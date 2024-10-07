@@ -1,0 +1,11 @@
+.navbar {
+  position: fixed;
+}
+
+.nav_link {
+  color: #0D6EFD;
+}
+
+.nnav_link:hover {
+  color: #94CFED;
+}
