@@ -1,0 +1,11 @@
+.container{
+
+    display: grid;
+    grid-template-areas: 
+
+}
+
+.linha{
+    width: 100%;
+    height: 30%;
+}
