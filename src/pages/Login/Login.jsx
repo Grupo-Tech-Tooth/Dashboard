@@ -10,7 +10,7 @@ const Login = () => {
     <>
       <Navbar />
       <Container>
-        <Card>
+        <Card titulo="Login">
           <LoginForm />
         </Card>
       </Container>

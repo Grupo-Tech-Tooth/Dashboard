@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Index from './pages/Index/Index';
 import Patients from './pages/Patients/Patients';
 import Login from './pages/Login/Login';
-import Geral from './pages/VisaoGeral/Geral';
 
 const AppRoutes = () => {
   return (
