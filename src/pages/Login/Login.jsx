@@ -10,7 +10,7 @@ const Login = () => {
     <>
       <Navbar />
       <Container>
-        <Card titulo="Login">
+        <Card titulo="Login" largura="350">
           <LoginForm />
         </Card>
       </Container>
