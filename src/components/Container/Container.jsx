@@ -1,9 +1,9 @@
 import React from 'react';
 import styles from './Container.module.css';
 
-const Container = ({ children }) => {
+const Container = ({ children, classes = '', estilos = {}}) => {
     return (
-        <div className={`${styles.container} container d-flex justify-content-center align-items-center`}>
+        <div className={`${styles.container} ${classes}`} style={estilos}>
             {children}
         </div>
     );

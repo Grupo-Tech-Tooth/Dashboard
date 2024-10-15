@@ -11,9 +11,9 @@ const Navbar = () => {
   const isLoginPage = location.pathname === '/';
 
   return (
-    <nav className={`${styles.navbar} navbar navbar-expand-lg navbar-light bg-white shadow-sm`}>
-      <div className="container-fluid">
-        <a className="navbar-brand text-primary" href="#">
+    <nav className={`${styles.navbar} navbar navbar-expand-lg navbar-light bg-white shadow-sm w-100`}>
+      <div className="container-fluid p-0 d-flex justify-content-between align-items-center" style={{width: '80%'}}>
+        <a className="navbar-brand text-primary m-0" href="#">
           <FontAwesomeIcon icon={faTooth} /> Tech Tooth
         </a>
         <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -21,7 +21,7 @@ const Navbar = () => {
         </button>
 
         {/* Condiciona a renderização do navbarNav */}
-        {!isLoginPage && (
+        {/* {!isLoginPage && ( */}
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav ms-auto">
               <li className="nav-item">
@@ -49,7 +49,7 @@ const Navbar = () => {
 
             <a className="btn btn-outline-primary" href="#">Sair</a>
           </div>
-        )}
+        {/* )} */}
       </div>
     </nav>
   );

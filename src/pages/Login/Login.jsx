@@ -9,8 +9,8 @@ const Login = () => {
   return (
     <>
       <Navbar />
-      <Container>
-        <Card titulo="Login" largura="350">
+      <Container classes="container d-flex justify-content-center align-items-center">
+        <Card titulo="Login" classes="card shadow-lg" estilos={{width: '350px'}}>
           <LoginForm />
         </Card>
       </Container>
