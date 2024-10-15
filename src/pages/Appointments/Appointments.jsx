@@ -6,8 +6,6 @@ import Input from "../../components/Input/Input";
 import Botao from "../../components/Botao/Botao";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight, faChevronLeft, faPlus } from '@fortawesome/free-solid-svg-icons';
-import { height } from '@fortawesome/free-solid-svg-icons/fa0';
-import { MdOpacity } from 'react-icons/md';
 
 
 function Appointments() {
@@ -62,20 +60,6 @@ function Appointments() {
         </Card>
 
         <Card classes="container m-0 px-2 py-1 card" estilos={{ height: '420px', maxWidth: '28%', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', justifyContent: 'space-between', textAlign: 'start', lineHeight: '3' }} bodyEstilos={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-          <h4 className='text-primary mb-4' style={{ textAlign: 'center', opacity: '0.5' }}>15 de Outubro de 2024</h4>
-          <div className="col-md-12" style={{opacity: '0.5'}}>
-            <h5 className='mb-3'>Horário: <span>11:00 - 12:00</span></h5>
-            <h5 className='mb-3'>Dentista: <span>Dr. Fulano de Tal</span></h5>
-            <h5 className='mb-3'>Tratamento: <span>Canal</span></h5>
-            <h5 className='mb-3'>Paciente: <span>Ciclano de Tal</span></h5>
-          </div>
-          <div className="d-flex justify-content-between p-0 m-0">
-            <Botao label="Avaliar Consulta" className="btn-primary my-3" data-bs-toggle="modal" data-bs-target="#viewCalendarModal" />
-            <Botao label="Remarcar Consulta" className="btn-outline-primary my-3" style={{opacity: '0.5' }} data-bs-toggle="modal" data-bs-target="#viewCalendarModal" disabled/>
-          </div>
-        </Card>
-
-        <Card classes="container m-0 px-2 py-1 card" estilos={{ height: '420px', maxWidth: '28%', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', justifyContent: 'space-between', textAlign: 'start', lineHeight: '3' }} bodyEstilos={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <h4 className='text-primary mb-4' style={{ textAlign: 'center' }}>15 de Novembro de 2024</h4>
           <div className="col-md-12">
             <h5 className='mb-3'>Horário: <span>11:00 - 12:00</span></h5>
@@ -84,8 +68,22 @@ function Appointments() {
             <h5 className='mb-3'>Paciente: <span>Ciclano de Tal</span></h5>
           </div>
           <div className="d-flex justify-content-between p-0 m-0">
-            <Botao label="Avaliar Consulta" className="btn-primary my-3" data-bs-toggle="modal" data-bs-target="#viewCalendarModal" />
+            <Botao label="Avaliar Consulta" className="btn-outline-primary my-3" data-bs-toggle="modal" data-bs-target="#viewCalendarModal" disabled/>
             <Botao label="Remarcar Consulta" className="btn-primary my-3" data-bs-toggle="modal" data-bs-target="#viewCalendarModal" />
+          </div>
+        </Card>
+
+        <Card classes="container m-0 px-2 py-1 card" estilos={{ height: '420px', maxWidth: '28%', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', justifyContent: 'space-between', textAlign: 'start', lineHeight: '3' }} bodyEstilos={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <h4 className='text-primary mb-4' style={{ textAlign: 'center', opacity: '0.5' }}>15 de Outubro de 2024</h4>
+          <div className="col-md-12" style={{ opacity: '0.5' }}>
+            <h5 className='mb-3'>Horário: <span>11:00 - 12:00</span></h5>
+            <h5 className='mb-3'>Dentista: <span>Dr. Fulano de Tal</span></h5>
+            <h5 className='mb-3'>Tratamento: <span>Canal</span></h5>
+            <h5 className='mb-3'>Paciente: <span>Ciclano de Tal</span></h5>
+          </div>
+          <div className="d-flex justify-content-between p-0 m-0">
+            <Botao label="Avaliar Consulta" className="btn-primary my-3" data-bs-toggle="modal" data-bs-target="#viewCalendarModal" />
+            <Botao label="Remarcar Consulta" className="btn-outline-primary my-3" style={{ opacity: '0.5' }} data-bs-toggle="modal" data-bs-target="#viewCalendarModal" disabled />
           </div>
         </Card>
 
