@@ -166,8 +166,10 @@ function Patients() {
     <>
       <Navbar />
       <h2 className="text-primary text-center my-3">Gerenciar Pacientes</h2>
-      <Container>
-        <FormUserAdd display={viewFormAdd} close={closeForm} />
+      <Container>{
+        viewFormAdd == 'block' &&
+        <FormUserAdd Display={viewFormAdd} close={closeForm} />
+      }
         <div className={style['card']}>
           <div className="row mb-4">
             <div className="col-md-8 mx-auto">
@@ -180,7 +182,7 @@ function Patients() {
               </div>
             </div>
             <div className="col-md-2 mx-auto">
-              <Button className="btn btn-primary" data-bs-toggle="modal" onClick={()=>abrirModalAdd()}  data-bs-target="#addPatientModal" label={"Adicionar Paciente"} />
+              <Button className="btn btn-primary" data-bs-toggle="modal" onClick={() => abrirModalAdd()} data-bs-target="#addPatientModal" label={"Adicionar Paciente"} />
             </div>
           </div>
           <Table tableInformation={tableInformation} />
@@ -190,7 +192,6 @@ function Patients() {
   );
 
   function buscar() {
-    debugger
     if (searchValue) {
       const searchLower = searchValue.toLowerCase();
       let filtered = tableInformation.dataNotFilter.filter((item) =>
@@ -204,7 +205,7 @@ function Patients() {
         ...prevTableInformation,
         data: filtered
       }));
-    }else{
+    } else {
       setTableInformation((prevTableInformation) => ({
         ...prevTableInformation,
         data: prevTableInformation.dataNotFilter
@@ -212,30 +213,22 @@ function Patients() {
     }
   }
 
-  function abrirModalAdd(){
+  function abrirModalAdd() {
     setViewFormAdd("block");
   }
 
   function closeForm(newUser) {
     setViewFormAdd("none");
     saveFields(newUser);
-}
-
-function saveFields(newUser){
-  const user = {
-    id: tableInformation.dataNotFilter[tableInformation.dataNotFilter.length - 1].id + 1,
-    name: newUser.target[0].value,
-    surname: newUser.target[1].value,
-    email: newUser.target[2].value,
-    phone: newUser.target[3].value,
-    cpf: newUser.target[4].value,
-    lastVisit: 'Não Possui',
-    dateBirth: newUser.target[5].value,
-    gender: newUser.target[6].value,
   }
-  tableInformation.dataNotFilter.push(user);
-  alert("Usar essa função para salvar");
-}
+  
+  function saveFields(newUser) {
+    if (newUser?.name) {
+      newUser.id = tableInformation.dataNotFilter[tableInformation.dataNotFilter.length - 1].id + 1;
+      tableInformation.dataNotFilter.push(newUser);
+      alert("Usar essa função para salvar");
+    }
+  }
 }
 
 export default Patients;

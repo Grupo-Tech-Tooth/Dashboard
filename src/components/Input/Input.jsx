@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const Input = ({ classes = '', name, type, label, placeholder, required, disabled, value = '' }) => {
+const Input = ({ classes = '', name, type, label, placeholder, required, disabled, value = ''}) => {
     const [valor, setValor] = useState(value);
 
     useEffect(() => {

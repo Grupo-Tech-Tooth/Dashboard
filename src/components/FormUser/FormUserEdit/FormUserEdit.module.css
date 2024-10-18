@@ -5,17 +5,19 @@
     position: absolute;
     top: 0%;
     left: 0%;
-    
-    
+
+
     .form {
         position: fixed;
-        width: 50%;
+        width: 60%;
+        max-height: 90vh;
         background-color: #ffffff;
-        top: 6rem;
-        left: 25%;
+        top: 2rem;
+        left: 20%;
         border: 1px solid gray;
         border-radius: 5px;
         padding: 1rem 2% 2rem 2%;
+        overflow-y: scroll;
 
 
         .lineTitle {
@@ -51,6 +53,21 @@
             }
         }
 
+        .lineData {
+            display: flex;
+            align-items: baseline;
+            height: fit-content;
+            gap: 2%;
+
+            .data {
+                display: flex;
+                height: fit-content;
+                flex-direction: column;
+                justify-content: center;
+                gap: 0.4rem;
+            }
+        }
+
         .lineButton {
             width: 100%;
             display: flex;
@@ -70,15 +87,15 @@
         }
 
         input:focus {
-            outline: none; 
-            box-shadow: none; 
-          }
+            outline: none;
+            box-shadow: none;
+        }
     }
 }
 
-@media (max-width: 767px){
-    .bottom{
-        .form{
+@media (max-width: 767px) {
+    .bottom {
+        .form {
             width: 70%;
             left: 15%;
             top: 2rem;
