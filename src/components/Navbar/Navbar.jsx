@@ -21,7 +21,7 @@ const Navbar = () => {
         </button>
 
         {/* Condiciona a renderização do navbarNav */}
-        {/* {!isLoginPage && ( */}
+        {!isLoginPage && (
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav ms-auto">
               <li className="nav-item">
@@ -49,7 +49,7 @@ const Navbar = () => {
 
             <a className="btn btn-outline-primary" href="#">Sair</a>
           </div>
-        {/* )} */}
+        )} 
       </div>
     </nav>
   );

@@ -6,91 +6,257 @@ import Input from "../../components/Input/Input";
 import Botao from "../../components/Botao/Botao";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight, faChevronLeft, faPlus } from '@fortawesome/free-solid-svg-icons';
+import Modal from '../../components/Modal/Modal';
+import Carousel from './Carousel/Carousel';
 
 
-function Appointments() {
+const Appointments = () => {
+  const [showModal, setShowModal] = useState(false);
+  const [step, setStep] = useState(0); // Controla o passo atual
+  const [selectedDoctor, setSelectedDoctor] = useState('');
+  const [selectedTreatment, setSelectedTreatment] = useState('');
+  const [selectedDate, setSelectedDate] = useState('');
+  const [selectedTime, setSelectedTime] = useState('');
 
+  const handleOpenModal = () => {
+    setShowModal(true); // Abre o modal
+    setStep(0); // Reseta o passo ao abrir
+  };
+  
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setStep(0); // Reseta o passo ao fechar
+    setSelectedDoctor('');
+    setSelectedTreatment('');
+    setSelectedDate('');
+    setSelectedTime('');
+  };
+
+  const handleNextStep = () => {
+    setStep(step + 1);
+  };
+
+  const consultas = [
+    {
+      data: '15 de Novembro de 2024',
+      horario: '11:00 - 12:00',
+      dentista: 'Dr. Fulano de Tal',
+      tratamento: 'Limpeza',
+      paciente: 'Ciclano de Tal',
+    },
+    {
+      data: '15 de Outubro de 2024',
+      horario: '12:00 - 13:00',
+      dentista: 'Dr. Fulano de Tal',
+      tratamento: 'Limpeza',
+      paciente: 'Ciclano de Tal',
+    },
+    {
+      data: '15 de Setembro de 2024',
+      horario: '13:00 - 14:00',
+      dentista: 'Dr. Fulano de Tal',
+      tratamento: 'Limpeza',
+      paciente: 'Ciclano de Tal',
+    },
+    {
+      data: '15 de Agosto de 2024',
+      horario: '14:00 - 15:00',
+      dentista: 'Dr. Fulano de Tal',
+      tratamento: 'Limpeza',
+      paciente: 'Ciclano de Tal',
+    },
+    // Adicione mais consultas conforme necessário
+  ];
+  // Lista de médicos e tratamentos (exemplo)
+  const doctors = ['Dr. João', 'Dr. Maria', 'Dr. Carlos'];
+  const treatments = ['Consulta Geral', 'Limpeza', 'Tratamento de Canal'];
+  const availableDates = ['2024-10-04', '2024-10-05']; // Exemplo de datas disponíveis
+  const availableTimes = ['09:00', '10:30', '15:00']; // Horários disponíveis
+
+  const renderContent = () => {
+    switch (step) {
+      case 0: // Selecionar Médico
+        return (
+          <div>
+            <h6>Selecionar Médico</h6>
+            {doctors.map((doctor, index) => (
+              <div key={index} className="form-check">
+                <input
+                  type="radio"
+                  id={`doctor-${index}`}
+                  name="doctor"
+                  value={doctor}
+                  onChange={() => setSelectedDoctor(doctor)}
+                  checked={selectedDoctor === doctor}
+                  className="form-check-input" // Classe do Bootstrap para o input
+                  style={{ display: 'none' }} // Oculta o radio button padrão
+                />
+                <label
+                  htmlFor={`doctor-${index}`}
+                  className={`form-check-label p-2 ${selectedDoctor === doctor ? 'bg-primary text-white' : ''}`}
+                  style={{ cursor: 'pointer', borderRadius: '0.25rem' }} // Estilo para o label
+                >
+                  {doctor}
+                </label>
+              </div>
+            ))}
+            <button onClick={handleNextStep} disabled={!selectedDoctor} className="btn btn-primary mt-2">
+              Avançar
+            </button>
+          </div>
+        );
+      case 1: // Selecionar Tipo de Tratamento
+        return (
+          <div>
+            <h6>Selecionar Tipo de Tratamento</h6>
+            {treatments.map((treatment, index) => (
+              <div key={index} className="form-check">
+                <input
+                  type="radio"
+                  id={`treatment-${index}`}
+                  name="treatment"
+                  value={treatment}
+                  onChange={() => setSelectedTreatment(treatment)}
+                  checked={selectedTreatment === treatment}
+                  className="form-check-input"
+                  style={{ display: 'none' }}
+                />
+                <label
+                  htmlFor={`treatment-${index}`}
+                  className={`form-check-label p-2 ${selectedTreatment === treatment ? 'bg-primary text-white' : ''}`}
+                  style={{ cursor: 'pointer', borderRadius: '0.25rem' }}
+                >
+                  {treatment}
+                </label>
+              </div>
+            ))}
+            <button onClick={handleNextStep} disabled={!selectedTreatment} className="btn btn-primary mt-2">
+              Avançar
+            </button>
+            <button onClick={() => setStep(step - 1)} disabled={step === 0} className="btn btn-secondary mt-2">
+              Voltar
+            </button>
+          </div>
+        );
+      case 2: // Selecionar Data
+        return (
+          <div>
+            <h6>Selecionar Data</h6>
+            {availableDates.map((date, index) => (
+              <div key={index} className="form-check">
+                <input
+                  type="radio"
+                  id={`date-${index}`}
+                  name="date"
+                  value={date}
+                  onChange={() => {
+                    setSelectedDate(date);
+                  }}
+                  checked={selectedDate === date}
+                  className="form-check-input"
+                  style={{ display: 'none' }}
+                />
+                <label
+                  htmlFor={`date-${index}`}
+                  className={`form-check-label p-2 ${selectedDate === date ? 'bg-primary text-white' : ''}`}
+                  style={{ cursor: 'pointer', borderRadius: '0.25rem' }}
+                >
+                  {date}
+                </label>
+              </div>
+            ))}
+            <button onClick={handleNextStep} disabled={!selectedDate} className="btn btn-primary mt-2">
+              Avançar
+            </button>
+            <button onClick={() => setStep(step - 1)} disabled={step === 0} className="btn btn-secondary mt-2">
+              Voltar
+            </button>
+          </div>
+        );
+      case 3: // Selecionar Hora
+        return (
+          <div>
+            <h6>Selecionar Hora</h6>
+            {availableTimes.map((time, index) => (
+              <div key={index} className="form-check">
+                <input
+                  type="radio"
+                  id={`time-${index}`}
+                  name="time"
+                  value={time}
+                  onChange={() => {
+                    setSelectedTime(time);
+                  }}
+                  checked={selectedTime === time}
+                  className="form-check-input"
+                  style={{ display: 'none' }}
+                />
+                <label
+                  htmlFor={`time-${index}`}
+                  className={`form-check-label p-2 ${selectedTime === time ? 'bg-primary text-white' : ''}`}
+                  style={{ cursor: 'pointer', borderRadius: '0.25rem' }}
+                >
+                  {time}
+                </label>
+              </div>
+            ))}
+            <button onClick={handleCloseModal} disabled={!selectedTime} className="btn btn-primary mt-2">
+              Confirmar
+            </button>
+            <button onClick={() => setStep(step - 1)} disabled={step === 0} className="btn btn-secondary mt-2">
+              Voltar
+            </button>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
     <div>
       <Navbar />
       <h2 class="text-primary text-center my-3">Gerenciar Consultas</h2>
 
-      <div className="container row" style={{ margin: '0 auto', justifyContent: 'space-between' }}>
-        <Card classes="container m-0 p-2 card" estilos={{ minHeight: '120px', maxWidth: '27%', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', textAlign: 'center' }}>
-          <h5 className='text-primary'>Sua última consulta foi em</h5>
-          <h4>15 de Outubro de 2024 <br /> às 11:00</h4>
-        </Card>
-        <Card classes="container m-0 p-2 card" estilos={{ minHeight: '120px', maxWidth: '42%', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', justifyContent: 'space-between', textAlign: 'center' }}>
-          <h5 className='text-primary'>Em caso de problemas com agendamento ou pós tratamento, entre em contato conosco</h5>
-          <h5 style={{ fontWeight: '400' }}>(11) 99999-8888 | (11) 2233-4455</h5>
-        </Card>
-        <Card classes="container m-0 p-2 card" estilos={{ minHeight: '120px', maxWidth: '27%', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', textAlign: 'center' }}>
-          <h5 className='text-primary'>Sua próxima consulta é em</h5>
-          <h4>15 de Novembro de 2024 <br /> às 10:00</h4>
-        </Card>
-      </div>
+      <Container classes="" estilos={{ margin: '0 10vw', maxWidth: '100%', height: 'fit-content' }}>
+        <div className="row pb-3" style={{ margin: '0', justifyContent: 'space-between', width: '100%' }}>
+          <Card classes="container m-0 p-2 card" estilos={{ minHeight: '120px', maxWidth: '27%', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', textAlign: 'center' }}>
+            <h5 className='text-primary'>Sua última consulta foi em</h5>
+            <h4>15 de Outubro de 2024 <br /> às 11:00</h4>
+          </Card>
+          <Card classes="container m-0 p-2 card" estilos={{ minHeight: '120px', maxWidth: '42%', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', justifyContent: 'space-between', textAlign: 'center' }}>
+            <h5 className='text-primary'>Em caso de problemas com agendamento ou pós tratamento, entre em contato conosco</h5>
+            <h5 style={{ fontWeight: '400' }}>(11) 99999-8888 | (11) 2233-4455</h5>
+          </Card>
+          <Card classes="container m-0 p-2 card" estilos={{ minHeight: '120px', maxWidth: '27%', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', textAlign: 'center' }}>
+            <h5 className='text-primary'>Sua próxima consulta é em</h5>
+            <h4>15 de Novembro de 2024 <br /> às 10:00</h4>
+          </Card>
+        </div>
 
-      <Container classes="container my-4 p-3 card" estilos={{ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
-        <div class="row">
-          <div class="row mx-auto">
-            <Input classes="col-md-2" name="searchPatient" type="text" label="Nome do Paciente" placeholder="Filtrar por paciente" />
-            <Input classes="col-md-2" name="searchTreatment" type="text" label="Tipo de tratamento" placeholder="Filtrar por tratamento" />
-            <Input classes="col-md-2" name="searchDoctor" type="text" label="Nome do Médico" placeholder="Filtrar por médico" />
-            <Input classes="col-md-2" name="searchInitialDate" type="date" label="Data Inicial" placeholder="Filtrar por período" />
-            <Input classes="col-md-2" name="searchFinalDate" type="date" label="Data Final" placeholder="Filtrar por período" />
-            <div class="col-md-2 mb-3 align-content-end">
-              <Botao label="Filtrar Consultas" className="btn-primary" data-bs-toggle="modal" data-bs-target="#viewCalendarModal" style={{ width: '100%' }} />
+        <Card classes="card my-2 py-2 px-0">
+          <div class="row">
+            <div class="row mx-auto">
+              <Input classes="col-md-2" name="searchPatient" type="text" label="Nome do Paciente" placeholder="Filtrar por paciente" />
+              <Input classes="col-md-2" name="searchTreatment" type="text" label="Tipo de tratamento" placeholder="Filtrar por tratamento" />
+              <Input classes="col-md-2" name="searchDoctor" type="text" label="Nome do Médico" placeholder="Filtrar por médico" />
+              <Input classes="col-md-2" name="searchInitialDate" type="date" label="Data Inicial" placeholder="Filtrar por período" />
+              <Input classes="col-md-2" name="searchFinalDate" type="date" label="Data Final" placeholder="Filtrar por período" />
+              <div class="col-md-2 mb-3 align-content-end">
+                <Botao label="Filtrar Consultas" className="btn-primary" data-bs-toggle="modal" data-bs-target="#viewCalendarModal" style={{ width: '100%' }} />
+              </div>
             </div>
           </div>
-        </div>
+        </Card>
+
+        <Carousel consultas={consultas} onCardClick={handleOpenModal}/>
+        <Modal
+          show={showModal}
+          onClose={handleCloseModal}
+          title={`Marcar Consulta`}
+          content={renderContent()}  // Renderiza o conteúdo com base no passo
+        />
       </Container>
-
-      <div className="container row " style={{ height: '450px', margin: '0 auto', justifyContent: 'space-between', alignItems: 'center', overflowX: 'hidden', flexWrap: 'noWrap' }}>
-        <Botao noGrid={true} type="button" className="btn-primary" icon={faChevronLeft} label='' style={{ height: '50px', maxWidth: '3%' }}>
-          <FontAwesomeIcon icon={faChevronLeft} />
-        </Botao>
-
-        <Card classes="container m-0 px-2 py-1 card" estilos={{ height: '420px', maxWidth: '28%', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', lineHeight: '3', opacity: '0.5' }} bodyEstilos={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-
-          <Botao label="" textAfter="Marcar Consulta" noGrid={true} className="btn-primary mt-4" icon={faPlus} data-bs-toggle="modal" data-bs-target="#viewCalendarModal" style={{ width: '180px', height: '220px', fontSize: '60px' }}>
-            <FontAwesomeIcon icon={faPlus} />
-          </Botao>
-
-        </Card>
-
-        <Card classes="container m-0 px-2 py-1 card" estilos={{ height: '420px', maxWidth: '28%', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', justifyContent: 'space-between', textAlign: 'start', lineHeight: '3' }} bodyEstilos={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-          <h4 className='text-primary mb-4' style={{ textAlign: 'center' }}>15 de Novembro de 2024</h4>
-          <div className="col-md-12">
-            <h5 className='mb-3'>Horário: <span>11:00 - 12:00</span></h5>
-            <h5 className='mb-3'>Dentista: <span>Dr. Fulano de Tal</span></h5>
-            <h5 className='mb-3'>Tratamento: <span>Limpeza</span></h5>
-            <h5 className='mb-3'>Paciente: <span>Ciclano de Tal</span></h5>
-          </div>
-          <div className="d-flex justify-content-between p-0 m-0">
-            <Botao label="Avaliar Consulta" className="btn-outline-primary my-3" data-bs-toggle="modal" data-bs-target="#viewCalendarModal" disabled/>
-            <Botao label="Remarcar Consulta" className="btn-primary my-3" data-bs-toggle="modal" data-bs-target="#viewCalendarModal" />
-          </div>
-        </Card>
-
-        <Card classes="container m-0 px-2 py-1 card" estilos={{ height: '420px', maxWidth: '28%', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', justifyContent: 'space-between', textAlign: 'start', lineHeight: '3' }} bodyEstilos={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-          <h4 className='text-primary mb-4' style={{ textAlign: 'center', opacity: '0.5' }}>15 de Outubro de 2024</h4>
-          <div className="col-md-12" style={{ opacity: '0.5' }}>
-            <h5 className='mb-3'>Horário: <span>11:00 - 12:00</span></h5>
-            <h5 className='mb-3'>Dentista: <span>Dr. Fulano de Tal</span></h5>
-            <h5 className='mb-3'>Tratamento: <span>Canal</span></h5>
-            <h5 className='mb-3'>Paciente: <span>Ciclano de Tal</span></h5>
-          </div>
-          <div className="d-flex justify-content-between p-0 m-0">
-            <Botao label="Avaliar Consulta" className="btn-primary my-3" data-bs-toggle="modal" data-bs-target="#viewCalendarModal" />
-            <Botao label="Remarcar Consulta" className="btn-outline-primary my-3" style={{ opacity: '0.5' }} data-bs-toggle="modal" data-bs-target="#viewCalendarModal" disabled />
-          </div>
-        </Card>
-
-        <Botao noGrid={true} type="button" className="btn-primary" icon={faChevronRight} label='' style={{ height: '50px', maxWidth: '3%' }}>
-          <FontAwesomeIcon icon={faChevronRight} />
-        </Botao>
-      </div>
     </div>
   );
 }

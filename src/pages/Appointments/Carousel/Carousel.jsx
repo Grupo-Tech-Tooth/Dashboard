@@ -1,0 +1,116 @@
+import React, { useState } from 'react';
+import Botao from '../../../components/Botao/Botao'; // Ajuste conforme a localização do seu componente Botao
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronRight, faChevronLeft, faPlus } from '@fortawesome/free-solid-svg-icons';
+import Card from '../../../components/Card/Card'; // Ajuste conforme a localização do seu componente Card
+
+const Carousel = ({ consultas, onCardClick }) => {
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const cardsPerPage = 2; // Número de cards de consultas a serem exibidos por vez
+
+    // Função para converter data no formato '15 de Novembro de 2024' para objeto Date
+    const parseDate = (dateString) => {
+        const months = {
+            Janeiro: 0, Fevereiro: 1, Março: 2, Abril: 3, Maio: 4, Junho: 5,
+            Julho: 6, Agosto: 7, Setembro: 8, Outubro: 9, Novembro: 10, Dezembro: 11
+        };
+
+        const parts = dateString.split(' ');
+        const day = parseInt(parts[0], 10);
+        const month = months[parts[2]]; // Ajuste aqui para pegar o mês correto
+        const year = parseInt(parts[4], 10);
+
+        return new Date(year, month, day);
+    };
+
+    // Ordenar as consultas por data em ordem crescente
+    const sortedConsultas = consultas.sort((a, b) => {
+        return parseDate(a.data) - parseDate(b.data);
+    });
+
+    const handleNext = () => {
+        setCurrentIndex((prevIndex) => Math.min(prevIndex + 1, sortedConsultas.length - 1));
+    };
+
+    const handlePrev = () => {
+        setCurrentIndex((prevIndex) => Math.max(prevIndex - 1, 0));
+    };
+
+    const renderCards = () => {
+        const cardsToRender = [];
+
+
+
+        // Renderizar as consultas de acordo com o índice atual
+        cardsToRender.push(
+            <Card
+                key="mark-appointment"
+                classes="container m-0 px-3 py-2 card"
+                estilos={{ height: '420px', maxWidth: '27%', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', lineHeight: '3', opacity: '0.5' }}
+                bodyEstilos={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}
+            >
+                <Botao
+                    label=""
+                    textAfter="Marcar Consulta"
+                    noGrid={true}
+                    className="btn-primary mt-4"
+                    icon={faPlus}
+                    onClick={onCardClick}
+                    data-bs-toggle="modal"
+                    data-bs-target="#viewCalendarModal"
+                    style={{ width: '180px', height: '220px', fontSize: '60px' }}
+                >
+                    <FontAwesomeIcon icon={faPlus} />
+                </Botao>
+            </Card>
+        );
+    
+        // Renderizar as consultas de acordo com o índice atual
+        for (let i = 0; i < cardsPerPage; i++) {
+            const index = currentIndex + i;
+            if (index >= sortedConsultas.length) break; // Se não houver mais consultas
+    
+            const consulta = sortedConsultas[index];
+            const isPast = parseDate(consulta.data) < new Date(); // Verifica se a consulta já passou
+    
+            cardsToRender.push(
+                <Card
+                    key={consulta.id} // Certifique-se de que cada consulta tenha um identificador único
+                    classes="container m-0 px-3 py-2 card"
+                    estilos={{ height: '420px', maxWidth: '27%', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', justifyContent: 'space-between', textAlign: 'start', lineHeight: '3' }}
+                    bodyEstilos={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
+                >
+                    <h4 className='text-primary mb-4' style={{ textAlign: 'center', opacity: isPast ? '0.5' : '1' }}>{consulta.data}</h4>
+                    <div className="col-md-12" style={{ opacity: isPast ? '0.5' : '1' }}>
+                        <h5 className='mb-3' style={{ fontWeight: 'normal' }}>Horário: <span>{consulta.horario}</span></h5>
+                        <h5 className='mb-3' style={{ fontWeight: 'normal' }}>Dentista: <span>{consulta.dentista}</span></h5>
+                        <h5 className='mb-3' style={{ fontWeight: 'normal' }}>Tratamento: <span>{consulta.tratamento}</span></h5>
+                        <h5 className='mb-3' style={{ fontWeight: 'normal' }}>Paciente: <span>{consulta.paciente}</span></h5>
+                    </div>
+                    <div className="d-flex justify-content-between p-0 m-0">
+                        <Botao label="Avaliar Consulta" className={`my-3 ${isPast ? 'btn-outline-primary' : 'btn-primary'}`} data-bs-toggle="modal" data-bs-target="#viewCalendarModal" disabled={isPast} />
+                        <Botao label="Remarcar Consulta" className={`my-3 ${isPast ? 'btn-primary' : 'btn-outline-primary'}`} data-bs-toggle="modal" data-bs-target="#viewCalendarModal" disabled={!isPast} />
+                    </div>
+                </Card>
+            );
+        }
+    
+        return cardsToRender;
+    };
+
+    return (
+        <div className="row" style={{ height: '450px', width: '94%', margin: '0 3%', justifyContent: 'space-between', alignItems: 'center', overflowX: 'hidden', flexWrap: 'noWrap' }}>
+            <Botao noGrid={true} type="button" className="btn-primary" icon={faChevronLeft} label='' onClick={handlePrev} style={{ height: '50px', maxWidth: '3%' }}>
+                <FontAwesomeIcon icon={faChevronLeft} />
+            </Botao>
+
+            {renderCards()}
+
+            <Botao noGrid={true} type="button" className="btn-primary" icon={faChevronRight} label='' onClick={handleNext} style={{ height: '50px', maxWidth: '3%' }}>
+                <FontAwesomeIcon icon={faChevronRight} />
+            </Botao>
+        </div>
+    );
+};
+
+export default Carousel;
