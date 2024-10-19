@@ -44,18 +44,32 @@ const Table = ({ tableInformation }) => {
 
 
     function closeForm(userEdit) {
+        debugger
         const position = tableInformation.data.findIndex((item) => item.id === userEdit.id);
         if (position !== -1) {
             tableInformation.data[position] = {
                 ...tableInformation.data[position],
                 name: userEdit.name,
                 surname: userEdit.surname,
-                email: userEdit.email,
+                dateBirth: userEdit.dateBirth,
                 phone: userEdit.phone,
-                lastVisit: userEdit.lastVisit
+                email: userEdit.email,
+                cpf: userEdit.cpf,
+                gender: userEdit.gender,
+                cep: userEdit.cep,
+                street: userEdit.street,
+                number: userEdit.number,
+                neighborhood: userEdit.neighborhood,
+                city: userEdit.city,
+                state: userEdit.state,
+                allergies: userEdit.allergies,
+                medications: userEdit.medications,
+                dentist: userEdit.dentist,
+                lastVisit: userEdit.lastVisit,
+                notes: userEdit.notes
             };
-            setFormUser("none");
         }
+        setFormUser("none");
     }
 
     function editPatient(user) {
