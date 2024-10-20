@@ -20,6 +20,7 @@
     background-color: #ffffff;
     border: none;
     border-top: 4px solid #0d6efd;
+    min-width: 400px;
   }
   
   .modalHeader {

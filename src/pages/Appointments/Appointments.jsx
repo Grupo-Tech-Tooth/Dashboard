@@ -1,31 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Navbar from "../../components/Navbar/Navbar";
 import Container from '../../components/Container/Container';
 import Card from "../../components/Card/Card";
 import Input from "../../components/Input/Input";
 import Botao from "../../components/Botao/Botao";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronRight, faChevronLeft, faPlus } from '@fortawesome/free-solid-svg-icons';
 import Modal from '../../components/Modal/Modal';
 import Carousel from './Carousel/Carousel';
 
 
 const Appointments = () => {
   const [showModal, setShowModal] = useState(false);
-  const [step, setStep] = useState(0); // Controla o passo atual
+  const [step, setStep] = useState(0);
   const [selectedDoctor, setSelectedDoctor] = useState('');
   const [selectedTreatment, setSelectedTreatment] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
 
   const handleOpenModal = () => {
-    setShowModal(true); // Abre o modal
-    setStep(0); // Reseta o passo ao abrir
+    setShowModal(true);
+    setStep(0);
   };
-  
+
   const handleCloseModal = () => {
     setShowModal(false);
-    setStep(0); // Reseta o passo ao fechar
+    setStep(0);
     setSelectedDoctor('');
     setSelectedTreatment('');
     setSelectedDate('');
@@ -65,149 +63,172 @@ const Appointments = () => {
       tratamento: 'Limpeza',
       paciente: 'Ciclano de Tal',
     },
-    // Adicione mais consultas conforme necessário
   ];
-  // Lista de médicos e tratamentos (exemplo)
+  const treatments = ['Consulta Geral', 'Limpeza', 'Tratamento de Canal', 'Extração de Dente', 'Clareamento Dental', 'Ortodontia', 'Implante Dentário', 'Prótese Dentária', 'Restauração Dental', 'Tratamento de Gengiva', 'Tratamento de Sensibilidade', 'Tratamento de Cárie'];
   const doctors = ['Dr. João', 'Dr. Maria', 'Dr. Carlos'];
-  const treatments = ['Consulta Geral', 'Limpeza', 'Tratamento de Canal'];
-  const availableDates = ['2024-10-04', '2024-10-05']; // Exemplo de datas disponíveis
-  const availableTimes = ['09:00', '10:30', '15:00']; // Horários disponíveis
+  const availableDates = ['04-10-2024', '05-10-2024'];
+  const availableTimes = ['09:00', '10:30', '15:00'];
 
   const renderContent = () => {
     switch (step) {
-      case 0: // Selecionar Médico
+      case 0: // Selecionar Tipo de Tratamento
         return (
           <div>
-            <h6>Selecionar Médico</h6>
-            {doctors.map((doctor, index) => (
-              <div key={index} className="form-check">
-                <input
-                  type="radio"
-                  id={`doctor-${index}`}
-                  name="doctor"
-                  value={doctor}
-                  onChange={() => setSelectedDoctor(doctor)}
-                  checked={selectedDoctor === doctor}
-                  className="form-check-input" // Classe do Bootstrap para o input
-                  style={{ display: 'none' }} // Oculta o radio button padrão
-                />
-                <label
-                  htmlFor={`doctor-${index}`}
-                  className={`form-check-label p-2 ${selectedDoctor === doctor ? 'bg-primary text-white' : ''}`}
-                  style={{ cursor: 'pointer', borderRadius: '0.25rem' }} // Estilo para o label
-                >
-                  {doctor}
-                </label>
+            <div className=' p-2'>
+              <h6 className='py-2'>Selecionar Tipo de Tratamento</h6>
+              <div className="d-flex flex-wrap">
+                {treatments.map((treatment, index) => (
+                  <div key={index} className="form-check text-primary p-1 mx-0 w-50" style={{ width: 'fit-content' }}>
+                    <input
+                      type="radio"
+                      id={`treatment-${index}`}
+                      name="treatment"
+                      value={treatment}
+                      onChange={() => setSelectedTreatment(treatment)}
+                      checked={selectedTreatment === treatment}
+                      className="form-check-input w-100"
+                      style={{ display: 'none' }}
+                    />
+                    <label
+                      htmlFor={`treatment-${index}`}
+                      className={`form-check-label p-2 ${selectedTreatment === treatment ? 'bg-primary text-white' : ''}`}
+                      style={{ cursor: 'pointer', borderRadius: '0.25rem' }}
+                    >
+                      {treatment}
+                    </label>
+                  </div>
+                ))}
               </div>
-            ))}
-            <button onClick={handleNextStep} disabled={!selectedDoctor} className="btn btn-primary mt-2">
-              Avançar
-            </button>
-          </div>
+            </div>
+            <div className="col-md-12 d-flex justify-content-end mt-4">
+              <Botao noGrid={true} onClick={handleNextStep} disabled={!selectedTreatment} className="col-md-5 btn-primary" label='Avançar' />
+            </div>
+          </div >
         );
-      case 1: // Selecionar Tipo de Tratamento
+      case 1: // Selecionar Médico
         return (
           <div>
-            <h6>Selecionar Tipo de Tratamento</h6>
-            {treatments.map((treatment, index) => (
-              <div key={index} className="form-check">
-                <input
-                  type="radio"
-                  id={`treatment-${index}`}
-                  name="treatment"
-                  value={treatment}
-                  onChange={() => setSelectedTreatment(treatment)}
-                  checked={selectedTreatment === treatment}
-                  className="form-check-input"
-                  style={{ display: 'none' }}
-                />
-                <label
-                  htmlFor={`treatment-${index}`}
-                  className={`form-check-label p-2 ${selectedTreatment === treatment ? 'bg-primary text-white' : ''}`}
-                  style={{ cursor: 'pointer', borderRadius: '0.25rem' }}
-                >
-                  {treatment}
-                </label>
+            <div className=' p-2'>
+              <h6 className='py-2'>Selecionar Médico</h6>
+              <div className="d-flex flex-wrap">
+                {doctors.map((doctor, index) => (
+
+                  <div key={index} className="form-check text-primary p-1 mx-0 w-50" style={{ width: 'fit-content' }}>
+                    <input
+                      type="radio"
+                      id={`doctor-${index}`}
+                      name="doctor"
+                      value={doctor}
+                      onChange={() => setSelectedDoctor(doctor)}
+                      checked={selectedDoctor === doctor}
+                      className="form-check-input w-100" // Classe do Bootstrap para o input
+                      style={{ display: 'none' }} // Oculta o radio button padrão
+                    />
+                    <label
+                      htmlFor={`doctor-${index}`}
+                      className={`form-check-label p-2 ${selectedDoctor === doctor ? 'bg-primary text-white' : ''}`}
+                      style={{ cursor: 'pointer', borderRadius: '0.25rem' }} // Estilo para o label
+                    >
+                      {doctor}
+                    </label>
+                  </div>
+                ))}
               </div>
-            ))}
-            <button onClick={handleNextStep} disabled={!selectedTreatment} className="btn btn-primary mt-2">
-              Avançar
-            </button>
-            <button onClick={() => setStep(step - 1)} disabled={step === 0} className="btn btn-secondary mt-2">
-              Voltar
-            </button>
-          </div>
+            </div>
+            <div className="col-md-12 d-flex justify-content-between mt-2">
+              <Botao noGrid={true} onClick={() => setStep(step - 1)} disabled={step === 0} className="col-md-5 btn-outline-secondary" label='Voltar' />
+              <Botao noGrid={true} onClick={handleNextStep} disabled={!selectedDoctor} className="col-md-5 btn-primary" label='Avançar' />
+            </div>
+          </div >
         );
       case 2: // Selecionar Data
         return (
           <div>
-            <h6>Selecionar Data</h6>
-            {availableDates.map((date, index) => (
-              <div key={index} className="form-check">
-                <input
-                  type="radio"
-                  id={`date-${index}`}
-                  name="date"
-                  value={date}
-                  onChange={() => {
-                    setSelectedDate(date);
-                  }}
-                  checked={selectedDate === date}
-                  className="form-check-input"
-                  style={{ display: 'none' }}
-                />
-                <label
-                  htmlFor={`date-${index}`}
-                  className={`form-check-label p-2 ${selectedDate === date ? 'bg-primary text-white' : ''}`}
-                  style={{ cursor: 'pointer', borderRadius: '0.25rem' }}
-                >
-                  {date}
-                </label>
+            <div className='p-2'>
+              <h6 className='py-2'>Selecionar Data</h6>
+              <div className="d-flex flex-wrap">
+                {availableDates.map((date, index) => (
+                  <div key={index} className="form-check text-primary p-1 mx-0 w-50" style={{ width: 'fit-content' }}>
+                    <input
+                      type="radio"
+                      id={`date-${index}`}
+                      name="date"
+                      value={date}
+                      onChange={() => {
+                        setSelectedDate(date);
+                      }}
+                      checked={selectedDate === date}
+                      className="form-check-input w-100"
+                      style={{ display: 'none' }}
+                    />
+                    <label
+                      htmlFor={`date-${index}`}
+                      className={`form-check-label p-2 ${selectedDate === date ? 'bg-primary text-white' : ''}`}
+                      style={{ cursor: 'pointer', borderRadius: '0.25rem' }}
+                    >
+                      {date}
+                    </label>
+                  </div>
+                ))}
               </div>
-            ))}
-            <button onClick={handleNextStep} disabled={!selectedDate} className="btn btn-primary mt-2">
-              Avançar
-            </button>
-            <button onClick={() => setStep(step - 1)} disabled={step === 0} className="btn btn-secondary mt-2">
-              Voltar
-            </button>
+            </div>
+            <div className="col-md-12 d-flex justify-content-between mt-2">
+              <Botao noGrid={true} onClick={() => setStep(step - 1)} disabled={step === 0} className="col-md-5 btn-outline-secondary" label='Voltar' />
+              <Botao noGrid={true} onClick={handleNextStep} disabled={!selectedDate} className="col-md-5 btn-primary" label='Avançar' />
+            </div>
           </div>
         );
       case 3: // Selecionar Hora
         return (
           <div>
-            <h6>Selecionar Hora</h6>
-            {availableTimes.map((time, index) => (
-              <div key={index} className="form-check">
-                <input
-                  type="radio"
-                  id={`time-${index}`}
-                  name="time"
-                  value={time}
-                  onChange={() => {
-                    setSelectedTime(time);
-                  }}
-                  checked={selectedTime === time}
-                  className="form-check-input"
-                  style={{ display: 'none' }}
-                />
-                <label
-                  htmlFor={`time-${index}`}
-                  className={`form-check-label p-2 ${selectedTime === time ? 'bg-primary text-white' : ''}`}
-                  style={{ cursor: 'pointer', borderRadius: '0.25rem' }}
-                >
-                  {time}
-                </label>
+            <div className='p-2'>
+              <h6 className='py-2'>Selecionar Hora</h6>
+              <div className="d-flex flex-wrap">
+                {availableTimes.map((time, index) => (
+                  <div key={index} className="form-check text-primary p-1 mx-0 w-50" style={{ width: 'fit-content' }}>
+                    <input
+                      type="radio"
+                      id={`time-${index}`}
+                      name="time"
+                      value={time}
+                      onChange={() => {
+                        setSelectedTime(time);
+                      }}
+                      checked={selectedTime === time}
+                      className="form-check-input w-100"
+                      style={{ display: 'none' }}
+                    />
+                    <label
+                      htmlFor={`time-${index}`}
+                      className={`form-check-label p-2 ${selectedTime === time ? 'bg-primary text-white' : ''}`}
+                      style={{ cursor: 'pointer', borderRadius: '0.25rem' }}
+                    >
+                      {time}
+                    </label>
+                  </div>
+                ))}
               </div>
-            ))}
-            <button onClick={handleCloseModal} disabled={!selectedTime} className="btn btn-primary mt-2">
-              Confirmar
-            </button>
-            <button onClick={() => setStep(step - 1)} disabled={step === 0} className="btn btn-secondary mt-2">
-              Voltar
-            </button>
+            </div>
+            <div className="col-md-12 d-flex justify-content-between mt-2">
+              <Botao noGrid={true} onClick={() => setStep(step - 1)} disabled={step === 0} className="col-md-5 btn-outline-secondary" label='Voltar' />
+              <Botao noGrid={true} onClick={handleNextStep} disabled={!selectedTime} className="col-md-5 btn-primary" label='Marcar' />
+            </div>
           </div>
         );
+        case 4:
+          return (
+            <div>
+              <div className='p-2'>
+                <h6 className='py-2'>Confirmação de Consulta</h6>
+                <div className="d-flex flex-wrap">
+                  <h5 className='text-primary'>Consulta marcada com sucesso!</h5>
+                </div>
+              </div>
+              <div className="col-md-12 d-flex justify-content-end mt-4">
+                <Botao noGrid={true} onClick={handleCloseModal} className="col-md-5 btn-primary" label='Fechar' />
+              </div>
+            </div>
+          )
       default:
         return null;
     }
@@ -249,7 +270,7 @@ const Appointments = () => {
           </div>
         </Card>
 
-        <Carousel consultas={consultas} onCardClick={handleOpenModal}/>
+        <Carousel consultas={consultas} onCardClick={handleOpenModal} />
         <Modal
           show={showModal}
           onClose={handleCloseModal}
