@@ -6,7 +6,7 @@ import { faAngleDoubleLeft, faAngleDoubleRight } from '@fortawesome/free-solid-s
 
 import Card from '../../../components/Card/Card'; // Ajuste conforme a localização do seu componente Card
 
-const Carousel = ({ consultas, onCardClick }) => {
+const Carousel = ({ appointmentsData, onCardClick }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const cardsPerPage = 3; // Número de cards de consultas a serem exibidos por vez
 
@@ -27,7 +27,7 @@ const Carousel = ({ consultas, onCardClick }) => {
 
     // Ordenar as consultas por data em ordem crescente
     const sortedConsultas = [{ data: '11 de Maio de 1993', tratamento: 'Marcar Consulta' }];
-    sortedConsultas.push(...consultas.sort((a, b) => parseDate(b.data) - parseDate(a.data)));
+    sortedConsultas.push(...appointmentsData.sort((a, b) => parseDate(b.data) - parseDate(a.data)));
 
     const handleFirst = () => {
         setCurrentIndex(0);
@@ -59,17 +59,45 @@ const Carousel = ({ consultas, onCardClick }) => {
         // Renderizar as consultas de acordo com o índice atual
 
         // Renderizar as consultas de acordo com o índice atual
+            console.log('fim da volta');    
         for (let i = 0; i < cardsPerPage; i++) {
             let index = currentIndex + i;
-            if (index >= sortedConsultas.length) {
-                index -= 5;
+            console.log(' index', index, ' i', i, ' currentIndex', currentIndex);
+            if (sortedConsultas.length > 2 && index >= sortedConsultas.length) {
+                index = index - sortedConsultas.length;
             }; // Se não houver mais consultas
 
             const consulta = sortedConsultas[index];
-            if (consulta.tratamento && consulta.tratamento == "Marcar Consulta") {
+            if (sortedConsultas.length < cardsPerPage && !consulta) {
+                cardsToRender.unshift(
+                    <Card
+                        key={index}
+                        id="mark-appointment"
+                        classes="container m-0 mx-2 px-1 py-2 card"
+                        estilos={{ height: '420px', maxWidth: '25%', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', lineHeight: '3', opacity: '0.5' }}
+                        bodyEstilos={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}
+                    >
+                        <Botao
+                            label=""
+                            textAfter="Marcar Consulta"
+                            noGrid={true}
+                            className="btn-primary mt-4"
+                            icon={faPlus}
+                            onClick={onCardClick}
+                            data-bs-toggle="modal"
+                            data-bs-target="#viewCalendarModal"
+                            style={{ width: '180px', height: '220px', fontSize: '60px' }}
+                        >
+                            <FontAwesomeIcon icon={faPlus} />
+                        </Botao>
+                    </Card>
+                );
+            }
+            else if(consulta && consulta.tratamento == "Marcar Consulta"){
                 cardsToRender.push(
                     <Card
-                        key="mark-appointment"
+                        key={index}
+                        id="mark-appointment"
                         classes="container m-0 mx-2 px-1 py-2 card"
                         estilos={{ height: '420px', maxWidth: '25%', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', lineHeight: '3', opacity: '0.5' }}
                         bodyEstilos={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}
@@ -109,8 +137,8 @@ const Carousel = ({ consultas, onCardClick }) => {
                             <h5 className='mb-3' style={{ fontWeight: 'normal' }}>Paciente: <span>{consulta.paciente}</span></h5>
                         </div>
                         <div className="d-flex justify-content-between p-0 m-0">
-                            <Botao label="Avaliar Consulta" className={`my-3 ${isPast ? 'btn-outline-primary' : 'btn-primary'}`} data-bs-toggle="modal" data-bs-target="#viewCalendarModal" disabled={isPast} />
-                            <Botao label="Remarcar Consulta" className={`my-3 ${isPast ? 'btn-primary' : 'btn-outline-primary'}`} data-bs-toggle="modal" data-bs-target="#viewCalendarModal" disabled={!isPast} />
+                            <Botao label="Avaliar Consulta" className={`my-3 ${!isPast ? 'btn-outline-primary' : 'btn-primary'}`} data-bs-toggle="modal" data-bs-target="#viewCalendarModal" disabled={!isPast} />
+                            <Botao label="Remarcar Consulta" className={`my-3 ${!isPast ? 'btn-primary' : 'btn-outline-primary'}`} data-bs-toggle="modal" data-bs-target="#viewCalendarModal" disabled={isPast} />
                         </div>
                     </Card>
                 );

@@ -11,6 +11,7 @@ import Carousel from './Carousel/Carousel';
 const Appointments = () => {
   const [showModal, setShowModal] = useState(false);
   const [step, setStep] = useState(0);
+  const [appointmentsData, setAppointmentsData] = useState([]);
   const [selectedDoctor, setSelectedDoctor] = useState('');
   const [selectedTreatment, setSelectedTreatment] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
@@ -42,27 +43,27 @@ const Appointments = () => {
       tratamento: 'Limpeza',
       paciente: 'Ciclano de Tal',
     },
-    {
-      data: '15 de Outubro de 2024',
-      horario: '12:00 - 13:00',
-      dentista: 'Dr. Fulano de Tal',
-      tratamento: 'Limpeza',
-      paciente: 'Ciclano de Tal',
-    },
-    {
-      data: '15 de Setembro de 2024',
-      horario: '13:00 - 14:00',
-      dentista: 'Dr. Fulano de Tal',
-      tratamento: 'Limpeza',
-      paciente: 'Ciclano de Tal',
-    },
-    {
-      data: '15 de Agosto de 2024',
-      horario: '14:00 - 15:00',
-      dentista: 'Dr. Fulano de Tal',
-      tratamento: 'Limpeza',
-      paciente: 'Ciclano de Tal',
-    },
+    // {
+    //   data: '15 de Outubro de 2024',
+    //   horario: '12:00 - 13:00',
+    //   dentista: 'Dr. Fulano de Tal',
+    //   tratamento: 'Limpeza',
+    //   paciente: 'Ciclano de Tal',
+    // },
+    // {
+    //   data: '15 de Setembro de 2024',
+    //   horario: '13:00 - 14:00',
+    //   dentista: 'Dr. Fulano de Tal',
+    //   tratamento: 'Limpeza',
+    //   paciente: 'Ciclano de Tal',
+    // },
+    // {
+    //   data: '15 de Agosto de 2024',
+    //   horario: '14:00 - 15:00',
+    //   dentista: 'Dr. Fulano de Tal',
+    //   tratamento: 'Limpeza',
+    //   paciente: 'Ciclano de Tal',
+    // },
   ];
   const treatments = ['Consulta Geral', 'Limpeza', 'Tratamento de Canal', 'Extração de Dente', 'Clareamento Dental', 'Ortodontia', 'Implante Dentário', 'Prótese Dentária', 'Restauração Dental', 'Tratamento de Gengiva', 'Tratamento de Sensibilidade', 'Tratamento de Cárie'];
   const doctors = ['Dr. João', 'Dr. Maria', 'Dr. Carlos'];
@@ -270,7 +271,7 @@ const Appointments = () => {
           </div>
         </Card>
 
-        <Carousel consultas={consultas} onCardClick={handleOpenModal} />
+        <Carousel appointmentsData={consultas} onCardClick={handleOpenModal} />
         <Modal
           show={showModal}
           onClose={handleCloseModal}
