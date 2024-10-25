@@ -6,7 +6,7 @@ import { faAngleDoubleLeft, faAngleDoubleRight } from '@fortawesome/free-solid-s
 
 import Card from '../../../components/Card/Card'; // Ajuste conforme a localização do seu componente Card
 
-const Carousel = ({ appointmentsData, onCardClick }) => {
+const Carousel = ({ appointmentsData, rescheduleAppointment, onCardClick, onEvaluationButtonClick }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const cardsPerPage = 3; // Número de cards de consultas a serem exibidos por vez
 
@@ -59,10 +59,8 @@ const Carousel = ({ appointmentsData, onCardClick }) => {
         // Renderizar as consultas de acordo com o índice atual
 
         // Renderizar as consultas de acordo com o índice atual
-            console.log('fim da volta');    
         for (let i = 0; i < cardsPerPage; i++) {
             let index = currentIndex + i;
-            console.log(' index', index, ' i', i, ' currentIndex', currentIndex);
             if (sortedConsultas.length > 2 && index >= sortedConsultas.length) {
                 index = index - sortedConsultas.length;
             }; // Se não houver mais consultas
@@ -97,7 +95,7 @@ const Carousel = ({ appointmentsData, onCardClick }) => {
                 cardsToRender.push(
                     <Card
                         key={index}
-                        id="mark-appointment"
+                        id={'mark-appointment' + index}
                         classes="container m-0 mx-2 px-1 py-2 card"
                         estilos={{ height: '420px', maxWidth: '25%', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', lineHeight: '3', opacity: '0.5' }}
                         bodyEstilos={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}
@@ -121,24 +119,30 @@ const Carousel = ({ appointmentsData, onCardClick }) => {
             else {
 
                 const isPast = parseDate(consulta.data) < new Date(); // Verifica se a consulta já passou
+                const evaluated = consulta.avaliacao == '' ? false : true; // Verifica se a consulta já foi avaliada
 
                 cardsToRender.push(
                     <Card
                         key={consulta.id} // Certifique-se de que cada consulta tenha um identificador único
+                        id={consulta.id}
                         classes="container m-0 mx-2 px-1 py-2 card"
                         estilos={{ height: '420px', maxWidth: '25%', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', justifyContent: 'space-between', textAlign: 'start', lineHeight: '3' }}
                         bodyEstilos={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
                     >
                         <h4 className='text-primary mb-4' style={{ textAlign: 'center', opacity: isPast ? '0.5' : '1' }}>{consulta.data}</h4>
-                        <div className="col-md-12" style={{ opacity: isPast ? '0.5' : '1' }}>
+                        <div className={`col-md-12 ${isPast ? 'border-bottom border-primary mb-2' : ''}`} style={{ opacity: isPast ? '0.5' : '1' }}>
                             <h5 className='mb-3' style={{ fontWeight: 'normal' }}>Horário: <span>{consulta.horario}</span></h5>
-                            <h5 className='mb-3' style={{ fontWeight: 'normal' }}>Dentista: <span>{consulta.dentista}</span></h5>
+                            <h5 className='mb-3' style={{ fontWeight: 'normal' }}>Dentista: <span>Dr(a). {consulta.dentista}</span></h5>
                             <h5 className='mb-3' style={{ fontWeight: 'normal' }}>Tratamento: <span>{consulta.tratamento}</span></h5>
                             <h5 className='mb-3' style={{ fontWeight: 'normal' }}>Paciente: <span>{consulta.paciente}</span></h5>
                         </div>
+                        <div className="col-md-12" style={{ opacity: isPast ? '0.5' : '1', display: isPast ? 'show' : 'none'}}>
+                            <h5 className='mb-3' style={{ fontWeight: 'normal' }}>Avaliação: <span>{consulta.avaliacao}</span></h5>
+                            <h5 className='mb-3' style={{ fontWeight: 'normal' }}>Feedback: <span>{consulta.feedback}</span></h5>
+                        </div>
                         <div className="d-flex justify-content-between p-0 m-0">
-                            <Botao label="Avaliar Consulta" className={`my-3 ${!isPast ? 'btn-outline-primary' : 'btn-primary'}`} data-bs-toggle="modal" data-bs-target="#viewCalendarModal" disabled={!isPast} />
-                            <Botao label="Remarcar Consulta" className={`my-3 ${!isPast ? 'btn-primary' : 'btn-outline-primary'}`} data-bs-toggle="modal" data-bs-target="#viewCalendarModal" disabled={isPast} />
+                            <Botao label="Avaliar Consulta" className={`my-3 ${!isPast ? 'btn-outline-primary' : `${evaluated ? 'btn-secondary': 'btn-primary'}`}`} data-bs-toggle="modal" data-bs-target="#viewCalendarModal" disabled={!isPast} onClick={() => onEvaluationButtonClick(consulta.id)}/>
+                            <Botao label="Remarcar Consulta" className={`my-3 ${!isPast ? 'btn-primary' : 'btn-outline-primary'}`} data-bs-toggle="modal" data-bs-target="#viewCalendarModal" disabled={isPast} onClick={() => rescheduleAppointment(consulta.id)}/>
                         </div>
                     </Card>
                 );
