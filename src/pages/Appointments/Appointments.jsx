@@ -576,15 +576,32 @@ const Appointments = () => {
       return matchesPatient && matchesTreatment && matchesDoctor && matchesInitialDate && matchesFinalDate;
     });
 
-    setAppointmentsData(ordenarConsultas(consultasFiltradas));
+    fillAppointmentsData(consultasFiltradas);
   };
 
+  //função para limpar os filtros
   const limparFiltros = () => {
-    setAppointmentsData(ordenarConsultas(consultas));
+    fillAppointmentsData();
+  };
+
+  //função para obter as consultas do banco de dados
+  const obterConsultas = async (clienteId) => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/agendamentos/cliente/${clienteId}`);
+      if (!response.ok) {
+        throw new Error('Erro ao obter consultas');
+      }
+      const data = await response.json();
+      setConsultas(data);
+      fillAppointmentsData();
+      console.log('Consultas obtidas com sucesso:', data);
+    } catch (error) {
+      console.error('Erro ao obter consultas:', error);
+    }
   };
 
   useEffect(() => {
-    fillAppointmentsData();
+    obterConsultas(0);
   }, [])
 
   return (
