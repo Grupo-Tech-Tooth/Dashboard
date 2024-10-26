@@ -1,0 +1,7 @@
+thead{
+    border-bottom: 1px solid #0D6EFD !important;
+
+    .title {
+        color: #0D6EFD !important;
+    }
+}

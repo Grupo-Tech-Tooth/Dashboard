@@ -1,0 +1,8 @@
+.showAlert{
+    display: flex;
+    position: fixed;
+    top: 2rem;
+    right: 1%;
+    opacity: 1;
+    transition: 1s;
+}
