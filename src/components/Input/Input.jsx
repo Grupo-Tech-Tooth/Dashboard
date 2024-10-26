@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const Input = ({ classes = '', name, type, label, placeholder, required, disabled, value = '', onChange = null }) => {
+const Input = ({ classes = '', name, type, label, placeholder, required, disabled, value = '', onChange = null}) => {
     const [valor, setValor] = useState(value);
 
     useEffect(() => {
@@ -10,11 +10,11 @@ const Input = ({ classes = '', name, type, label, placeholder, required, disable
     const handleChange = (e) => {
         const newValue = e.target.value;
         setValor(newValue);
-
+        
         if (onChange) {
-            onChange(e);
+          onChange(e); 
         }
-    };
+      };
 
     return (
         <div className={`${classes} mb-3`}>
