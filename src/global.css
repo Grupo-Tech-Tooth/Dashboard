@@ -30,6 +30,7 @@ body {
     background-color: #FFFFFF;
     border: none;
     border-top: 4px solid #0D6EFD;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .calendarCell:hover {
