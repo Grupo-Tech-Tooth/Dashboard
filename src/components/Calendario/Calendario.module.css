@@ -1,0 +1,28 @@
+.box-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: baseline;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    gap: 0.5rem;
+    
+
+    .alert {
+        width: 80%;
+    }
+    
+
+    .wrapperStyle {
+        width: 80%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+
+
+        .calendario{
+            width: 100%;
+        }
+    }
+}

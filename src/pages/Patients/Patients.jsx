@@ -4,7 +4,7 @@ import Navbar from '../../components/Navbar/Navbar';
 import Container from '../../components/Container/Container';
 import Button from '../../components/Botao/Botao';
 import Table from '../../components/Table/Table';
-import FormUserAdd from '../../components/FormUser/FormUserAdd/FormUserAdd';
+import Add from '../../components/Form/User/Add/Add';
 
 function Patients() {
   const [tableInformation, setTableInformation] = useState({
@@ -168,7 +168,7 @@ function Patients() {
       <h2 className="text-primary text-center my-3">Gerenciar Pacientes</h2>
       <Container>{
         viewFormAdd == 'block' &&
-        <FormUserAdd Display={viewFormAdd} close={closeForm} />
+        <Add Display={viewFormAdd} close={closeForm} />
       }
         <div className={style['card']}>
           <div className="row mb-4">
@@ -221,11 +221,12 @@ function Patients() {
     setViewFormAdd("none");
     saveFields(newUser);
   }
-  
+
   function saveFields(newUser) {
     if (newUser?.name) {
       newUser.id = tableInformation.dataNotFilter[tableInformation.dataNotFilter.length - 1].id + 1;
       tableInformation.dataNotFilter.push(newUser);
+
       alert("Usar essa função para salvar");
     }
   }

@@ -14,7 +14,7 @@ function Appointments() {
   return (
     <div>
       <Navbar />
-      <h2 class="text-primary text-center my-3">Gerenciar Consultas</h2>
+      <h2 className="text-primary text-center my-3">Gerenciar Consultas</h2>
 
       <div className="container row" style={{ margin: '0 auto', justifyContent: 'space-between' }}>
         <Card classes="container m-0 p-2 card" estilos={{ minHeight: '120px', maxWidth: '27%', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', textAlign: 'center' }}>
@@ -32,14 +32,14 @@ function Appointments() {
       </div>
 
       <Container classes="container my-4 p-3 card" estilos={{ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
-        <div class="row">
-          <div class="row mx-auto">
+        <div className="row">
+          <div className="row mx-auto">
             <Input classes="col-md-2" name="searchPatient" type="text" label="Nome do Paciente" placeholder="Filtrar por paciente" />
             <Input classes="col-md-2" name="searchTreatment" type="text" label="Tipo de tratamento" placeholder="Filtrar por tratamento" />
             <Input classes="col-md-2" name="searchDoctor" type="text" label="Nome do Médico" placeholder="Filtrar por médico" />
             <Input classes="col-md-2" name="searchInitialDate" type="date" label="Data Inicial" placeholder="Filtrar por período" />
             <Input classes="col-md-2" name="searchFinalDate" type="date" label="Data Final" placeholder="Filtrar por período" />
-            <div class="col-md-2 mb-3 align-content-end">
+            <div className="col-md-2 mb-3 align-content-end">
               <Botao label="Filtrar Consultas" className="btn-primary" data-bs-toggle="modal" data-bs-target="#viewCalendarModal" style={{ width: '100%' }} />
             </div>
           </div>

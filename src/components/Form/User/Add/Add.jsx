@@ -1,16 +1,15 @@
-import style from './FormUserAdd.module.css';
+import style from './Add.module.css';
 import React, { useState } from 'react';
-import Input from '../../Input/Input';
 import InputMask from 'react-input-mask';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import logo from "../../../assets/Tech-Tooth-Logo.png";
-import SuccessAlert from '../../AlertSuccess/AlertSuccess';
+import SuccessAlert from '../../../AlertSuccess/AlertSuccess';
 
-const FormUserAdd = ({ Display, close }) => {
+const Add = ({ Display, close }) => {
     const [newUser, setNewUser] = useState([]);
     const [date, setDate] = useState(newUser.lastVisit);
     const [error, setError] = useState('');
     const [AlertSuccess, setAlertSucess] = useState(false);
+    
 
     //Trata a data de aniversário
     const validateDate = (inputDate) => {
@@ -46,7 +45,7 @@ const FormUserAdd = ({ Display, close }) => {
             <div className={`${style['bottom']} modal `} id="addPatientModal" tabIndex="-1" aria-labelledby="addPatientModalLabel"
                 aria-hidden="true" style={{ display: Display, padding: '0', borderRadius: '5px' }}>
                 {AlertSuccess &&
-                    <SuccessAlert text={'Usuário alterado com sucesso!'} />
+                    <SuccessAlert text={'Usuário Salvo com sucesso!'} />
                 }
                 <div className={`${style['form']} modal-dialog modal-lg modal-dialog-scrollable`}>
                     <div className={`modal-content`}
@@ -201,6 +200,9 @@ const FormUserAdd = ({ Display, close }) => {
         setNewUser(user);
         setAlertSucess(true);
         setTimeout(() => setAlertSucess(false), 1500);
+        setTimeout(() => {
+            close(user);
+        }, 2500);
     };
 
     // Função para buscar endereço pelo CEP (exemplo)
@@ -227,4 +229,4 @@ const FormUserAdd = ({ Display, close }) => {
     }
 }
 
-export default FormUserAdd;
+export default Add;
