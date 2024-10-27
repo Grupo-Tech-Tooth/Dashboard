@@ -235,24 +235,24 @@ const Appointments = () => {
   ]);
 
   //tratamentos
-  const treatments = [
+  const [treatments, setTreatments] = useState([
     'Consulta Geral', 'Limpeza', 'Tratamento de Canal', 'Extração de Dente', 'Clareamento Dental', 'Ortodontia', 'Implante Dentário', 'Prótese Dentária', 'Restauração Dental', 'Tratamento de Gengiva', 'Tratamento de Sensibilidade', 'Tratamento de Cárie'
-  ];
+  ]);
 
   //médicos
-  const doctors = [
+  const [doctors, setDoctors] = useState([
     'João', 'Maria', 'Carlos'
-  ];
+  ]);
 
   //datas disponíveis
-  const availableDates = [
+  const [availableDates, setAvailableDates] = useState([
     '15-08-2024', '04-11-2024', '05-11-2024', '06-11-2024', '07-11-2024', '08-11-2024', '09-11-2024', '10-11-2024', '11-11-2024', '12-11-2024', '13-11-2024', '14-11-2024', '15-11-2024', '16-11-2024', '17-11-2024', '18-11-2024', '19-11-2024', '20-11-2024', '21-11-2024', '22-11-2024', '23-11-2024', '24-11-2024', '25-11-2024', '26-11-2024', '27-11-2024', '28-11-2024', '29-11-2024'
-  ];
+  ]);
 
   //horários disponíveis
-  const availableTimes = [
+  const [availableTimes, setAvailableTimes] = useState([
     '09:00', '10:30', '11:00', '14:00', '15:00', '16:00'
-  ];
+  ]);
 
   //notas disponíveis
   const availableNotes = [
@@ -537,7 +537,7 @@ const Appointments = () => {
   //popula os dados de consultas para renderizar nos cards
   function fillAppointmentsData(listaConsultas = null) {
     listaConsultas ? setAppointmentsData(ordenarConsultas(listaConsultas)) :
-    setAppointmentsData(ordenarConsultas(consultas));
+      setAppointmentsData(ordenarConsultas(consultas));
   }
 
   //atualiza as consultas com os novos dados
@@ -584,6 +584,44 @@ const Appointments = () => {
     fillAppointmentsData();
   };
 
+  //função para obter os dados do banco de dados(medicos, tratamentos, consultas)
+  const obterDadosBanco = async () => {
+    obterMedicos();
+    obterServicos();
+    await obterConsultas(1);
+  };
+
+
+  //função para obter os médicos do banco de dados
+  const obterMedicos = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/medicos`);
+      if (!response.ok) {
+        throw new Error('Erro ao obter médicos');
+      }
+      const data = await response.json();
+      setDoctors(data);
+      console.log('Relação de médicos obtida com sucesso:', data);
+    } catch (error) {
+      console.error('Erro ao obter lista de médicos:', error);
+    }
+  };
+
+  //função para obter os serviços oferecidos do banco de dados
+  const obterServicos = async () => {
+    try {
+      const response = await fetch(``);
+      if (!response.ok) {
+        throw new Error('Erro ao obter tratamentos');
+      }
+      const data = await response.json();
+      setTreatments(data);
+      console.log('Relação de tratamentos obtida com sucesso:', data);
+    } catch (error) {
+      console.error('Erro ao obter lista de tratamentos:', error);
+    }
+  };
+
   //função para obter as consultas do banco de dados
   const obterConsultas = async (clienteId) => {
     try {
@@ -595,13 +633,17 @@ const Appointments = () => {
       setConsultas(data);
       fillAppointmentsData();
       console.log('Consultas obtidas com sucesso:', data);
+
+      setTimeout(() => {
+        obterConsultas(clienteId);
+      }, 50000);
     } catch (error) {
       console.error('Erro ao obter consultas:', error);
     }
   };
 
   useEffect(() => {
-    obterConsultas(0);
+    obterDadosBanco();
   }, [])
 
   return (
