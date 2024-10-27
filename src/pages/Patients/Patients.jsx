@@ -5,6 +5,7 @@ import Container from '../../components/Container/Container';
 import Button from '../../components/Botao/Botao';
 import Table from '../../components/Table/Table';
 import Add from '../../components/Form/User/Add/Add';
+import { width } from '@fortawesome/free-solid-svg-icons/fa0';
 
 function Patients() {
   const [tableInformation, setTableInformation] = useState({
@@ -13,7 +14,7 @@ function Patients() {
       { 'name': 'Nome' },
       { 'name': 'Email' },
       { 'name': 'Telefone' },
-      { 'name': 'Data da Última Consulta' },
+      { 'name': 'Última Consulta' },
       { 'name': 'Ações' }
     ],
     'data': [
@@ -154,8 +155,14 @@ function Patients() {
     'tableId': 'patientsTable',
     'tbodyId': 'patientsBody'
   });
-  const [searchValue, setSearchValue] = useState("");
+
+  const [searchEmail, setSearchEmail] = useState('');
+  const [searchName, setSearchName] = useState('');
+  const [searchCpf, setSearchCpf] = useState('');
+  const [searchPhone, setSearchPhone] = useState('');
+
   const [viewFormAdd, setViewFormAdd] = useState("none");
+
   const [userEdit, setUserEdit] = useState([]);
 
   useEffect(() => {
@@ -171,44 +178,133 @@ function Patients() {
         <Add Display={viewFormAdd} close={closeForm} />
       }
         <div className={style['card']}>
-          <div className="row mb-4">
-            <div className="col-md-8 mx-auto">
-              <div className="input-group">
-                <input type="text" id="searchInput" className="form-control"
-                  placeholder="Buscar por nome, email ou ID..."
-                  value={searchValue}
-                  onChange={(e) => setSearchValue(e.target.value)} />
-                <Button className={`${style['buttonSearch']} btn btn-primary`} id="searchButton" onClick={buscar} label="Buscar" />
-              </div>
+          <div className="row mb-4" style={{ display: 'flex', alignItems: 'center' }}>
+            <div className="col-md-2 mx-auto">
+              <label htmlFor="searchNome">Nome do Paciente</label>
+              <input
+                id="searchName"
+                className="form-control"
+                type="text"
+                placeholder="Filtrar por nome"
+                value={searchName}
+                onChange={(e) => setSearchName(e.target.value)}
+              />
             </div>
             <div className="col-md-2 mx-auto">
-              <Button className="btn btn-primary" data-bs-toggle="modal" onClick={() => abrirModalAdd()} data-bs-target="#addPatientModal" label={"Adicionar Paciente"} />
+              <label htmlFor='searchEmail'>E-mail do Paciente</label>
+              <input type="text" id="searchEmail" className="form-control"
+                placeholder="Filtrar por e-mail"
+                value={searchEmail}
+                onChange={(e) => setSearchEmail(e.target.value)} />
+            </div>
+            <div className="col-md-2 mx-auto">
+              <label htmlFor="searchCpf">Cpf do Paciente</label>
+              <input
+                id="searchCpf"
+                className="form-control"
+                type="text"
+                placeholder="Cpf completo"
+                value={searchCpf}
+                onChange={(e) => setSearchCpf(e.target.value)}
+              />
+            </div>
+            <div className="col-md-2 mx-auto">
+              <label htmlFor="searchPhone">Telefone do Paciente</label>
+              <input
+                id="searchPhone"
+                className="form-control"
+                type="text"
+                placeholder="Filtrar por telefone"
+                value={searchPhone}
+                onChange={(e) => setSearchPhone(e.target.value)}
+              />
+            </div>
+            <div className={`col-md-2 mx-auto ${style['lineButton']}`}>
+              <Button className={`${style['buttonSearch']} btn btn-primary`} id="searchButton" onClick={buscar} label="Buscar" style={{width: 'fit-content'}} />
+              <button
+                className={`${style['button-limpar']} btn btn-secondary`}
+                type="button"
+                onClick={resetFields} >
+                Limpar
+              </button>
             </div>
           </div>
           <Table tableInformation={tableInformation} />
         </div>
       </Container>
+      <div className={`z-3 position-absolute p-5 rounded-3 ${style['boxButton']}`}><button type="button" onClick={() => abrirModalAdd()} className={style['add']}>+</button></div>
     </>
   );
 
+  function resetFields() {
+    setSearchName('');
+    setSearchEmail('');
+    setSearchCpf('');
+    setSearchPhone('');
+    setTableInformation((prevTableInformation) =>
+    ({
+      ...prevTableInformation,
+      data: tableInformation.dataNotFilter
+    }));
+  }
+
   function buscar() {
-    if (searchValue) {
-      const searchLower = searchValue.toLowerCase();
-      let filtered = tableInformation.dataNotFilter.filter((item) =>
-        item.id == searchValue ||
-        item.name.toLowerCase().includes(searchLower) ||
-        item.email.toLowerCase().includes(searchLower) ||
-        item.phone.toLowerCase().includes(searchLower)
+    debugger
+    let listName = [];
+    let listEmail = [];
+    let listCpf = [];
+    let listPhone = [];
+
+    if (searchName) {
+      const searchLower = searchName.toLowerCase();
+      listName = tableInformation.dataNotFilter.filter((item) =>
+        item.name.toLowerCase().includes(searchLower)
       );
+    }
+    if (searchEmail) {
+      const searchLower = searchEmail.toLowerCase();
+      listEmail = tableInformation.dataNotFilter.filter((item) =>
+        item.email.toLowerCase().includes(searchLower)
+      );
+    }
+    if (searchCpf) {
+      // Entregavel Pesquisa Binária 
+      const listOrdenada = tableInformation.dataNotFilter.sort((a, b) => a.cpf.localeCompare(b.cpf));
+      let start = 0;
+      let end = listOrdenada.length - 1;
+
+      while (start <= end) {
+        let meio = Math.floor((start + end) / 2);
+
+        if (listOrdenada[meio].cpf.includes(searchCpf)) {
+          listCpf.push(listOrdenada[meio]);
+          break;
+        } else if (searchCpf < listOrdenada[meio].cpf) {
+          end = meio - 1;
+        } else {
+          start = meio + 1;
+        }
+      }
+    }
+    if (searchPhone) {
+      const searchLower = searchPhone
+      listPhone = tableInformation.dataNotFilter.filter((item) =>
+        item.phone.includes(searchLower)
+      );
+    }
+
+    if (searchName || searchEmail || searchPhone || searchCpf) {
+      let listAll = [...listName, ...listEmail, ...listCpf, ...listPhone];
 
       setTableInformation((prevTableInformation) => ({
         ...prevTableInformation,
-        data: filtered
+        data: listAll
       }));
     } else {
+      const listOrdenada = tableInformation.dataNotFilter.sort((a, b) => a.id - b.id);
       setTableInformation((prevTableInformation) => ({
         ...prevTableInformation,
-        data: prevTableInformation.dataNotFilter
+        data: listOrdenada
       }));
     }
   }
