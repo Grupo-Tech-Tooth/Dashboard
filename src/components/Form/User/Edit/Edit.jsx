@@ -1,12 +1,12 @@
-import style from './FormUserEdit.module.css';
+import style from './Edit.module.css';
 import React, { useState, useEffect } from 'react';
-import Input from '../../Input/Input';
+import Input from '../../../Input/Input';
 import InputMask from 'react-input-mask';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import logo from "../../../assets/Tech-Tooth-Logo.png";
-import SuccessAlert from '../../AlertSuccess/AlertSuccess';
+import logo from "../../../../assets/Tech-Tooth-Logo.png";
+import SuccessAlert from '../../../AlertSuccess/AlertSuccess';
 
-const FormUserEdit = ({ userData, display, close }) => {
+const Edit = ({ userData, display, close }) => {
     const [date, setDate] = useState(userData.lastVisit);
     const [dateBirth, setDateBirth] = useState(userData.dateBirth);
     const [error, setError] = useState('');
@@ -246,7 +246,6 @@ const FormUserEdit = ({ userData, display, close }) => {
 
     function saveFields(user) {
         user.preventDefault();
-        debugger
         let data = {
             id: userEdit.id,
             name: user.target.firstName.value,
@@ -294,4 +293,4 @@ const FormUserEdit = ({ userData, display, close }) => {
     }
 }
 
-export default FormUserEdit;
+export default Edit;
