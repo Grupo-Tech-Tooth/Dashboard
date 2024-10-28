@@ -11,10 +11,10 @@ const AppRoutes = () => {
     <Router>
       <Routes>
         <Route path="/index" element={<Index />} />
-        <Route path="/" element={<Appointments />} />
+        <Route path="/consultas" element={<Appointments />} />
         <Route path="/pacientes" element={<Patients />} />
-        <Route path="/login" element={<Login />} />
-        <Route path='/consultas' element={<Consultation />} />
+        <Route path="/" element={<Login />} />
+        <Route path='/gestao-consultas' element={<Consultation />} />
       </Routes>
     </Router>
   );
