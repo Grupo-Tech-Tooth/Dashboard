@@ -16,7 +16,8 @@ const LoginForm = () => {
         email: email,
         senha: password
       });
-      sessionStorage.setItem('token', response.data.tokenJWT);
+      sessionStorage.clear(); // Limpa o sessionStorage
+      sessionStorage.setItem('token', response.data.token);
       setError(''); 
       window.location.href = '/'; // Redireciona para a página inicial
     } catch (error) {

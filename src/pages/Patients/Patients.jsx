@@ -5,6 +5,7 @@ import Container from '../../components/Container/Container';
 import Button from '../../components/Botao/Botao';
 import Table from '../../components/Table/Table';
 import Add from '../../components/Form/User/Add/Add';
+import axios from 'axios';
 // import { width } from '@fortawesome/free-solid-svg-icons/fa0';
 
 function Patients() {
@@ -160,37 +161,44 @@ function Patients() {
   const [searchName, setSearchName] = useState('');
   const [searchCpf, setSearchCpf] = useState('');
   const [searchPhone, setSearchPhone] = useState('');
+  const [page, setPage] = useState(1);
+  const [size, setSize] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
 
   const [viewFormAdd, setViewFormAdd] = useState("none");
 
   // const [userEdit, setUserEdit] = useState([]);
 
-  async function getData() {
+  async function getData(page, size) {
     try {
-      const response = await fetch(`http://localhost:8080/api/clientes`, {
-        method: 'GET' 
+      const response = await axios.get(`http://localhost:8080/clientes`, {
+          headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${sessionStorage.getItem('token')}`
+          },
+          params: {
+            page: page,
+            size: size
+          }
     });
-        if (!response.ok) {
-            throw new Error('Erro ao obter consultas');
-        }
         setTableInformation((prevTableInformation) =>(
           {...prevTableInformation,
-            data: response,
-            dataNotFilter: response
+            data: response.data.content,
+            dataNotFilter: response.data.sort
           }
         ))
     } catch (error) {
         console.log('Erro ao obter consultas:', error);
     }
     setTimeout(() => {
-      getData();
+      getData(page, size);
   }, 50000);
 }
 
   useEffect(() => {
-    getData();
+    getData(page, size);
     tableInformation.dataNotFilter = tableInformation.data;
-  }, []);
+  }, [page, size]);
 
   return (
     <>
