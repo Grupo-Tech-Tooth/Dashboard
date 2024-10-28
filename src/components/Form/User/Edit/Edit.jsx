@@ -1,5 +1,5 @@
 import style from './Edit.module.css';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Input from '../../../Input/Input';
 import InputMask from 'react-input-mask';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -7,7 +7,7 @@ import logo from "../../../../assets/Tech-Tooth-Logo.png";
 import SuccessAlert from '../../../AlertSuccess/AlertSuccess';
 
 const Edit = ({ userData, display, close }) => {
-    const [date, setDate] = useState(userData.lastVisit);
+    // const [date, setDate] = useState(userData.lastVisit);
     const [dateBirth, setDateBirth] = useState(userData.dateBirth);
     const [error, setError] = useState('');
     const [disabled, setDisabled] = useState(true);

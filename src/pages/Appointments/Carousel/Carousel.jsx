@@ -6,7 +6,7 @@ import { faAngleDoubleLeft, faAngleDoubleRight } from '@fortawesome/free-solid-s
 
 import Card from '../../../components/Card/Card'; // Ajuste conforme a localização do seu componente Card
 
-const Carousel = ({ appointmentsData, rescheduleAppointment, onCardClick, onEvaluationButtonClick }) => {
+const Carousel = ({ appointmentsData, rescheduleAppointment, onCardClick, onEvaluationButtonClick, handleOpenCancelModal }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const cardsPerPage = 3; // Número de cards de consultas a serem exibidos por vez
 
@@ -33,7 +33,7 @@ const Carousel = ({ appointmentsData, rescheduleAppointment, onCardClick, onEval
         setCurrentIndex(0);
     };
     const handleNext = () => {
-        if (currentIndex == sortedConsultas.length - 1) {
+        if (currentIndex === sortedConsultas.length - 1) {
             setCurrentIndex(0);
             return;
         }
@@ -44,7 +44,7 @@ const Carousel = ({ appointmentsData, rescheduleAppointment, onCardClick, onEval
         setCurrentIndex(sortedConsultas.length - 3);
     };
     const handlePrev = () => {
-        if (currentIndex == 0) {
+        if (currentIndex === 0) {
             setCurrentIndex(sortedConsultas.length - 1);
             return;
         }
@@ -91,7 +91,7 @@ const Carousel = ({ appointmentsData, rescheduleAppointment, onCardClick, onEval
                     </Card>
                 );
             }
-            else if(consulta && consulta.tratamento == "Marcar Consulta"){
+            else if (consulta && consulta.tratamento === "Marcar Consulta") {
                 cardsToRender.push(
                     <Card
                         key={index}
@@ -119,7 +119,7 @@ const Carousel = ({ appointmentsData, rescheduleAppointment, onCardClick, onEval
             else {
 
                 const isPast = parseDate(consulta.data) < new Date(); // Verifica se a consulta já passou
-                const evaluated = consulta.avaliacao == '' ? false : true; // Verifica se a consulta já foi avaliada
+                const evaluated = consulta.avaliacao === '' ? false : true; // Verifica se a consulta já foi avaliada
 
                 cardsToRender.push(
                     <Card
@@ -136,13 +136,16 @@ const Carousel = ({ appointmentsData, rescheduleAppointment, onCardClick, onEval
                             <h5 className='mb-3' style={{ fontWeight: 'normal' }}>Tratamento: <span>{consulta.tratamento}</span></h5>
                             <h5 className='mb-3' style={{ fontWeight: 'normal' }}>Paciente: <span>{consulta.paciente}</span></h5>
                         </div>
-                        <div className="col-md-12" style={{ opacity: isPast ? '0.5' : '1', display: isPast ? 'show' : 'none'}}>
+                        <div className="col-md-12" style={{ opacity: isPast ? '0.5' : '1', display: isPast ? 'show' : 'none' }}>
                             <h5 className='mb-3' style={{ fontWeight: 'normal' }}>Avaliação: <span>{consulta.avaliacao}</span></h5>
                             <h5 className='mb-3' style={{ fontWeight: 'normal' }}>Feedback: <span>{consulta.feedback}</span></h5>
                         </div>
                         <div className="d-flex justify-content-between p-0 m-0">
-                            <Botao label="Avaliar Consulta" className={`my-3 ${!isPast ? 'btn-outline-primary' : `${evaluated ? 'btn-secondary': 'btn-primary'}`}`} data-bs-toggle="modal" data-bs-target="#viewCalendarModal" disabled={!isPast} onClick={() => onEvaluationButtonClick(consulta.id)}/>
-                            <Botao label="Remarcar Consulta" className={`my-3 ${!isPast ? 'btn-primary' : 'btn-outline-primary'}`} data-bs-toggle="modal" data-bs-target="#viewCalendarModal" disabled={isPast} onClick={() => rescheduleAppointment(consulta.id)}/>
+                            <Botao label="Avaliar Consulta" className={`my-3 ${!isPast ? 'btn-outline-primary' : `${evaluated ? 'btn-secondary' : 'btn-primary'}`}`} data-bs-toggle="modal" data-bs-target="#viewCalendarModal" hidden={!isPast} onClick={() => onEvaluationButtonClick(consulta.id)} />
+                                
+                            <Botao label="Cancelar Consulta" className={`my-3 ${!isPast ? 'btn-secondary' : 'btn-outline-secondary'}`} data-bs-toggle="modal" data-bs-target="#viewCalendarModal" hidden={isPast} onClick={() => handleOpenCancelModal(consulta.id)} />
+
+                            <Botao label="Remarcar Consulta" className={`my-3 ${!isPast ? 'btn-primary' : 'btn-outline-primary'}`} data-bs-toggle="modal" data-bs-target="#viewCalendarModal" disabled={isPast} onClick={() => rescheduleAppointment(consulta.id)} />
                         </div>
                     </Card>
                 );

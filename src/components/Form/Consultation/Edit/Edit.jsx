@@ -102,8 +102,8 @@ function Edit({ consultationData, display, close, listUsers, doctors, treatments
                         }
                         <div className={`${style['modal-header']} modal-header`} style={{ borderTop: "4px solid #0D6EFD" }}>
                             <h5 className="modal-title text-primary" id="viewCalendarModalLabel">
-                            {step == 0 ? "Editar Consulta" :
-                                    (step == 1) ?
+                            {step === 0 ? "Editar Consulta" :
+                                    (step === 1) ?
                                         <> <button type="button" className="btn btn-secondary me-2" id="backButton" onClick={() =>updateStep(2)}>Voltar</button> Horários Disponíveis</> :
                                         <> <button type="button" className="btn btn-secondary me-2" id="backButton" onClick={() => updateStep(0)}>Voltar</button> Editar Consulta </>}</h5>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={() => close(newConsultation)}></button>
@@ -111,7 +111,7 @@ function Edit({ consultationData, display, close, listUsers, doctors, treatments
 
                         <div className={`${style['modal-body']} modal-body`}>
                             {
-                                step == 0 &&
+                                step === 0 &&
                                 <form className={style['form']} onSubmit={saveFields}>
                                     <div className="mb-3">
                                         <label for="appointmentCpf" className="form-label">CPF do Paciente*</label>
@@ -210,26 +210,26 @@ function Edit({ consultationData, display, close, listUsers, doctors, treatments
                                     </div>
                                 </form>
                             }
-                            {step == 2 &&
+                            {step === 2 &&
                                 <>
                                     <Calendario className={style['calendario']} selectedDate={updateDate} />
                                 </>
                             }
-                             {messageAlert && step == 1 &&
+                             {messageAlert && step === 1 &&
                                 <Alert message={`Selecione um horário disponível!`} className={style['alert']} />
                             }
-                            {step == 1 &&
+                            {step === 1 &&
                                 <div className={style['listDate']}>
-                                    {newConsultation.data == dataFormatada ? (
+                                    {newConsultation.data === dataFormatada ? (
                                         availableHours.filter((item) => item.time > horarioAtual).map((item) => (
                                             <>
-                                                <span className={style[item.class]} onClick={() => timeConsultation(item.class, item.time)}>{item.time} {item.class == 'red' && '- Horário Ocupado'}</span>
+                                                <span className={style[item.class]} onClick={() => timeConsultation(item.class, item.time)}>{item.time} {item.class === 'red' && '- Horário Ocupado'}</span>
                                             </>
                                         ))
                                     ) : (
                                         availableHours.map((item) => (
                                             <>
-                                                <span className={style[item.class]} onClick={() => timeConsultation(item.class, item.time)}>{item.time} {item.class == 'red' && '- Horário Ocupado'}</span>
+                                                <span className={style[item.class]} onClick={() => timeConsultation(item.class, item.time)}>{item.time} {item.class === 'red' && '- Horário Ocupado'}</span>
                                             </>
                                         ))
                                     )

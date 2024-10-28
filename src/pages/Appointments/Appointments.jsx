@@ -11,6 +11,7 @@ import Carousel from './Carousel/Carousel';
 const Appointments = () => {
   const [showModal, setShowModal] = useState(false);
   const [showEvaluationModal, setShowEvaluationModal] = useState(false);
+  const [showCancelModal, setShowCancelModal] = useState(false);
   const [step, setStep] = useState(0);
   const [appointmentsData, setAppointmentsData] = useState([]);
   const [schedulementId, setSchedulementId] = useState('');
@@ -190,6 +191,20 @@ const Appointments = () => {
     }
   };
 
+  //função para abrir o modal de cancelar consultas
+  const handleOpenCancelModal = (id) => {
+    setSchedulementId(id);
+    setShowCancelModal(true);
+  };
+
+  const handleCancelConsultation = () => {
+    const novasConsultas = consultas.filter(consulta => consulta.id !== schedulementId);
+    setConsultas(novasConsultas);
+    fillAppointmentsData(novasConsultas);
+    setShowCancelModal(false);
+    setSchedulementId('');
+  };
+
   //consultas
   const [consultas, setConsultas] = useState([
     {
@@ -245,12 +260,12 @@ const Appointments = () => {
   ]);
 
   //datas disponíveis
-  const [availableDates, setAvailableDates] = useState([
+  const [availableDates] = useState([
     '15-08-2024', '04-11-2024', '05-11-2024', '06-11-2024', '07-11-2024', '08-11-2024', '09-11-2024', '10-11-2024', '11-11-2024', '12-11-2024', '13-11-2024', '14-11-2024', '15-11-2024', '16-11-2024', '17-11-2024', '18-11-2024', '19-11-2024', '20-11-2024', '21-11-2024', '22-11-2024', '23-11-2024', '24-11-2024', '25-11-2024', '26-11-2024', '27-11-2024', '28-11-2024', '29-11-2024'
   ]);
 
   //horários disponíveis
-  const [availableTimes, setAvailableTimes] = useState([
+  const [availableTimes] = useState([
     '09:00', '10:30', '11:00', '14:00', '15:00', '16:00'
   ]);
 
@@ -507,7 +522,7 @@ const Appointments = () => {
               </div>
               <div className="d-flex flex-wrap" style={{ maxHeight: '500px', overflow: 'auto' }}>
                 <h5 className='text-primary'>Consulta avaliada com sucesso!</h5>
-                <p className='text-primary'>Obrigado por sua avaliação! Estamos em constante melhoria e vamos considerar sua avaliação para aprimorar nossos serviços.</p>
+                <p className='text-primary'>Obrigado por sua avaliação! <br />Estamos em constante melhoria e vamos considerar sua avaliação para aprimorar nossos serviços.</p>
               </div>
             </div>
             <div className="col-md-12 d-flex justify-content-end mt-4">
@@ -521,7 +536,7 @@ const Appointments = () => {
             <div className='px-2'>
               <div className="d-flex flex-wrap" style={{ maxHeight: '500px', overflow: 'auto' }}>
                 <h5 className='text my-3'>Esta consulta já foi avaliada!</h5>
-                <p className='text'>Obrigado novamente por sua avaliação! Estamos em constante melhoria e vamos considerar sua avaliação para aprimorar nossos serviços.</p>
+                <p className='text'>Obrigado novamente por sua avaliação! <br />Estamos em constante melhoria e vamos considerar sua avaliação para aprimorar nossos serviços.</p>
               </div>
             </div>
             <div className="col-md-12 d-flex justify-content-end mt-4">
@@ -643,7 +658,7 @@ const Appointments = () => {
   };
 
   useEffect(() => {
-    obterDadosBanco();
+    fillAppointmentsData();
   }, [])
 
   return (
@@ -685,7 +700,7 @@ const Appointments = () => {
           </div>
         </Card>
 
-        <Carousel appointmentsData={appointmentsData} rescheduleAppointment={rescheduleAppointment} onCardClick={handleOpenModal} onEvaluationButtonClick={handleOpenEvaluationModal} />
+        <Carousel appointmentsData={appointmentsData} rescheduleAppointment={rescheduleAppointment} onCardClick={handleOpenModal} onEvaluationButtonClick={handleOpenEvaluationModal} handleOpenCancelModal={handleOpenCancelModal}/>
         <Modal
           show={showModal}
           onClose={handleCloseModal}
@@ -697,6 +712,20 @@ const Appointments = () => {
           onClose={handleCloseEvaluationModal}
           title={`Avaliar Consulta`}
           content={renderEvaluationContent()}  // Renderiza o conteúdo com base no passo
+        />
+        <Modal
+          show={showCancelModal}
+          onClose={() => setShowCancelModal(false)}
+          title={`Cancelar Consulta`}
+          content={
+            <div>
+              <p>Tem certeza de que deseja cancelar esta consulta?</p>
+              <div className="d-flex justify-content-between mt-4">
+                <Botao noGrid={true} onClick={handleCancelConsultation} className="col-md-5 btn-outline-primary" label='Sim, Cancelar' />
+                <Botao noGrid={true} onClick={() => setShowCancelModal(false)} className="col-md-5 btn-secondary" label='Não' />
+              </div>
+            </div>
+          }
         />
       </Container>
     </div>

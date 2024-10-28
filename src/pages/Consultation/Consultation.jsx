@@ -197,7 +197,7 @@ function Consultation() {
             <h2 className="text-primary text-center my-3">Gerenciar Consultas</h2>
             <Container>
                 {
-                    viewFormAdd == 'block' &&
+                    viewFormAdd === 'block' &&
                     <Add Display={viewFormAdd} close={closeForm} listUsers={tableInformation.data} doctors={tableInformation.doctor} treatments={tableInformation.treatment} />
                 }
 
@@ -311,7 +311,7 @@ function Consultation() {
     function buscar(value) {
         value.preventDefault();
 
-        if (value.target.searchPatient.value || value.target.searchTreatment.value != 'Escolher tratamento' || value.target.searchDoctor.value != 'Escolher médico' || value.target.startDate.value || value.target.endDate.value) {
+        if (value.target.searchPatient.value || value.target.searchTreatment.value !== 'Escolher tratamento' || value.target.searchDoctor.value !== 'Escolher médico' || value.target.startDate.value || value.target.endDate.value) {
 
             let filtered = tableInformation.dataNotFilter;
 

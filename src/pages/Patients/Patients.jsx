@@ -5,7 +5,7 @@ import Container from '../../components/Container/Container';
 import Button from '../../components/Botao/Botao';
 import Table from '../../components/Table/Table';
 import Add from '../../components/Form/User/Add/Add';
-import { width } from '@fortawesome/free-solid-svg-icons/fa0';
+// import { width } from '@fortawesome/free-solid-svg-icons/fa0';
 
 function Patients() {
   const [tableInformation, setTableInformation] = useState({
@@ -163,7 +163,7 @@ function Patients() {
 
   const [viewFormAdd, setViewFormAdd] = useState("none");
 
-  const [userEdit, setUserEdit] = useState([]);
+  // const [userEdit, setUserEdit] = useState([]);
 
   useEffect(() => {
     tableInformation.dataNotFilter = tableInformation.data;
@@ -174,7 +174,7 @@ function Patients() {
       <Navbar />
       <h2 className="text-primary text-center my-3">Gerenciar Pacientes</h2>
       <Container>{
-        viewFormAdd == 'block' &&
+        viewFormAdd === 'block' &&
         <Add Display={viewFormAdd} close={closeForm} />
       }
         <div className={style['card']}>

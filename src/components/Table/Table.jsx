@@ -140,14 +140,14 @@ const Table = ({ tableInformation }) => {
     function deletar(id) {
         if (tableInformation.tableId === 'patientsTable'){
             if (window.confirm('Deseja realmente excluir este paciente?')) {
-                tableInformation.data = tableInformation.data.filter((item) => item.id != id);
-                tableInformation.dataNotFilter = tableInformation.dataNotFilter.filter((item) => item.id != id);
+                tableInformation.data = tableInformation.data.filter((item) => item.id !== id);
+                tableInformation.dataNotFilter = tableInformation.dataNotFilter.filter((item) => item.id !== id);
                 setCount(count + 1);
             }
         }else{
             if (window.confirm('Deseja realmente cancelar esta consulta?')) {
-                tableInformation.data = tableInformation.data.filter((item) => item.id != id);
-                tableInformation.dataNotFilter = tableInformation.dataNotFilter.filter((item) => item.id != id);
+                tableInformation.data = tableInformation.data.filter((item) => item.id !== id);
+                tableInformation.dataNotFilter = tableInformation.dataNotFilter.filter((item) => item.id !== id);
                 setCount(count + 1);
             }
         }
