@@ -17,7 +17,8 @@ const LoginForm = () => {
         senha: password
       });
       sessionStorage.setItem('token', response.data.tokenJWT);
-      setError(''); // Clear any previous errors
+      setError(''); 
+      window.location.href = '/'; // Redireciona para a página inicial
     } catch (error) {
       console.error(error);
       setError('Login failed. Please check your credentials and try again.');
