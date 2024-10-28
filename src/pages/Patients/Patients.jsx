@@ -158,7 +158,30 @@ function Patients() {
   const [viewFormAdd, setViewFormAdd] = useState("none");
   const [userEdit, setUserEdit] = useState([]);
 
+  async function getData() {
+    try {
+      const response = await fetch(`http://localhost:8080/api/clientes`, {
+        method: 'GET' 
+    });
+        if (!response.ok) {
+            throw new Error('Erro ao obter consultas');
+        }
+        setTableInformation((prevTableInformation) =>(
+          {...prevTableInformation,
+            data: response,
+            dataNotFilter: response
+          }
+        ))
+    } catch (error) {
+        console.log('Erro ao obter consultas:', error);
+    }
+    setTimeout(() => {
+      getData();
+  }, 50000);
+}
+
   useEffect(() => {
+    getData();
     tableInformation.dataNotFilter = tableInformation.data;
   }, []);
 
