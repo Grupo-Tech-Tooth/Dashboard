@@ -183,10 +183,45 @@ function Consultation() {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
 
+    async function getData() {
+        try {
+            const token = sessionStorage.getItem('token');
+
+            const response = await fetch(`http://localhost:8080/agendamentos`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,  
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Erro ao obter consultas');
+            }
+    
+            const data = await response.json();
+    
+            setTableInformation((prevTableInformation) => ({
+                ...prevTableInformation,
+                dataNotFilter: data,
+                data: data
+            }));
+    
+            console.log('Consultas obtidas com sucesso:', data);
+            setTimeout(() => {
+                getData();
+            }, 50000);
+        } catch (error) {
+            console.error('Erro ao obter consultas:', error);
+        }
+    }
+    
+
     useEffect(() => {
+        getData();
         setTableInformation((prevTableInformation) => ({
             ...prevTableInformation,
-            dataNotFilter: prevTableInformation.data,
+            data: prevTableInformation.dataNotFilter,
         }));
     }, []);
 

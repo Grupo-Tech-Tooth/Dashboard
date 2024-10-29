@@ -280,7 +280,6 @@ function Patients() {
   }
 
   function buscar() {
-    debugger
     let listName = [];
     let listEmail = [];
     let listCpf = [];
