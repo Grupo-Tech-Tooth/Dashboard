@@ -18,7 +18,6 @@ const LoginForm = () => {
       });
       sessionStorage.clear(); // Limpa o sessionStorage
       sessionStorage.setItem('token', response.data.token);
-      sessionStorage.setItem('id', response.data.loginInfo.id);
       sessionStorage.setItem('email', response.data.loginInfo.email);
       if (response.data.loginInfo.hierarquia) {
         sessionStorage.setItem('hierarquia', response.data.loginInfo.hierarquia);
@@ -27,12 +26,16 @@ const LoginForm = () => {
       
       
       if (response.data.loginInfo.funcionario) {
-        sessionStorage.setItem('funcionario', response.data.loginInfo.funcionario);
+        sessionStorage.setItem('id', response.data.loginInfo.funcionario.id);
+        sessionStorage.setItem('nome', response.data.loginInfo.funcionario.nome);
+        sessionStorage.setItem('sobrenome', response.data.loginInfo.funcionario.sobrenome);
         window.location.href = '/gestao-consultas';
       }
       
-      if (!response.data.loginInfo.funcionario) {
-        sessionStorage.setItem('cliente', response.data.loginInfo.cliente);
+      if (response.data.loginInfo.cliente) {
+        sessionStorage.setItem('id', response.data.loginInfo.cliente.id);
+        sessionStorage.setItem('nome', response.data.loginInfo.cliente.nome);
+        sessionStorage.setItem('sobrenome', response.data.loginInfo.cliente.sobrenome);
         window.location.href = '/consultas';
       }
     } catch (error) {
