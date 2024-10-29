@@ -5,6 +5,7 @@ import FormConsultation from '../Form/Consultation/Edit/Edit';
 import FormService from '../Form/Service/EditService/EditService'; // Importando o novo formulário
 
 const Table = ({ tableInformation }) => {
+    debugger
     const [count, setCount] = useState(0);
     const [formUser, setFormUser] = useState("none");
     const [userEdit, setUserEdit] = useState([]);
@@ -17,7 +18,7 @@ const Table = ({ tableInformation }) => {
         if (tableInformation && tableInformation.data) {
             setCount((prev) => prev + 1); 
         }
-    }, [tableInformation]);
+    }, [tableInformation]); 
 
     return (
         <div className="table-responsive">
@@ -55,6 +56,17 @@ const Table = ({ tableInformation }) => {
                                     <td style={{ display: 'flex', gap: '5px' }}>
                                         <button className="btn btn-primary btn-sm" onClick={() => editar(item)}>Editar</button>
                                         <button className="btn btn-danger btn-sm" onClick={() => deletar(item.id)}>Excluir</button>
+                                    </td>
+                                </tr>
+                            ) : tableInformation.tbodyId === 'servicesBody' ? (
+                                <tr key={index}>
+                                    <td>{item.id}</td>
+                                    <td>{item.nome}</td>
+                                    <td>{item.duracaoMinutos}</td>
+                                    <td>{item.preco}</td>
+                                    <td style={{ display: 'flex', gap: '5px' }}>
+                                        <button className="btn btn-primary btn-sm" onClick={() => editarService(item)}>Editar</button>
+                                        <button className="btn btn-danger btn-sm" onClick={() => deletar(item.id)}>Cancelar</button>
                                     </td>
                                 </tr>
                             ) : (
