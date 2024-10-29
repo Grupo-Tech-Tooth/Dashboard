@@ -32,11 +32,11 @@ const LoginForm = () => {
         window.location.href = '/gestao-consultas';
       }
       
-      if (!response.data.loginInfo.funcionario) {
+      if (response.data.loginInfo.cliente) {
         sessionStorage.setItem('id', response.data.loginInfo.cliente.id);
         sessionStorage.setItem('nome', response.data.loginInfo.cliente.nome);
         sessionStorage.setItem('sobrenome', response.data.loginInfo.cliente.sobrenome);
-        window.location.href = '/consultas';
+        window.location.href = '/geral';
       }
     } catch (error) {
       console.error(error);
