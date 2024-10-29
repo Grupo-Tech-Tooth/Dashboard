@@ -5,6 +5,7 @@ import Appointments from './pages/Appointments/Appointments';
 import Patients from './pages/Patients/Patients';
 import Login from './pages/Login/Login';
 import Consultation from './pages/Consultation/Consultation';
+import Employees from './pages/Employee/Employees';
 
 const AppRoutes = () => {
   return (
@@ -12,6 +13,7 @@ const AppRoutes = () => {
       <Routes>
         <Route path="/index" element={<Index />} />
         <Route path="/" element={<Appointments />} />
+        <Route path="/funcionarios" element={<Employees />} />
         <Route path="/pacientes" element={<Patients />} />
         <Route path="/login" element={<Login />} />
         <Route path='/consultas' element={<Consultation />} />
