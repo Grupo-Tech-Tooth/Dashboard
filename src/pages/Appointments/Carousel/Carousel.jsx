@@ -23,6 +23,7 @@ const Carousel = ({ appointmentsData = [], rescheduleAppointment, onCardClick, o
     const findTreatment = (treatmentId = null) => {
         if (!treatmentId) return null;
         const treatment = treatments.find((treatment) => treatment.id === treatmentId);
+        console.log(treatment);
         return treatment;
     };
 
@@ -155,8 +156,7 @@ const Carousel = ({ appointmentsData = [], rescheduleAppointment, onCardClick, o
 
                 const isPast = new Date(consulta.dataHora) < new Date(); // Verifica se a consulta já passou
                 const evaluated = consulta.avaliacao === '' ? false : true; // Verifica se a consulta já foi avaliada
-                const cliente = sessionStorage.getItem('cliente');
-                console.log(cliente);
+                const nomeCliente = sessionStorage.getItem('nome');
 
                 cardsToRender.push(
                     <Card
@@ -171,7 +171,7 @@ const Carousel = ({ appointmentsData = [], rescheduleAppointment, onCardClick, o
                             <h5 className='mb-3' style={{ fontWeight: 'normal' }}>Horário: <span>{parseDateBDtoDateTime(consulta.dataHora).time}</span></h5>
                             <h5 className='mb-3' style={{ fontWeight: 'normal' }}>Dentista: <span>Dr(a). {findDoctor(consulta.medicoId).nome}</span></h5>
                             <h5 className='mb-3' style={{ fontWeight: 'normal' }}>Tratamento: <span>{findTreatment(consulta.servicoId).nome}</span></h5>
-                            <h5 className='mb-3' style={{ fontWeight: 'normal' }}>Paciente: <span>{cliente.nome}</span></h5>
+                            <h5 className='mb-3' style={{ fontWeight: 'normal' }}>Paciente: <span>{nomeCliente}</span></h5>
                         </div>
                         <div className="col-md-12" style={{ opacity: isPast ? '0.5' : '1', display: isPast && consulta.status !== "Cancelado" && consulta.status !== "1" ? 'show' : 'none' }}>
                             <h5 className='mb-3' style={{ fontWeight: 'normal' }}>Avaliação: <span>{consulta.avaliacao}</span></h5>

@@ -198,9 +198,10 @@ const Appointments = () => {
     return consultas.find(appointment => appointment.id === id);
   };
   //popula os dados no modal para reagendar consultas
-  const rescheduleAppointment = (id) => {
+  const rescheduleAppointment = async (id) => {
     const consulta = findAppointment(id);
     if (consulta) {
+      await obterDatasDisponiveis(consulta.medicoId);
       setSchedulementId(consulta.id);
       setSelectedTreatment(consulta.servicoId);
       setSelectedDoctor(consulta.medicoId);
@@ -228,23 +229,16 @@ const Appointments = () => {
   };
 
   //função para avançar os passos do modal de marcar/remarcar consultas
-  const handleNextStep = () => {
+  const handleNextStep = async () => {
     if (step === 1) {
-      obterDatasDisponiveis(selectedDoctor, selectedTreatment);
+      await obterDatasDisponiveis(selectedDoctor, selectedTreatment);
     }
     if (step === 3) {
       if (schedulementId === '') {
-        //post consulta
         criarConsulta();
       }
       else {
-        const consulta = consultas.find(consulta => consulta.id === schedulementId);
-        if (consulta) {
-          //logica para atualizar/remarcar consulta
-        }
-        else {
-          console.log('Consulta não encontrada');
-        }
+        remarcarConsulta(schedulementId);
       }
     }
     setStep(step + 1);
@@ -873,6 +867,73 @@ const Appointments = () => {
     }
   };
 
+  const remarcarConsulta = async (id) => {
+    const consulta = findAppointment(id);
+    console.log('consulta', consulta);
+    try {
+      const token = sessionStorage.getItem('token');
+      const response = await fetch(`http://localhost:8080/agendamentos/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          clienteId: consulta.clienteId,
+          medicoId: consulta.medicoId,
+          servicoId: consulta.servicoId,
+          status: 'Remarcado',
+          dataHora: consulta.dataHora
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Erro ao cancelar consulta');
+      }
+      const data = await response.json();
+      const newAppointmentList = consultas.filter(consulta => consulta.id !== id);
+      setConsultas(newAppointmentList);
+      fillAppointmentsData(newAppointmentList);
+      getLastAppointment();
+      getNextAppointment();
+    } catch (error) {
+      console.error('Erro ao cancelar consulta:', error);
+    }
+
+    try {
+      const token = sessionStorage.getItem('token');
+      const adjustedTime = subtractHours(selectedTime, 3);
+      const response = await fetch(`http://localhost:8080/agendamentos`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          // clienteId: sessionStorage.getItem('id'),
+          clienteId: consulta.clienteId,
+          medicoId: selectedDoctor,
+          servicoId: selectedTreatment,
+          status: 'Pendente',
+          dataHora: parseDateDateTimetoBD(selectedDate, adjustedTime)
+        })
+      });
+
+
+      if (!response.ok) {
+        throw new Error('Erro ao criar consulta');
+      }
+      const data = await response.json();
+      const newAppointmentList = [...consultas, data];
+      setConsultas(newAppointmentList);
+      fillAppointmentsData(newAppointmentList);
+      getLastAppointment();
+      getNextAppointment();
+    } catch (error) {
+      console.error('Erro ao criar consulta:', error);
+    }
+  };
+
 
   //função para obter as consultas do banco de dados
   const cancelarConsulta = async (idConsulta) => {
@@ -884,16 +945,7 @@ const Appointments = () => {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
-        },
-        // body: JSON.stringify({
-        //   id: idConsulta,
-        //   // clienteId: sessionStorage.getItem('id'),
-        //   clienteId: 1,
-        //   medicoId: consulta.medicoId,
-        //   servicoId: consulta.servicoId,
-        //   status: 'Cancelado',
-        //   dataHora: consulta.dataHora
-        // })
+        }
       });
 
 
@@ -970,7 +1022,7 @@ const Appointments = () => {
       }
       setDoctorAvailableDates(availableDates);
 
-      const datas = doctorAvailableDates.reduce((acc, date) => {
+      const datas = await doctorAvailableDates.reduce((acc, date) => {
         const formattedDate = parseDateBDtoDateTime(date).date;
         if (!acc.includes(formattedDate)) {
           acc.push(formattedDate);
@@ -980,7 +1032,7 @@ const Appointments = () => {
 
       setAvailableDates(datas);
 
-      const horas = doctorAvailableDates.reduce((acc, date) => {
+      const horas = await doctorAvailableDates.reduce((acc, date) => {
         const formattedTime = parseDateBDtoDateTime(date).time;
         if (!acc.includes(formattedTime)) {
           acc.push(formattedTime);
@@ -1009,9 +1061,6 @@ const Appointments = () => {
     obterDadosBanco();
   }, [])
 
-  if (loading) {
-    return <div>Carregando...</div>; // Indicador de carregamento
-  }
 
   return (
     <div>
