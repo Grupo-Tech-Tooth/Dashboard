@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import Navbar from "../../components/Navbar/Navbar";
 import Container from '../../components/Container/Container';
 import Card from "../../components/Card/Card";
@@ -6,6 +8,7 @@ import Input from "../../components/Input/Input";
 import Botao from "../../components/Botao/Botao";
 import Modal from '../../components/Modal/Modal';
 import Carousel from './Carousel/Carousel';
+import style from './Appointments.module.css';
 
 
 const Appointments = () => {
@@ -14,6 +17,8 @@ const Appointments = () => {
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [step, setStep] = useState(0);
   const [appointmentsData, setAppointmentsData] = useState([]);
+  const [lastAppointment, setLastAppointment] = useState(null);
+  const [nextAppointment, setNextAppointment] = useState(null);
   const [schedulementId, setSchedulementId] = useState('');
   const [selectedTreatment, setSelectedTreatment] = useState('');
   const [selectedDoctor, setSelectedDoctor] = useState('');
@@ -21,11 +26,56 @@ const Appointments = () => {
   const [selectedTime, setSelectedTime] = useState('');
   const [selectedNote, setSelectedNote] = useState('');
   const [filledFeedback, setFilledFeedback] = useState('');
-  const [searchPatient, setSearchPatient] = useState('');
+  // const [searchPatient, setSearchPatient] = useState('');
   const [searchTreatment, setSearchTreatment] = useState('');
   const [searchDoctor, setSearchDoctor] = useState('');
   const [searchInitialDate, setSearchInitialDate] = useState('');
   const [searchFinalDate, setSearchFinalDate] = useState('');
+  const [optionsTreatments, setOptionsTreatments] = useState([]);
+  const [inputValueTreatment, setInputValueTreatment] = useState(searchTreatment);
+  const [optionsDoctors, setOptionsDoctors] = useState([]);
+  const [inputValueDoctor, setInputValueDoctor] = useState(searchDoctor);
+
+
+  function searchTreatmentFunction(value) {
+    const valor = value;
+    setInputValueTreatment(valor);
+
+    if (valor.length > 2) {
+      const filteredTreatments = treatments.filter(treatment =>
+        removerAcentos(treatment.toLowerCase()).includes(removerAcentos(valor.toLowerCase()))
+      );
+      setOptionsTreatments(filteredTreatments);
+    } else {
+      setOptionsTreatments([]);
+    }
+  }
+
+  function treatmentSelect(treatment) {
+    setInputValueTreatment(treatment);
+    setSearchTreatment(treatment);
+    setOptionsTreatments([]);
+  }
+
+  function searchDoctorFunction(value) {
+    const valor = value;
+    setInputValueDoctor(valor);
+
+    if (valor.length > 2) {
+      const filteredDoctors = doctors.filter(doctor =>
+        removerAcentos(doctor.toLowerCase()).includes(removerAcentos(valor.toLowerCase()))
+      );
+      setOptionsDoctors(filteredDoctors);
+    } else {
+      setOptionsDoctors([]);
+    }
+  }
+
+  function doctorSelect(doctor) {
+    setInputValueDoctor(doctor);
+    setSearchDoctor(doctor);
+    setOptionsDoctors([]);
+  }
 
   // Função para remover acentos de uma string
   const removerAcentos = (str) => {
@@ -36,6 +86,21 @@ const Appointments = () => {
   const capitalizeFirstLetter = (string) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
+
+  const parseCompareDate = (dateString) => {
+    const months = {
+      Janeiro: 0, Fevereiro: 1, Março: 2, Abril: 3, Maio: 4, Junho: 5,
+      Julho: 6, Agosto: 7, Setembro: 8, Outubro: 9, Novembro: 10, Dezembro: 11
+    };
+
+    const parts = dateString.split(' ');
+    const day = parseInt(parts[0], 10);
+    const month = months[parts[2]]; // Ajuste aqui para pegar o mês correto
+    const year = parseInt(parts[4], 10);
+
+    return new Date(year, month, day);
+  };
+
 
   // Função para converter a data para o formato dd-mm-yyyy
   const parseDate = (dateString) => {
@@ -549,10 +614,38 @@ const Appointments = () => {
     };
   };
 
+  const getLastAppointment = (appointments) => {
+    const pastAppointments = appointments.filter(appointment => parseCompareDate(appointment.data) < new Date());
+    if (pastAppointments.length === 0) {
+      setLastAppointment(null);
+      return;
+    }
+    const latestAppointment = pastAppointments.reduce((latest, appointment) => {
+      return parseCompareDate(appointment.data) > parseCompareDate(latest.data) ? appointment : latest;
+    });
+    setLastAppointment(latestAppointment);
+  };
+
+
+  const getNextAppointment = (appointments) => {
+    const nextAppointments = appointments.filter(appointment => parseCompareDate(appointment.data) > new Date());
+    if (nextAppointments.length === 0) {
+      setNextAppointment(null);
+      return;
+    }
+    const comingAppointment = nextAppointments.reduce((first, appointment) => {
+      return parseCompareDate(appointment.data) < parseCompareDate(first.data) ? appointment : first;
+    });
+    setNextAppointment(comingAppointment);
+  };
+
   //popula os dados de consultas para renderizar nos cards
   function fillAppointmentsData(listaConsultas = null) {
     listaConsultas ? setAppointmentsData(ordenarConsultas(listaConsultas)) :
       setAppointmentsData(ordenarConsultas(consultas));
+
+    getLastAppointment(appointmentsData);
+    getNextAppointment(appointmentsData);
   }
 
   //atualiza as consultas com os novos dados
@@ -578,17 +671,17 @@ const Appointments = () => {
   //função para filtrar as consultas
   const filtrarConsultas = () => {
     console.log('Filtrando consultas...');
-    console.log('Paciente:', searchPatient, 'Tratamento:', searchTreatment, 'Médico:', searchDoctor, 'Data Inicial:', searchInitialDate, 'Data Final:', searchFinalDate);
+    console.log('Tratamento:', searchTreatment, 'Médico:', searchDoctor, 'Data Inicial:', searchInitialDate, 'Data Final:', searchFinalDate);
     const consultasFiltradas = consultas.filter((consulta) => {
       const dataConsulta = new Date(consulta.data);
 
-      const matchesPatient = searchPatient ? removerAcentos(consulta.paciente).toLowerCase().includes(removerAcentos(searchPatient).toLowerCase().trim()) : true;
+      // const matchesPatient = searchPatient ? removerAcentos(consulta.paciente).toLowerCase().includes(removerAcentos(searchPatient).toLowerCase().trim()) : true;
       const matchesTreatment = searchTreatment ? removerAcentos(consulta.tratamento).toLowerCase().includes(removerAcentos(searchTreatment).toLowerCase().trim()) : true;
       const matchesDoctor = searchDoctor ? removerAcentos(consulta.dentista).toLowerCase().includes(removerAcentos(searchDoctor).toLowerCase().trim()) : true;
       const matchesInitialDate = searchInitialDate ? dataConsulta >= new Date(searchInitialDate) : true;
       const matchesFinalDate = searchFinalDate ? dataConsulta <= new Date(searchFinalDate) : true;
 
-      return matchesPatient && matchesTreatment && matchesDoctor && matchesInitialDate && matchesFinalDate;
+      return matchesTreatment && matchesDoctor && matchesInitialDate && matchesFinalDate;
     });
 
     fillAppointmentsData(consultasFiltradas);
@@ -596,6 +689,11 @@ const Appointments = () => {
 
   //função para limpar os filtros
   const limparFiltros = () => {
+    // setSearchPatient('');
+    setSearchTreatment('');
+    setSearchDoctor('');
+    setSearchInitialDate('');
+    setSearchFinalDate('');
     fillAppointmentsData();
   };
 
@@ -664,43 +762,132 @@ const Appointments = () => {
   return (
     <div>
       <Navbar />
-      <h2 className="text-primary text-center my-3">Gerenciar Consultas</h2>
+      <h2 className="text-primary text-center my-4">Gerenciar Consultas</h2>
 
       <Container classes="" estilos={{ margin: '0 10vw', maxWidth: '100%', height: 'fit-content' }}>
-        <div className="row pb-3" style={{ margin: '0', justifyContent: 'space-between', width: '100%' }}>
-          <Card classes="container m-0 p-2 card" estilos={{ minHeight: '120px', maxWidth: '27%', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', textAlign: 'center' }}>
-            <h5 className='text-primary'>Sua última consulta foi em</h5>
-            <h4>15 de Outubro de 2024 <br /> às 11:00</h4>
-          </Card>
-          <Card classes="container m-0 p-2 card" estilos={{ minHeight: '120px', maxWidth: '42%', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', justifyContent: 'space-between', textAlign: 'center' }}>
-            <h5 className='text-primary'>Em caso de problemas com agendamento ou pós tratamento, entre em contato conosco</h5>
-            <h5 style={{ fontWeight: '400' }}>(11) 99999-8888 | (11) 2233-4455</h5>
-          </Card>
-          <Card classes="container m-0 p-2 card" estilos={{ minHeight: '120px', maxWidth: '27%', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', textAlign: 'center' }}>
-            <h5 className='text-primary'>Sua próxima consulta é em</h5>
-            <h4>15 de Novembro de 2024 <br /> às 10:00</h4>
-          </Card>
-        </div>
 
-        <Card classes="card my-2 py-2 px-0">
+        <Card classes="card my-2 mb-4 py-0 px-0">
           <div className="row">
-            <div className="row mx-auto">
-              <Input classes="col-md-2" name="searchPatient" type="text" label="Nome do Paciente" placeholder="Filtrar por paciente" value={searchPatient} onChange={(e) => setSearchPatient(e.target.value)} />
-              <Input classes="col-md-2" name="searchTreatment" type="text" label="Tipo de tratamento" placeholder="Filtrar por tratamento" value={searchTreatment} onChange={(e) => setSearchTreatment(e.target.value)} />
-              <Input classes="col-md-2" name="searchDoctor" type="text" label="Nome do Médico" placeholder="Filtrar por médico" value={searchDoctor} onChange={(e) => setSearchDoctor(e.target.value)} />
+            <div className="row mx-auto d-flex justify-content-between">
+              <div className="col-md-3">
+                <Input classes="mb-0" name="searchTreatment" type="text" label="Tipo de tratamento" placeholder="Filtrar por tratamento" value={inputValueTreatment} onChange={(e) => searchTreatmentFunction(e.target.value)} />
+                <div id="suggestions-treatment" className={`${style['suggestions']} col-md-3 ${optionsTreatments.length > 0 ? 'border border-primary bg-white' : ''}`}>
+                  {optionsTreatments.length > 0 ? optionsTreatments.map(treatment => (
+                    <div
+                      key={treatment}
+                      className={style['suggestion-item']}
+                      onClick={() => treatmentSelect(treatment)}
+                    >
+                      {treatment}
+                    </div>
+                  )) : null}
+                </div>
+              </div>
+              <div className="col-md-3">
+                <Input classes="mb-0" name="searchDoctor" type="text" label="Nome do Médico" placeholder="Filtrar por médico" value={inputValueDoctor} onChange={(e) => searchDoctorFunction(e.target.value)} />
+                <div id="suggestions-doctor" className={`${style['suggestions']} col-md-3 ${optionsDoctors.length > 0 ? 'border border-primary bg-white' : ''}`}>
+                  {optionsDoctors.length > 0 ? optionsDoctors.map(doctor => (
+                    <div
+                      key={doctor}
+                      className={style['suggestion-item']}
+                      onClick={() => doctorSelect(doctor)}
+                    >
+                      {doctor}
+                    </div>
+                  )) : null}
+                </div>
+              </div>
               <Input classes="col-md-2" name="searchInitialDate" type="date" label="Data Inicial" placeholder="Filtrar por período" value={searchInitialDate} onChange={(e) => setSearchInitialDate(e.target.value)} />
               <Input classes="col-md-2" name="searchFinalDate" type="date" label="Data Final" placeholder="Filtrar por período" value={searchFinalDate} onChange={(e) => setSearchFinalDate(e.target.value)} />
               <div className="col-md-1 mb-3 align-content-end">
-                <Botao label="Filtrar Consultas" className="btn-primary" data-bs-toggle="modal" data-bs-target="#viewCalendarModal" style={{ width: '100%' }} onClick={filtrarConsultas} />
+                <Botao label="Filtrar Consultas" className="btn-primary" style={{ width: '100%' }} onClick={filtrarConsultas} />
               </div>
               <div className="col-md-1 mb-3 align-content-end">
-                <Botao label="Limpar Filtros" className="btn-primary" data-bs-toggle="modal" data-bs-target="#viewCalendarModal" style={{ width: '100%' }} onClick={limparFiltros} />
+                <Botao label="Limpar Filtros" className="btn-primary" style={{ width: '100%' }} onClick={limparFiltros} />
               </div>
             </div>
           </div>
         </Card>
 
-        <Carousel appointmentsData={appointmentsData} rescheduleAppointment={rescheduleAppointment} onCardClick={handleOpenModal} onEvaluationButtonClick={handleOpenEvaluationModal} handleOpenCancelModal={handleOpenCancelModal}/>
+        <Carousel appointmentsData={appointmentsData} rescheduleAppointment={rescheduleAppointment} onCardClick={handleOpenModal} onEvaluationButtonClick={handleOpenEvaluationModal} handleOpenCancelModal={handleOpenCancelModal} />
+
+        
+        <div className="row pb-1 mt-4" style={{ margin: '0', justifyContent: 'space-between', width: '100%' }}>
+          <Card classes="container m-0 p-1 card" estilos={{ minHeight: '120px', maxWidth: '27%', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', textAlign: 'center' }}>
+            {appointmentsData.length > 0 && lastAppointment ? (
+              <>
+                <h5 className='text-primary'>Sua última consulta foi em</h5>
+                <h5>{lastAppointment.data} às {lastAppointment.horario}</h5>
+              </>
+            ) : (
+              <>
+                <h5 className='text-primary'>Você não possui consultas anteriores!</h5>
+                <h5>Agende sua primeira consulta agora mesmo..</h5>
+              </>
+            )}
+          </Card>
+          <Card classes="container m-0 p-0 py-1 card" estilos={{ minHeight: '90px', maxWidth: '42%', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', justifyContent: 'space-between', textAlign: 'center' }} bodyClasses='p-1 pb-0'>
+            <div id="messageCarousel" className="carousel carousel-dark slide" data-bs-ride="carousel" style={{ padding: '0 10%' }} data-bs-interval="3000">
+              {/* <div className="carousel-indicators mb-0">
+                <button type="button" data-bs-target="#messageCarousel" data-bs-slide-to="0" className="active" aria-current="true" aria-label="Slide 1"></button>
+                <button type="button" data-bs-target="#messageCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                <button type="button" data-bs-target="#messageCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                <button type="button" data-bs-target="#messageCarousel" data-bs-slide-to="3" aria-label="Slide 4"></button>
+              </div> */}
+
+              <div className="carousel-inner">
+                <div className="carousel-item active" style={{ minHeight: '90px' }}>
+                  <h5 className='text-primary'>Dicas para Cuidados Pós-Tratamento</h5>
+                  <p style={{ fontWeight: '400' }}>
+                    Lembre-se de seguir as orientações do seu dentista para garantir uma recuperação tranquila.
+                  </p>
+                </div>
+                <div className="carousel-item" style={{ minHeight: '90px' }}>
+                  <h5 className='text-primary'>O que nossos pacientes dizem</h5>
+                  <p style={{ fontWeight: '400' }}>
+                    "Minha experiência foi excelente! A equipe é muito atenciosa." - João S.
+                  </p>
+                </div>
+                <div className="carousel-item" style={{ minHeight: '90px' }}>
+                  <h5 className='text-primary'>Pronto para a próxima consulta?</h5>
+                  <p style={{ fontWeight: '400' }}>
+                    Agende sua próxima consulta agora mesmo e mantenha seu sorriso saudável!
+                  </p>
+                </div>
+                <div className="carousel-item" style={{ minHeight: '90px' }}>
+                  <h5 className='text-primary'>Por que cuidar da sua saúde bucal?</h5>
+                  <p style={{ fontWeight: '400' }}>
+                    A saúde bucal afeta sua saúde geral! Descubra os benefícios de manter um sorriso saudável.
+                  </p>
+                </div>
+              </div>
+
+              <button className="carousel-control-prev justify-content-start" type="button" data-bs-target="#messageCarousel" data-bs-slide="prev">
+                <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span className="visually-hidden">Previous</span>
+              </button>
+              <button className="carousel-control-next justify-content-end" type="button" data-bs-target="#messageCarousel" data-bs-slide="next">
+                <span className="carousel-control-next-icon" aria-hidden="true"></span>
+                <span className="visually-hidden">Next</span>
+              </button>
+            </div>
+          </Card>
+          <Card classes="container m-0 p-1 card" estilos={{ minHeight: '120px', maxWidth: '27%', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', textAlign: 'center' }}>
+            {appointmentsData.length > 0 && nextAppointment ? (
+              <>
+                <h5 className='text-primary'>Sua próxima consulta é em</h5>
+                <h5>{nextAppointment.data} às {nextAppointment.horario}</h5>  
+              </>
+            ) : (
+              <>
+                <h5 className='text-primary'>Você não possui próximas consultas!</h5>
+                <h5>Agende sua próxima consulta agora mesmo..</h5>
+              </>
+
+            )}
+          </Card>
+        </div>
+
         <Modal
           show={showModal}
           onClose={handleCloseModal}

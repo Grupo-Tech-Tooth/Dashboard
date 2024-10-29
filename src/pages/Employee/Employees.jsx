@@ -1,21 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import style from './Patients.module.css';
+import style from './Employees.module.css';
 import Navbar from '../../components/Navbar/Navbar';
 import Container from '../../components/Container/Container';
 import Button from '../../components/Botao/Botao';
 import Table from '../../components/Table/Table';
 import Add from '../../components/Form/User/Add/Add';
-import axios from 'axios';
 // import { width } from '@fortawesome/free-solid-svg-icons/fa0';
 
-function Patients() {
+function Employees() {
   const [tableInformation, setTableInformation] = useState({
     'columns': [
       { 'name': '#' },
       { 'name': 'Nome' },
       { 'name': 'Email' },
-      { 'name': 'Telefone' },
-      { 'name': 'Última Consulta' },
+      { 'name': 'Departamento' },
+      { 'name': 'Especialização' },
       { 'name': 'Ações' }
     ],
     'data': [
@@ -25,185 +24,35 @@ function Patients() {
         surname: 'da Silva',
         email: 'joao@example.com',
         phone: '(11) 91234-5678',
-        lastVisit: '2024-08-15',
+        department: 'Recepção',
+        specialization: '-',
         cpf: '12345678909',
         dateBirth: '2005-05-03',
-        gender: 'Masculino'
-      },
-      {
-        id: 2,
-        name: 'Maria',
-        surname: 'da Silva',
-        email: 'maria@example.com',
-        phone: '(21) 99876-5432',
-        lastVisit: '2024-08-20',
-        dateBirth: '2005-05-03',
-        cpf: '98765432100',
-        gender: 'Feminino'
-      },
-      {
-        id: 3,
-        name: 'Pedro',
-        surname: 'Souza',
-        email: 'pedro@example.com',
-        phone: '(31) 98765-4321',
-        lastVisit: '2024-08-10',
-        dateBirth: '2005-05-03',
-        cpf: '11122233344',
-        gender: 'Masculino'
-      },
-      {
-        id: 4,
-        name: 'João',
-        surname: 'da Silva',
-        email: 'joao2@example.com',
-        phone: '(11) 91234-5678',
-        lastVisit: '2024-08-15',
-        dateBirth: '2005-05-03',
-        cpf: '12345678901',
-        gender: 'Masculino'
-      },
-      {
-        id: 5,
-        name: 'Maria',
-        surname: 'Oliveira',
-        email: 'maria.oliveira@example.com',
-        phone: '(21) 99876-5432',
-        lastVisit: '2024-08-20',
-        dateBirth: '2005-05-03',
-        cpf: '22233344455',
-        gender: 'Feminino'
-      },
-      {
-        id: 6,
-        name: 'Pedro',
-        surname: 'Silva',
-        email: 'pedro.silva@example.com',
-        phone: '(31) 98765-4321',
-        lastVisit: '2024-08-10',
-        dateBirth: '2005-05-03',
-        cpf: '33344455566',
-        gender: 'Masculino'
-      },
-      {
-        id: 7,
-        name: 'João',
-        surname: 'Santos',
-        email: 'joao.santos@example.com',
-        phone: '(11) 91234-5678',
-        lastVisit: '2024-08-15',
-        dateBirth: '2005-05-03',
-        cpf: '44455566677',
-        gender: 'Masculino'
-      },
-      {
-        id: 8,
-        name: 'Maria',
-        surname: 'Pereira',
-        email: 'maria.pereira@example.com',
-        phone: '(21) 99876-5432',
-        lastVisit: '2024-08-20',
-        dateBirth: '2005-05-03',
-        cpf: '55566677788',
-        gender: 'Feminino'
-      },
-      {
-        id: 9,
-        name: 'Pedro',
-        surname: 'Lima',
-        email: 'pedro.lima@example.com',
-        phone: '(31) 98765-4321',
-        lastVisit: '2024-08-10',
-        dateBirth: '2005-05-03',
-        cpf: '66677788899',
-        gender: 'Masculino'
-      },
-      {
-        id: 10,
-        name: 'João',
-        surname: 'Almeida',
-        email: 'joao.almeida@example.com',
-        phone: '(11) 91234-5678',
-        lastVisit: '2024-08-15',
-        dateBirth: '2005-05-03',
-        cpf: '77788899900',
-        gender: 'Masculino'
-      },
-      {
-        id: 11,
-        name: 'Maria',
-        surname: 'Cruz',
-        email: 'maria.cruz@example.com',
-        phone: '(21) 99876-5432',
-        lastVisit: '2024-08-20',
-        dateBirth: '2005-05-03',
-        cpf: '88899900011',
-        gender: 'Feminino'
-      },
-      {
-        id: 12,
-        name: 'Pedro',
-        surname: 'Ferreira',
-        email: 'pedro.ferreira@example.com',
-        phone: '(31) 98765-4321',
-        lastVisit: '2024-08-10',
-        dateBirth: '2005-05-03',
-        cpf: '99900011122',
         gender: 'Masculino'
       }
     ],
     'dataNotFilter': [],
-    'tableId': 'patientsTable',
-    'tbodyId': 'patientsBody'
+    'tableId': 'employeesTable',
+    'tbodyId': 'employeesBody'
   });
 
   const [searchEmail, setSearchEmail] = useState('');
   const [searchName, setSearchName] = useState('');
   const [searchCpf, setSearchCpf] = useState('');
-  const [searchPhone, setSearchPhone] = useState('');
-  const [page, setPage] = useState(1);
-  const [size, setSize] = useState(10);
-  const [totalPages, setTotalPages] = useState(1);
+  const [searchDepartment, setSearchDepartment] = useState('');
 
   const [viewFormAdd, setViewFormAdd] = useState("none");
 
   // const [userEdit, setUserEdit] = useState([]);
 
-  async function getData(page, size) {
-    try {
-      const response = await axios.get(`http://localhost:8080/clientes`, {
-          headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${sessionStorage.getItem('token')}`
-          },
-          params: {
-            page: page,
-            size: size
-          }
-    });
-        setTableInformation((prevTableInformation) =>(
-          {...prevTableInformation,
-            data: response.data.content,
-            dataNotFilter: response.data.sort
-          }
-        ))
-    } catch (error) {
-        console.log('Erro ao obter consultas:', error);
-    }
-    setTimeout(() => {
-      getData(page, size);
-  }, 50000);
-}
-
   useEffect(() => {
-    getData(page, size);
     tableInformation.dataNotFilter = tableInformation.data;
-  }, [page, size]);
+  }, []);
 
   return (
     <>
       <Navbar />
-      <h2 className="text-primary text-center my-3">Gerenciar Pacientes</h2>
+      <h2 className="text-primary text-center my-3">Gerenciar Funcionários</h2>
       <Container>{
         viewFormAdd === 'block' &&
         <Add Display={viewFormAdd} close={closeForm} />
@@ -211,7 +60,7 @@ function Patients() {
         <div className={style['card']}>
           <div className="row mb-4" style={{ display: 'flex', alignItems: 'center' }}>
             <div className="col-md-2 mx-auto">
-              <label htmlFor="searchNome">Nome do Paciente</label>
+              <label htmlFor="searchNome">Nome do Funcionário</label>
               <input
                 id="searchName"
                 className="form-control"
@@ -222,14 +71,14 @@ function Patients() {
               />
             </div>
             <div className="col-md-2 mx-auto">
-              <label htmlFor='searchEmail'>E-mail do Paciente</label>
+              <label htmlFor='searchEmail'>E-mail do Funcionário</label>
               <input type="text" id="searchEmail" className="form-control"
                 placeholder="Filtrar por e-mail"
                 value={searchEmail}
                 onChange={(e) => setSearchEmail(e.target.value)} />
             </div>
             <div className="col-md-2 mx-auto">
-              <label htmlFor="searchCpf">Cpf do Paciente</label>
+              <label htmlFor="searchCpf">Cpf do Funcionário</label>
               <input
                 id="searchCpf"
                 className="form-control"
@@ -240,14 +89,14 @@ function Patients() {
               />
             </div>
             <div className="col-md-2 mx-auto">
-              <label htmlFor="searchPhone">Telefone do Paciente</label>
+              <label htmlFor="searchDepartment">Departamento</label>
               <input
-                id="searchPhone"
+                id="searchDepartment"
                 className="form-control"
                 type="text"
-                placeholder="Filtrar por telefone"
-                value={searchPhone}
-                onChange={(e) => setSearchPhone(e.target.value)}
+                placeholder="Departamento"
+                value={searchDepartment}
+                onChange={(e) => setSearchDepartment(e.target.value)}
               />
             </div>
             <div className={`col-md-2 mx-auto ${style['lineButton']}`}>
@@ -271,7 +120,7 @@ function Patients() {
     setSearchName('');
     setSearchEmail('');
     setSearchCpf('');
-    setSearchPhone('');
+    setSearchDepartment('');
     setTableInformation((prevTableInformation) =>
     ({
       ...prevTableInformation,
@@ -284,7 +133,7 @@ function Patients() {
     let listName = [];
     let listEmail = [];
     let listCpf = [];
-    let listPhone = [];
+    let listDepartment = [];
 
     if (searchName) {
       const searchLower = searchName.toLowerCase();
@@ -317,15 +166,15 @@ function Patients() {
         }
       }
     }
-    if (searchPhone) {
-      const searchLower = searchPhone
-      listPhone = tableInformation.dataNotFilter.filter((item) =>
-        item.phone.includes(searchLower)
+    if (searchDepartment) {
+      const searchLower = searchDepartment.toLowerCase();
+      listDepartment = tableInformation.dataNotFilter.filter((item) =>
+        item.department.includes(searchLower)
       );
     }
 
-    if (searchName || searchEmail || searchPhone || searchCpf) {
-      let listAll = [...listName, ...listEmail, ...listCpf, ...listPhone];
+    if (searchName || searchEmail || searchDepartment || searchCpf) {
+      let listAll = [...listName, ...listEmail, ...listCpf, ...listDepartment];
 
       setTableInformation((prevTableInformation) => ({
         ...prevTableInformation,
@@ -359,4 +208,4 @@ function Patients() {
   }
 }
 
-export default Patients;
+export default Employees;

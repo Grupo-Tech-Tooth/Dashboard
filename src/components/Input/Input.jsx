@@ -17,7 +17,7 @@ const Input = ({ classes = '', name, type, label, placeholder, required, disable
       };
 
     return (
-        <div className={`${classes} mb-3`}>
+        <div className={`${classes.includes('mb-') ? '' : 'mb-3'} ${classes}`}>
             <label htmlFor={name} className={`form-label`}>{label ? label : "Default Text"}</label>
             <input
                 type={type}

@@ -1,5 +1,26 @@
-
 .calendarCell:hover {
     background-color: #007bff;
     color: #fff;
+}
+
+.suggestions {
+    position: absolute;
+    background: transparent ;
+    z-index: 1000;
+    width: 352px;
+    max-height: 200px;
+    overflow-y: auto;
+    /* padding: .375rem .75rem; */
+    border-radius: var(--bs-border-radius);
+}
+
+.suggestion-item {
+    padding: 2px .75rem;
+    cursor: pointer;
+}
+
+.suggestion-item:hover {
+    background-color: #007bff !important;
+    color:#fff;
+    cursor: pointer;
 }

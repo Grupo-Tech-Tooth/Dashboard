@@ -16,8 +16,25 @@ const LoginForm = () => {
         email: email,
         senha: password
       });
-      sessionStorage.setItem('token', response.data.tokenJWT);
-      setError(''); // Clear any previous errors
+      sessionStorage.clear(); // Limpa o sessionStorage
+      sessionStorage.setItem('token', response.data.token);
+      sessionStorage.setItem('id', response.data.loginInfo.id);
+      sessionStorage.setItem('email', response.data.loginInfo.email);
+      if (response.data.loginInfo.hierarquia) {
+        sessionStorage.setItem('hierarquia', response.data.loginInfo.hierarquia);
+      }
+      setError(''); 
+      
+      
+      if (response.data.loginInfo.funcionario) {
+        sessionStorage.setItem('funcionario', response.data.loginInfo.funcionario);
+        window.location.href = '/gestao-consultas';
+      }
+      
+      if (!response.data.loginInfo.funcionario) {
+        sessionStorage.setItem('cliente', response.data.loginInfo.cliente);
+        window.location.href = '/consultas';
+      }
     } catch (error) {
       console.error(error);
       setError('Login failed. Please check your credentials and try again.');
