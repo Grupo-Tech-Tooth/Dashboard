@@ -45,15 +45,16 @@ const Table = ({ tableInformation }) => {
                                         <button className="btn btn-danger btn-sm" onClick={() => deletar(item.id)}>Excluir</button>
                                     </td>
                                 </tr>
-                            ) : tableInformation.tbodyId === 'servicesBody' ? (
+                            ) : (tableInformation.tbodyId === 'employeesBody' ? (
                                 <tr key={index}>
                                     <td>{item.id}</td>
-                                    <td>{item.nome}</td>
-                                    <td>{item.duracaoMinutos}</td>
-                                    <td>{item.preco}</td>
+                                    <td>{item.name} {item.surname}</td>
+                                    <td>{item.email}</td>
+                                    <td>{item.department}</td>
+                                    <td>{item.specialization}</td>
                                     <td style={{ display: 'flex', gap: '5px' }}>
-                                        <button className="btn btn-primary btn-sm" onClick={() => editarService(item)}>Editar</button>
-                                        <button className="btn btn-danger btn-sm" onClick={() => deletar(item.id)}>Cancelar</button>
+                                        <button className="btn btn-primary btn-sm" onClick={() => editar(item)}>Editar</button>
+                                        <button className="btn btn-danger btn-sm" onClick={() => deletar(item.id)}>Excluir</button>
                                     </td>
                                 </tr>
                             ) : (
@@ -82,7 +83,7 @@ const Table = ({ tableInformation }) => {
                                         <button className="btn btn-danger btn-sm" onClick={() => deletar(item.id)}>Cancelar</button>
                                     </td>
                                 </tr>
-                            )
+                            ))
                         ))}
                 </tbody>
             </table>
