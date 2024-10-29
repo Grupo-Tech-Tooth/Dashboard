@@ -5,7 +5,6 @@ import FormConsultation from '../Form/Consultation/Edit/Edit';
 import FormService from '../Form/Service/EditService/EditService'; // Importando o novo formulário
 
 const Table = ({ tableInformation }) => {
-    debugger
     const [count, setCount] = useState(0);
     const [formUser, setFormUser] = useState("none");
     const [userEdit, setUserEdit] = useState([]);

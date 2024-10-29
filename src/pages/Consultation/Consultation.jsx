@@ -20,7 +20,7 @@ function Consultation() {
         'data': [
             {
                 "id": 1,
-                "nomePaciente": "John Doe",
+                "nomePaciente": "Carlos Silva",
                 "cpf": "12345678900",
                 "date": "25/10/2024",
                 "time": "10:00",
@@ -30,7 +30,7 @@ function Consultation() {
             },
             {
                 "id": 2,
-                "nomePaciente": "Jane Smith",
+                "nomePaciente": "Ana Souza",
                 "cpf": "23456789011",
                 "date": "26/09/2024",
                 "time": "14:30",
@@ -40,7 +40,7 @@ function Consultation() {
             },
             {
                 "id": 3,
-                "nomePaciente": "Michael Johnson",
+                "nomePaciente": "Marcos Pereira",
                 "cpf": "34567890122",
                 "date": "27/09/2024",
                 "time": "09:00",
@@ -50,7 +50,7 @@ function Consultation() {
             },
             {
                 "id": 4,
-                "nomePaciente": "Emily Davis",
+                "nomePaciente": "Beatriz Costa",
                 "cpf": "45678901233",
                 "date": "28/09/2024",
                 "time": "13:00",
@@ -60,7 +60,7 @@ function Consultation() {
             },
             {
                 "id": 5,
-                "nomePaciente": "Chris Brown",
+                "nomePaciente": "José Oliveira",
                 "cpf": "56789012344",
                 "date": "29/09/2024",
                 "time": "15:45",
@@ -70,7 +70,7 @@ function Consultation() {
             },
             {
                 "id": 6,
-                "nomePaciente": "Anna Taylor",
+                "nomePaciente": "Juliana Mendes",
                 "cpf": "67890123455",
                 "date": "30/09/2024",
                 "time": "11:15",
@@ -80,7 +80,7 @@ function Consultation() {
             },
             {
                 "id": 7,
-                "nomePaciente": "David Wilson",
+                "nomePaciente": "Rafael Almeida",
                 "cpf": "78901234566",
                 "date": "01/10/2024",
                 "time": "16:00",
@@ -90,7 +90,7 @@ function Consultation() {
             },
             {
                 "id": 8,
-                "nomePaciente": "Sophia Martinez",
+                "nomePaciente": "Fernanda Rodrigues",
                 "cpf": "89012345677",
                 "date": "02/10/2024",
                 "time": "10:30",
@@ -100,7 +100,7 @@ function Consultation() {
             },
             {
                 "id": 9,
-                "nomePaciente": "James Anderson",
+                "nomePaciente": "Pedro Martins",
                 "cpf": "90123456788",
                 "date": "03/10/2024",
                 "time": "12:00",
@@ -110,7 +110,7 @@ function Consultation() {
             },
             {
                 "id": 10,
-                "nomePaciente": "Olivia Lee",
+                "nomePaciente": "Larissa Barbosa",
                 "cpf": "01234567899",
                 "date": "04/10/2024",
                 "time": "08:45",
@@ -279,12 +279,11 @@ function Consultation() {
                             </button>
                             <button
                                 className="btn btn-primary"
-                                data-bs-toggle="modal"
-                                data-bs-target="#addAppointmentModal"
                                 type="submit"
                             >
                                 Buscar
                             </button>
+
                         </div>
                     </form>
 
@@ -302,15 +301,15 @@ function Consultation() {
         setStartDate('');
         setEndDate('');
         setTableInformation((prevTableInformation) =>
-            ({
-                ...prevTableInformation,
-                data: tableInformation.dataNotFilter
-            }));
+        ({
+            ...prevTableInformation,
+            data: tableInformation.dataNotFilter
+        }));
     }
 
     function buscar(value) {
         value.preventDefault();
-
+        debugger
         if (value.target.searchPatient.value || value.target.searchTreatment.value !== 'Escolher tratamento' || value.target.searchDoctor.value !== 'Escolher médico' || value.target.startDate.value || value.target.endDate.value) {
 
             let filtered = tableInformation.dataNotFilter;
