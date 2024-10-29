@@ -309,7 +309,6 @@ function Consultation() {
 
     function buscar(value) {
         value.preventDefault();
-        debugger
         if (value.target.searchPatient.value || value.target.searchTreatment.value !== 'Escolher tratamento' || value.target.searchDoctor.value !== 'Escolher médico' || value.target.startDate.value || value.target.endDate.value) {
 
             let filtered = tableInformation.dataNotFilter;

@@ -1,64 +1,109 @@
-import React, { useState, useEffect } from 'react';
-import style from './Employees.module.css';
-import Navbar from '../../components/Navbar/Navbar';
-import Container from '../../components/Container/Container';
-import Button from '../../components/Botao/Botao';
-import Table from '../../components/Table/Table';
-import Add from '../../components/Form/User/Add/Add';
+import React, { useState, useEffect } from "react";
+import style from "./Employees.module.css";
+import Navbar from "../../components/Navbar/Navbar";
+import Container from "../../components/Container/Container";
+import Button from "../../components/Botao/Botao";
+import Table from "../../components/Table/Table";
+import Add from "../../components/Form/User/Add/Add";
+import api from "../../api";
 // import { width } from '@fortawesome/free-solid-svg-icons/fa0';
 
 function Employees() {
   const [tableInformation, setTableInformation] = useState({
-    'columns': [
-      { 'name': '#' },
-      { 'name': 'Nome' },
-      { 'name': 'Email' },
-      { 'name': 'Departamento' },
-      { 'name': 'Especialização' },
-      { 'name': 'Ações' }
+    columns: [
+      { name: "#" },
+      { name: "Nome" },
+      { name: "Email" },
+      { name: "Departamento" },
+      { name: "Especialização" },
+      { name: "Ações" },
     ],
-    'data': [
+    data: [
       {
         id: 1,
-        name: 'João',
-        surname: 'da Silva',
-        email: 'joao@example.com',
-        phone: '(11) 91234-5678',
-        department: 'Recepção',
-        specialization: '-',
-        cpf: '12345678909',
-        dateBirth: '2005-05-03',
-        gender: 'Masculino'
-      }
+        name: "João",
+        surname: "da Silva",
+        email: "joao@example.com",
+        phone: "(11) 91234-5678",
+        department: "Recepção",
+        specialization: "-",
+        cpf: "12345678909",
+        dateBirth: "2005-05-03",
+        gender: "Masculino",
+      },
     ],
-    'dataNotFilter': [],
-    'tableId': 'employeesTable',
-    'tbodyId': 'employeesBody'
+    dataNotFilter: [],
+    tableId: "employeesTable",
+    tbodyId: "employeesBody",
   });
 
-  const [searchEmail, setSearchEmail] = useState('');
-  const [searchName, setSearchName] = useState('');
-  const [searchCpf, setSearchCpf] = useState('');
-  const [searchDepartment, setSearchDepartment] = useState('');
-
+  const [searchEmail, setSearchEmail] = useState("");
+  const [searchName, setSearchName] = useState("");
+  const [searchCpf, setSearchCpf] = useState("");
+  const [searchDepartment, setSearchDepartment] = useState("");
   const [viewFormAdd, setViewFormAdd] = useState("none");
 
-  // const [userEdit, setUserEdit] = useState([]);
+  async function getData() {
+    const responseMedicos = await api.get("/medicos");
+    const responseFuncionais = await api.get("/funcionais");
+
+    const data = [];
+
+    if (responseMedicos.data.length !== 0) {
+      responseMedicos.data.forEach((medico) => {
+        data.push({
+          id: medico.id,
+          name: medico.nome,
+          email: medico.email,
+          phone: medico.telefone,
+          department: "Médico",
+          specialization: medico.especializacao,
+          cpf: medico.cpf,
+          dateBirth: medico.dataNascimento,
+        });
+      });
+    }
+
+    if (responseFuncionais.data.length !== 0) {
+      responseFuncionais.data.forEach((funcional) => {
+        data.push({
+          id: funcional.id,
+          name: funcional.nome,
+          email: funcional.email,
+          phone: funcional.telefone,
+          department: "Funcional",
+          specialization: "-",
+          cpf: funcional.cpf,
+          dateBirth: funcional.dataNascimento,
+        });
+      });
+    }
+
+    setTableInformation((prevTableInformation) => ({
+      ...prevTableInformation,
+      data: data,
+    }));
+  }
 
   useEffect(() => {
     tableInformation.dataNotFilter = tableInformation.data;
+
+    getData();
   }, []);
 
   return (
     <>
       <Navbar />
       <h2 className="text-primary text-center my-3">Gerenciar Funcionários</h2>
-      <Container>{
-        viewFormAdd === 'block' &&
-        <Add Display={viewFormAdd} close={closeForm} />
-      }
-        <div className={style['card']}>
-          <div className="row mb-4" style={{ display: 'flex', alignItems: 'center' }}>
+      <Container>
+        {viewFormAdd === "block" && (
+          <Add Display={viewFormAdd} close={closeForm} />
+        )}
+        <div className={style["card"]}>
+          <div
+            className="row mb-4"
+            style={{ display: "flex", alignItems: "center" }}
+          >
             <div className="col-md-2 mx-auto">
               <label htmlFor="searchNome">Nome do Funcionário</label>
               <input
@@ -71,11 +116,15 @@ function Employees() {
               />
             </div>
             <div className="col-md-2 mx-auto">
-              <label htmlFor='searchEmail'>E-mail do Funcionário</label>
-              <input type="text" id="searchEmail" className="form-control"
+              <label htmlFor="searchEmail">E-mail do Funcionário</label>
+              <input
+                type="text"
+                id="searchEmail"
+                className="form-control"
                 placeholder="Filtrar por e-mail"
                 value={searchEmail}
-                onChange={(e) => setSearchEmail(e.target.value)} />
+                onChange={(e) => setSearchEmail(e.target.value)}
+              />
             </div>
             <div className="col-md-2 mx-auto">
               <label htmlFor="searchCpf">Cpf do Funcionário</label>
@@ -99,12 +148,19 @@ function Employees() {
                 onChange={(e) => setSearchDepartment(e.target.value)}
               />
             </div>
-            <div className={`col-md-2 mx-auto ${style['lineButton']}`}>
-              <Button className={`${style['buttonSearch']} btn btn-primary`} id="searchButton" onClick={buscar} label="Buscar" style={{width: 'fit-content'}} />
+            <div className={`col-md-2 mx-auto ${style["lineButton"]}`}>
+              <Button
+                className={`${style["buttonSearch"]} btn btn-primary`}
+                id="searchButton"
+                onClick={buscar}
+                label="Buscar"
+                style={{ width: "fit-content" }}
+              />
               <button
-                className={`${style['button-limpar']} btn btn-secondary`}
+                className={`${style["button-limpar"]} btn btn-secondary`}
                 type="button"
-                onClick={resetFields} >
+                onClick={resetFields}
+              >
                 Limpar
               </button>
             </div>
@@ -112,19 +168,28 @@ function Employees() {
           <Table tableInformation={tableInformation} />
         </div>
       </Container>
-      <div className={`z-3 position-absolute p-5 rounded-3 ${style['boxButton']}`}><button type="button" onClick={() => abrirModalAdd()} className={style['add']}>+</button></div>
+      <div
+        className={`z-3 position-absolute p-5 rounded-3 ${style["boxButton"]}`}
+      >
+        <button
+          type="button"
+          onClick={() => abrirModalAdd()}
+          className={style["add"]}
+        >
+          +
+        </button>
+      </div>
     </>
   );
 
   function resetFields() {
-    setSearchName('');
-    setSearchEmail('');
-    setSearchCpf('');
-    setSearchDepartment('');
-    setTableInformation((prevTableInformation) =>
-    ({
+    setSearchName("");
+    setSearchEmail("");
+    setSearchCpf("");
+    setSearchDepartment("");
+    setTableInformation((prevTableInformation) => ({
       ...prevTableInformation,
-      data: tableInformation.dataNotFilter
+      data: tableInformation.dataNotFilter,
     }));
   }
 
@@ -147,8 +212,10 @@ function Employees() {
       );
     }
     if (searchCpf) {
-      // Entregavel Pesquisa Binária 
-      const listOrdenada = tableInformation.dataNotFilter.sort((a, b) => a.cpf.localeCompare(b.cpf));
+      // Entregavel Pesquisa Binária
+      const listOrdenada = tableInformation.dataNotFilter.sort((a, b) =>
+        a.cpf.localeCompare(b.cpf)
+      );
       let start = 0;
       let end = listOrdenada.length - 1;
 
@@ -177,13 +244,15 @@ function Employees() {
 
       setTableInformation((prevTableInformation) => ({
         ...prevTableInformation,
-        data: listAll
+        data: listAll,
       }));
     } else {
-      const listOrdenada = tableInformation.dataNotFilter.sort((a, b) => a.id - b.id);
+      const listOrdenada = tableInformation.dataNotFilter.sort(
+        (a, b) => a.id - b.id
+      );
       setTableInformation((prevTableInformation) => ({
         ...prevTableInformation,
-        data: listOrdenada
+        data: listOrdenada,
       }));
     }
   }
@@ -199,7 +268,10 @@ function Employees() {
 
   function saveFields(newUser) {
     if (newUser?.name) {
-      newUser.id = tableInformation.dataNotFilter[tableInformation.dataNotFilter.length - 1].id + 1;
+      newUser.id =
+        tableInformation.dataNotFilter[
+          tableInformation.dataNotFilter.length - 1
+        ].id + 1;
       tableInformation.dataNotFilter.push(newUser);
 
       alert("Usar essa função para salvar");
