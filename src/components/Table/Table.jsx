@@ -3,6 +3,7 @@ import style from './Table.module.css';
 import FormUser from '../Form/User/Edit/Edit';
 import FormConsultation from '../Form/Consultation/Edit/Edit';
 import FormService from '../Form/Service/EditService/EditService'; // Importando o novo formulário
+import api from '../../api';
 
 const Table = ({ tableInformation }) => {
     const [count, setCount] = useState(0);
@@ -163,10 +164,17 @@ const Table = ({ tableInformation }) => {
     }
 
     function deletar(id) {
-        if (window.confirm('Deseja realmente excluir este registro?')) {
-            tableInformation.data = tableInformation.data.filter((item) => item.id !== id);
-            tableInformation.dataNotFilter = tableInformation.dataNotFilter.filter((item) => item.id !== id);
-            setCount(count + 1);
+        if (!window.confirm('Deseja realmente excluir este registro?')) {
+            return
+        }
+        tableInformation.data = tableInformation.data.filter((item) => item.id !== id);
+        tableInformation.dataNotFilter = tableInformation.dataNotFilter.filter((item) => item.id !== id);
+        setCount(count + 1);
+
+        console.log("Estamos na tela: ", tableInformation.tbodyId);
+        
+        if(tableInformation.tbodyId === 'employeesBody') {
+            api.delete(`/medicos/${id}`);
         }
     }
 }
