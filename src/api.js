@@ -4,7 +4,6 @@ const api = axios.create({
     baseURL: 'http://localhost:8080', // URL base da sua API
 });
 
-// Configurar interceptores se necessário
 api.interceptors.request.use(
     (config) => {
         const token = sessionStorage.getItem('token');
