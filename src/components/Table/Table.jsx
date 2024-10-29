@@ -61,7 +61,7 @@ const Table = ({ tableInformation }) => {
                             ) : tableInformation.tbodyId === 'servicesBody' ? (
                                 <tr key={index}>
                                     <td>{item.id}</td>
-                                    <td>{item.nome}</td>
+                                    <td>{item.nome == 'consulta' ? 'Consulta': (item.nome == 'limpeza') ? 'Limpeza' : 'Remover Dente'}</td>
                                     <td>{item.duracaoMinutos}</td>
                                     <td>{item.preco}</td>
                                     <td style={{ display: 'flex', gap: '5px' }}>

@@ -12,7 +12,7 @@ const AppRoutes = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/index" element={<Index />} />
+        {/* <Route path="/index" element={<Index />} /> */}
         <Route path="/consultas" element={<Appointments />} />
         <Route path="/funcionarios" element={<Employees />} />
         <Route path="/pacientes" element={<Patients />} />
