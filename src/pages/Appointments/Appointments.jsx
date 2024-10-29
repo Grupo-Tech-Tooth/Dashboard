@@ -765,8 +765,55 @@ const Appointments = () => {
       <h2 className="text-primary text-center my-4">Gerenciar Consultas</h2>
 
       <Container classes="" estilos={{ margin: '0 10vw', maxWidth: '100%', height: 'fit-content' }}>
-        <div className="row pb-3" style={{ margin: '0', justifyContent: 'space-between', width: '100%' }}>
-          <Card classes="container m-0 p-2 card" estilos={{ minHeight: '120px', maxWidth: '27%', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', textAlign: 'center' }}>
+
+        <Card classes="card my-2 mb-4 py-0 px-0">
+          <div className="row">
+            <div className="row mx-auto d-flex justify-content-between">
+              <div className="col-md-3">
+                <Input classes="mb-0" name="searchTreatment" type="text" label="Tipo de tratamento" placeholder="Filtrar por tratamento" value={inputValueTreatment} onChange={(e) => searchTreatmentFunction(e.target.value)} />
+                <div id="suggestions-treatment" className={`${style['suggestions']} col-md-3 ${optionsTreatments.length > 0 ? 'border border-primary bg-white' : ''}`}>
+                  {optionsTreatments.length > 0 ? optionsTreatments.map(treatment => (
+                    <div
+                      key={treatment}
+                      className={style['suggestion-item']}
+                      onClick={() => treatmentSelect(treatment)}
+                    >
+                      {treatment}
+                    </div>
+                  )) : null}
+                </div>
+              </div>
+              <div className="col-md-3">
+                <Input classes="mb-0" name="searchDoctor" type="text" label="Nome do Médico" placeholder="Filtrar por médico" value={inputValueDoctor} onChange={(e) => searchDoctorFunction(e.target.value)} />
+                <div id="suggestions-doctor" className={`${style['suggestions']} col-md-3 ${optionsDoctors.length > 0 ? 'border border-primary bg-white' : ''}`}>
+                  {optionsDoctors.length > 0 ? optionsDoctors.map(doctor => (
+                    <div
+                      key={doctor}
+                      className={style['suggestion-item']}
+                      onClick={() => doctorSelect(doctor)}
+                    >
+                      {doctor}
+                    </div>
+                  )) : null}
+                </div>
+              </div>
+              <Input classes="col-md-2" name="searchInitialDate" type="date" label="Data Inicial" placeholder="Filtrar por período" value={searchInitialDate} onChange={(e) => setSearchInitialDate(e.target.value)} />
+              <Input classes="col-md-2" name="searchFinalDate" type="date" label="Data Final" placeholder="Filtrar por período" value={searchFinalDate} onChange={(e) => setSearchFinalDate(e.target.value)} />
+              <div className="col-md-1 mb-3 align-content-end">
+                <Botao label="Filtrar Consultas" className="btn-primary" style={{ width: '100%' }} onClick={filtrarConsultas} />
+              </div>
+              <div className="col-md-1 mb-3 align-content-end">
+                <Botao label="Limpar Filtros" className="btn-primary" style={{ width: '100%' }} onClick={limparFiltros} />
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        <Carousel appointmentsData={appointmentsData} rescheduleAppointment={rescheduleAppointment} onCardClick={handleOpenModal} onEvaluationButtonClick={handleOpenEvaluationModal} handleOpenCancelModal={handleOpenCancelModal} />
+
+        
+        <div className="row pb-1 mt-4" style={{ margin: '0', justifyContent: 'space-between', width: '100%' }}>
+          <Card classes="container m-0 p-1 card" estilos={{ minHeight: '120px', maxWidth: '27%', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', textAlign: 'center' }}>
             {appointmentsData.length > 0 && lastAppointment ? (
               <>
                 <h5 className='text-primary'>Sua última consulta foi em</h5>
@@ -779,7 +826,7 @@ const Appointments = () => {
               </>
             )}
           </Card>
-          <Card classes="container m-0 p-0 py-2 card" estilos={{ minHeight: '90px', maxWidth: '42%', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', justifyContent: 'space-between', textAlign: 'center' }} bodyClasses='pb-0'>
+          <Card classes="container m-0 p-0 py-1 card" estilos={{ minHeight: '90px', maxWidth: '42%', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', justifyContent: 'space-between', textAlign: 'center' }} bodyClasses='p-1 pb-0'>
             <div id="messageCarousel" className="carousel carousel-dark slide" data-bs-ride="carousel" style={{ padding: '0 10%' }} data-bs-interval="3000">
               {/* <div className="carousel-indicators mb-0">
                 <button type="button" data-bs-target="#messageCarousel" data-bs-slide-to="0" className="active" aria-current="true" aria-label="Slide 1"></button>
@@ -825,11 +872,11 @@ const Appointments = () => {
               </button>
             </div>
           </Card>
-          <Card classes="container m-0 p-2 card" estilos={{ minHeight: '120px', maxWidth: '27%', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', textAlign: 'center' }}>
+          <Card classes="container m-0 p-1 card" estilos={{ minHeight: '120px', maxWidth: '27%', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', textAlign: 'center' }}>
             {appointmentsData.length > 0 && nextAppointment ? (
               <>
                 <h5 className='text-primary'>Sua próxima consulta é em</h5>
-                <h5>{nextAppointment.data} às {nextAppointment.horario}</h5>
+                <h5>{nextAppointment.data} às {nextAppointment.horario}</h5>  
               </>
             ) : (
               <>
@@ -841,50 +888,6 @@ const Appointments = () => {
           </Card>
         </div>
 
-        <Card classes="card my-2 py-2 px-0">
-          <div className="row">
-            <div className="row mx-auto d-flex justify-content-between">
-              <div className="col-md-3">
-                <Input classes="mb-0" name="searchTreatment" type="text" label="Tipo de tratamento" placeholder="Filtrar por tratamento" value={inputValueTreatment} onChange={(e) => searchTreatmentFunction(e.target.value)} />
-                <div id="suggestions-treatment" className={`${style['suggestions']} col-md-3 ${optionsTreatments.length > 0 ? 'border border-primary bg-white' : ''}`}>
-                  {optionsTreatments.length > 0 ? optionsTreatments.map(treatment => (
-                    <div
-                      key={treatment}
-                      className={style['suggestion-item']}
-                      onClick={() => treatmentSelect(treatment)}
-                    >
-                      {treatment}
-                    </div>
-                  )) : null}
-                </div>
-              </div>
-              <div className="col-md-3">
-                <Input classes="mb-0" name="searchDoctor" type="text" label="Nome do Médico" placeholder="Filtrar por médico" value={inputValueDoctor} onChange={(e) => searchDoctorFunction(e.target.value)} />
-                <div id="suggestions-doctor" className={`${style['suggestions']} col-md-3 ${optionsDoctors.length > 0 ? 'border border-primary bg-white' : ''}`}>
-                  {optionsDoctors.length > 0 ? optionsDoctors.map(doctor => (
-                    <div
-                      key={doctor}
-                      className={style['suggestion-item']}
-                      onClick={() => doctorSelect(doctor)}
-                    >
-                      {doctor}
-                    </div>
-                  )) : null}
-                </div>
-              </div>
-              <Input classes="col-md-2" name="searchInitialDate" type="date" label="Data Inicial" placeholder="Filtrar por período" value={searchInitialDate} onChange={(e) => setSearchInitialDate(e.target.value)} />
-              <Input classes="col-md-2" name="searchFinalDate" type="date" label="Data Final" placeholder="Filtrar por período" value={searchFinalDate} onChange={(e) => setSearchFinalDate(e.target.value)} />
-              <div className="col-md-1 mb-3 align-content-end">
-                <Botao label="Filtrar Consultas" className="btn-primary" style={{ width: '100%' }} onClick={filtrarConsultas} />
-              </div>
-              <div className="col-md-1 mb-3 align-content-end">
-                <Botao label="Limpar Filtros" className="btn-primary" style={{ width: '100%' }} onClick={limparFiltros} />
-              </div>
-            </div>
-          </div>
-        </Card>
-
-        <Carousel appointmentsData={appointmentsData} rescheduleAppointment={rescheduleAppointment} onCardClick={handleOpenModal} onEvaluationButtonClick={handleOpenEvaluationModal} handleOpenCancelModal={handleOpenCancelModal} />
         <Modal
           show={showModal}
           onClose={handleCloseModal}
