@@ -9,7 +9,7 @@ const Login = () => {
   return (
     <>
       <Navbar />
-      <Container classes="container d-flex justify-content-center align-items-center">
+      <Container classes="container d-flex justify-content-center align-items-center" estilos={{height: 'calc(100vh - 56px)'}}>
         <Card titulo="Login" classes="card shadow-lg" estilos={{width: '350px'}}>
           <LoginForm />
         </Card>

@@ -33,9 +33,9 @@ const Table = ({ tableInformation }) => {
                             tableInformation.tbodyId === 'patientsBody' ? (
                                 <tr key={index}>
                                     <td>{item.id}</td>
-                                    <td>{item.name} {item.surname}</td>
+                                    <td>{item.nome} {item.sobrenome}</td>
                                     <td>{item.email}</td>
-                                    <td>{item.phone}</td>
+                                    <td>{item.cpf}</td>
                                     <td>{item.lastVisit}</td>
                                     <td style={{ display: 'flex', gap: '5px' }}>
                                         <button className="btn btn-warning btn-sm" onClick={() => editar(item)}>Editar</button>

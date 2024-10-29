@@ -141,11 +141,11 @@ const Carousel = ({ appointmentsData, rescheduleAppointment, onCardClick, onEval
                             <h5 className='mb-3' style={{ fontWeight: 'normal' }}>Feedback: <span>{consulta.feedback}</span></h5>
                         </div>
                         <div className="d-flex justify-content-between p-0 m-0">
-                            <Botao label="Avaliar Consulta" className={`my-3 ${!isPast ? 'btn-outline-primary' : `${evaluated ? 'btn-secondary' : 'btn-primary'}`}`} data-bs-toggle="modal" data-bs-target="#viewCalendarModal" hidden={!isPast} onClick={() => onEvaluationButtonClick(consulta.id)} />
+                            <Botao label="Avaliar Consulta" className={`my-3 ${!isPast ? 'btn-outline-primary' : `${evaluated ? 'btn-secondary' : 'btn-primary'}`}`} hidden={!isPast} onClick={() => onEvaluationButtonClick(consulta.id)} />
                                 
-                            <Botao label="Cancelar Consulta" className={`my-3 ${!isPast ? 'btn-secondary' : 'btn-outline-secondary'}`} data-bs-toggle="modal" data-bs-target="#viewCalendarModal" hidden={isPast} onClick={() => handleOpenCancelModal(consulta.id)} />
+                            <Botao label="Cancelar Consulta" className={`my-3 ${!isPast ? 'btn-secondary' : 'btn-outline-secondary'}`} hidden={isPast} onClick={() => handleOpenCancelModal(consulta.id)} />
 
-                            <Botao label="Remarcar Consulta" className={`my-3 ${!isPast ? 'btn-primary' : 'btn-outline-primary'}`} data-bs-toggle="modal" data-bs-target="#viewCalendarModal" disabled={isPast} onClick={() => rescheduleAppointment(consulta.id)} />
+                            <Botao label="Remarcar Consulta" className={`my-3 ${!isPast ? 'btn-primary' : 'btn-outline-primary'}`} disabled={isPast} onClick={() => rescheduleAppointment(consulta.id)} />
                         </div>
                     </Card>
                 );
