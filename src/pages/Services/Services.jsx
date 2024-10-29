@@ -6,6 +6,7 @@ import Button from '../../components/Botao/Botao';
 import Table from '../../components/Table/Table';
 import Add from '../../components/Form/Service/AddService/AddService';
 import axios from 'axios';
+import api from '../../api';
 
 function Services() {
   const [tableInformation, setTableInformation] = useState({
@@ -17,18 +18,7 @@ function Services() {
       { 'name': 'Ações' }
     ],
     'data': [
-      { id: 1, nome: 'Consulta', duracaoMinutos: 30, preco: 'R$ 100.00' },
-      { id: 2, nome: 'Limpeza', duracaoMinutos: 45, preco: 'R$ 150.00' },
-      { id: 3, nome: 'Remoção de Dente', duracaoMinutos: 60, preco: 'R$ 300.00' },
-      { id: 4, nome: 'Consulta', duracaoMinutos: 30, preco: 'R$ 100.00' },
-      { id: 5, nome: 'Limpeza', duracaoMinutos: 45, preco: 'R$ 150.00' },
-      { id: 6, nome: 'Remoção de Dente', duracaoMinutos: 60, preco: 'R$ 300.00' },
-      { id: 7, nome: 'Consulta', duracaoMinutos: 30, preco: 'R$ 100.00' },
-      { id: 8, nome: 'Limpeza', duracaoMinutos: 45, preco: 'R$ 150.00' },
-      { id: 9, nome: 'Remoção de Dente', duracaoMinutos: 60, preco: 'R$ 300.00' },
-      { id: 10, nome: 'Consulta', duracaoMinutos: 30, preco: 'R$ 100.00' },
-      { id: 11, nome: 'Limpeza', duracaoMinutos: 45, preco: 'R$ 150.00' },
-      { id: 12, nome: 'Remoção de Dente', duracaoMinutos: 60, preco: 'R$ 300.00' }
+      { id: 1, nome: 'Consulta', duracaoMinutos: 30, preco: 'R$ 100.00' }
     ],
     'dataNotFilter': [],
     'tableId': 'servicesTable',
@@ -41,19 +31,16 @@ function Services() {
   const [searchId, setSearchId] = useState('');
   const [viewFormAdd, setViewFormAdd] = useState("none");
 
-  async function getData(page, size) {
+  async function getData() {
     try {
-      const response = await axios.get(`http://localhost:8080/servicos`, {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${sessionStorage.getItem('token')}`
-        },
-        params: { page, size }
-      });
+      const response = await api.get(`/servicos`);
+
+      console.log('Serviços:', response.data);
+
       setTableInformation((prevTableInformation) => ({
         ...prevTableInformation,
-        data: response.data.content,
-        dataNotFilter: response.data.content
+        data: response.data,
+        dataNotFilter: response.data
       }));
     } catch (error) {
       console.log('Erro ao obter serviços:', error);
@@ -61,7 +48,7 @@ function Services() {
   }
 
   useEffect(() => {
-    // Carrega os dados na inicialização
+    getData();
     setTableInformation((prev) => ({
       ...prev,
       dataNotFilter: prev.data
