@@ -23,15 +23,15 @@ const LoginForm = () => {
       if (response.data.loginInfo.hierarquia) {
         sessionStorage.setItem('hierarquia', response.data.loginInfo.hierarquia);
       }
-      setError(''); 
-      
-      
-      if (response.data.loginInfo.funcionario) {
+      setError('');
+
+
+      if (response.data.loginInfo.cliente.hierarquia !== "CLIENTE") {
         sessionStorage.setItem('funcionario', response.data.loginInfo.funcionario);
-        window.location.href = '/gestao-consultas';
+        window.location.href = '/consultas';
       }
-      
-      if (!response.data.loginInfo.funcionario) {
+
+      if (response.data.loginInfo.cliente.hierarquia == "CLIENTE") {
         sessionStorage.setItem('cliente', response.data.loginInfo.cliente);
         window.location.href = '/consultas';
       }
