@@ -8,14 +8,14 @@ import Add from '../../components/Form/Consultation/Add/Add';
 function Consultation() {
     const [tableInformation, setTableInformation] = useState({
         'columns': [
-            { 'name': '#' },
-            { 'name': 'Nome' },
-            { 'name': 'Data' },
-            { 'name': 'Hora' },
-            { 'name': 'Médico' },
-            { 'name': 'Tratamento' },
-            { 'name': 'Status' },
-            { 'name': 'Ações' },
+            { 'name': '#', key: ''},
+            { 'name': 'Nome', key: 'nomePaciente' },
+            { 'name': 'Data',  key: 'date'},
+            { 'name': 'Hora', key: 'time' },
+            { 'name': 'Médico', key: 'doctor' },
+            { 'name': 'Tratamento', key: 'treatment' },
+            { 'name': 'Status', key: 'status' },
+            { 'name': 'Ações', key: 'acoes' },
         ],
         'data': [
             {

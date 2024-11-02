@@ -5,3 +5,8 @@ thead{
         color: #0D6EFD !important;
     }
 }
+
+.divPagination{
+    display: flex;
+    justify-content: end;
+}

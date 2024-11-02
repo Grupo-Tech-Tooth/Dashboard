@@ -11,14 +11,13 @@ import api from '../../api';
 function Services() {
   const [tableInformation, setTableInformation] = useState({
     'columns': [
-      { 'name': '#' },
-      { 'name': 'Nome do Serviço' },
-      { 'name': 'Duração (min)' },
-      { 'name': 'Preço (R$)' },
-      { 'name': 'Ações' }
+      { 'name': '#', key: '' },
+      { 'name': 'Nome do Serviço', key: 'nome' },
+      { 'name': 'Duração (min)', key: 'duracaoMinutos' },
+      { 'name': 'Preço (R$)', key: 'preco' },
+      { 'name': 'Ações', key: 'acoes' }
     ],
     'data': [
-      { id: 1, nome: 'Consulta', duracaoMinutos: 30, preco: 'R$ 100.00' }
     ],
     'dataNotFilter': [],
     'tableId': 'servicesTable',
