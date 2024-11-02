@@ -11,26 +11,14 @@ import api from "../../api";
 function Employees() {
   const [tableInformation, setTableInformation] = useState({
     columns: [
-      { name: "#" },
-      { name: "Nome" },
-      { name: "Email" },
-      { name: "Departamento" },
-      { name: "Especialização" },
-      { name: "Ações" },
+      { name: "#", key: ''},
+      { name: "Nome", key: 'fullName' },
+      { name: "Email", key: 'email' },
+      { name: "Departamento", key: 'department' },
+      { name: "Especialização", key: 'specialization' },
+      { name: "Ações", key: 'acoes' },
     ],
     data: [
-      {
-        id: 1,
-        name: "João",
-        surname: "da Silva",
-        email: "joao@example.com",
-        phone: "(11) 91234-5678",
-        department: "Recepção",
-        specialization: "-",
-        cpf: "12345678909",
-        dateBirth: "2005-05-03",
-        gender: "Masculino",
-      },
     ],
     dataNotFilter: [],
     tableId: "employeesTable",
@@ -53,8 +41,9 @@ function Employees() {
       responseMedicos.data.forEach((medico) => {
         data.push({
           id: medico.id,
+          fullName: `${medico.nome} ${medico.sobrenome ? medico.sobrenome : ''}`,
           name: medico.nome,
-          email: medico.email,
+          email: medico.loginInfo.email,
           phone: medico.telefone,
           department: "Médico",
           specialization: medico.especializacao,
@@ -66,10 +55,12 @@ function Employees() {
 
     if (responseFuncionais.data.length !== 0) {
       responseFuncionais.data.forEach((funcional) => {
+        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
         data.push({
           id: funcional.id,
+          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
           name: funcional.nome,
-          email: funcional.email,
+          email: funcional.loginInfo.email,
           phone: funcional.telefone,
           department: "Funcional",
           specialization: "-",
