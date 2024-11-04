@@ -54,7 +54,7 @@ const Edit = ({ userData, display, close }) => {
                 </div>
                 <div className={style['lineData']}>
                     <div className={`${style['data']} col-md-6`} style={{ display: 'flex', justifyContent: 'end', flexDirection: 'column' }}>
-                        <label htmlFor="date">Data</label>
+                        <label htmlFor="date">Data De Nascimento</label>
                         <InputMask
                             mask="99/99/9999"
                             className={`form-control ${error ? 'is-invalid' : ''}`}
