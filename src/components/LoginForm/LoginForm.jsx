@@ -40,7 +40,7 @@ const LoginForm = () => {
           "sobrenome",
           response.data.loginInfo.funcionario.sobrenome
         );
-        window.location.href = "/gestao-consultas";
+        window.location.href = "/consultas";
       }
 
       if (response.data.loginInfo.cliente) {
