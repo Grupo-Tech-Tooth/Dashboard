@@ -1,12 +1,19 @@
 import React from 'react';
-import { useLocation, Link } from 'react-router-dom';
+import { useLocation, Link, useNavigate } from 'react-router-dom';
 import styles from './Navbar.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTooth } from '@fortawesome/free-solid-svg-icons';
 
 const Navbar = () => {
-  const location = useLocation(); 
+  const location = useLocation();
+  const navigate = useNavigate();
   const isLoginPage = location.pathname === '/';
+
+  // Função para realizar o logout
+  const handleLogout = () => {
+    sessionStorage.clear(); // Limpa o sessionStorage
+    navigate('/'); // Redireciona para a página de login
+  };
 
   return (
     <nav className={`${styles.navbar} navbar navbar-expand-lg navbar-light bg-white shadow-sm w-100`}>
@@ -50,7 +57,7 @@ const Navbar = () => {
               </li> */}
             </ul>
 
-            <Link className="btn btn-outline-primary" to="/">Sair</Link>
+            <Link className="btn btn-outline-primary" to={handleLogout}>Sair</Link>
           </div>
         )}
       </div>
