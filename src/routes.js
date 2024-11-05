@@ -8,7 +8,7 @@ import Login from './pages/Login/Login';
 import Consultation from './pages/Consultation/Consultation';
 import Employees from './pages/Employee/Employees';
 import Services from './pages/Services/Services';
-import Dashboard from './pages/Dashboard/Dashboard';
+// import Dashboard from './pages/Dashboard/Dashboard';
 
 function RequireAuth({ children }) {
   const token = sessionStorage.getItem('token');
@@ -59,14 +59,14 @@ const AppRoutes = () => {
             </RequireAuth>
           }
         />
-        <Route
+        {/* <Route
           path="/dashboard"
           element={
             <RequireAuth>
               <Dashboard />
             </RequireAuth>
           }
-        />
+        /> */}
       </Routes>
     </Router>
   );
