@@ -806,7 +806,7 @@ const Appointments = () => {
   };
 
   //função para obter as consultas do banco de dados
-  const obterConsultas = async (clienteId) => {
+  const obterConsultas = async () => {
     const clienteId = sessionStorage.getItem('id');
     try {
       const token = sessionStorage.getItem('token');

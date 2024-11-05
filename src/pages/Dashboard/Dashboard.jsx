@@ -1,0 +1,266 @@
+import React, { useState } from 'react';
+import { Line, Bar, Pie } from 'react-chartjs-2';
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
+import Navbar from '../../components/Navbar/Navbar';
+
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend,
+    ArcElement
+);
+
+const Dashboard = () => {
+    const [timeframe, setTimeframe] = useState('Mensal');
+    const [filter, setFilter] = useState({ year: '2024', specialty: 'Todos', paymentType: 'Todos' });
+
+    const dailyFlowData = {
+        labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
+        datasets: [{
+            label: 'Fluxo de Pessoas',
+            data: [30, 40, 45, 35, 60, 50, 20],
+            backgroundColor: '#0D6EFD',
+        }]
+    };
+
+    const popularServicesData = {
+        labels: ['Consulta', 'Limpeza', 'Ortodontia', 'Implante', 'Extração'],
+        datasets: [{
+            label: 'Serviços Mais Usados',
+            data: [200, 150, 100, 80, 60],
+            backgroundColor: ['#0D6EFD', '#94CFED', '#0D6EFD', '#94CFED', '#0D6EFD']
+        }]
+    };
+
+    const revenueData = {
+        labels: timeframe === 'diário' ? ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'] :
+            timeframe === 'semanal' ? ['Semana 1', 'Semana 2', 'Semana 3', 'Semana 4'] :
+                ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+        datasets: [
+            {
+                label: 'Taxa de Crescimento (%)',
+                data: calculateGrowthRate([12000, 15000, 14000, 16000, 17000, 13000, 18000, 15000, 14000, 16000, 15000, 17000]),
+                borderColor: '#0D6EFD',
+                backgroundColor: '#0D6EFD',
+                borderWidth: 2,
+                type: 'line',
+                yAxisID: 'growth',
+                fill: false,
+            },
+            {
+                label: `Faturamento (${timeframe})`,
+                data: timeframe === 'diário' ? [300, 500, 200, 400, 600, 700, 100] :
+                    timeframe === 'semanal' ? [1500, 2000, 1750, 1800] :
+                        [12000, 15000, 14000, 16000, 17000, 13000, 18000, 15000, 14000, 16000, 15000, 17000],
+                backgroundColor: '#94CFED',
+                type: 'bar'
+            }
+        ]
+    };
+
+    const annualRevenueData = {
+        labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+        datasets: [
+            {
+                type: 'line', // Define o tipo para a linha de faturamento total
+                label: `Faturamento Total (${filter.specialty})`,
+                data: [12000, 15000, 14000, 16000, 17000, 13000, 18000, 15000, 14000, 16000, 15000, 17000],
+                borderColor: '#0D6EFD',
+                backgroundColor: '#0D6EFD',
+                borderWidth: 2,
+                fill: false,
+            },
+            {
+                type: 'bar', // Define o tipo para barra de Cartão de Crédito
+                label: 'Cartão de Crédito',
+                data: [6000, 7500, 7000, 8000, 8500, 6500, 9000, 7500, 7000, 8000, 7500, 8500],
+                backgroundColor: '#FF6384',
+            },
+            {
+                type: 'bar', // Define o tipo para barra de Cartão de Débito
+                label: 'Cartão de Débito',
+                data: [3000, 3750, 3500, 4000, 4250, 3250, 4500, 3750, 3500, 4000, 3750, 4250],
+                backgroundColor: '#36A2EB',
+            },
+            {
+                type: 'bar', // Define o tipo para barra de Dinheiro
+                label: 'Dinheiro',
+                data: [2000, 2500, 2300, 2600, 2700, 2100, 2800, 2500, 2400, 2600, 2500, 2700],
+                backgroundColor: '#FFCE56',
+            },
+            {
+                type: 'bar', // Define o tipo para barra de Pix
+                label: 'Pix',
+                data: [1000, 1250, 1200, 1300, 1350, 1050, 1400, 1250, 1200, 1300, 1250, 1350],
+                backgroundColor: '#4BC0C0',
+            },
+        ],
+    };
+
+    function calculateGrowthRate(data) {
+        const growthRates = [0]; // Primeiro mês não tem crescimento, então começamos com 0
+        for (let i = 1; i < data.length; i++) {
+            const growth = ((data[i] - data[i - 1]) / data[i - 1]) * 100;
+            growthRates.push(growth.toFixed(2)); // Arredondamento para 2 casas decimais
+        }
+        return growthRates;
+    }
+
+    const lineOptions = {
+        responsive: true,
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    label: (context) => {
+                        // Exibe a taxa de crescimento ou o faturamento, dependendo do dataset
+                        const label = context.dataset.label || '';
+                        const value = context.dataset.data[context.dataIndex]; // Obtém o valor do ponto
+                        if (context.dataset.type === 'line') {
+                            return `${label}: ${value}%`; // Exibe a taxa de crescimento
+                        } else {
+                            return `${label}: R$${value.toLocaleString('pt-BR')}`; // Exibe o faturamento
+                        }
+                    },
+                },
+            },
+            legend: {
+                position: 'top',
+            },
+        },
+        scales: {
+            y: { 
+                beginAtZero: true, 
+                title: { display: true, text: 'Faturamento' },
+            },
+            growth: { 
+                position: 'right', 
+                title: { display: true, text: 'Taxa de Crescimento (%)' }, 
+                grid: { display: false },
+                ticks: { // Adiciona configuração de ticks para a escala de crescimento
+                    callback: (value) => value + '%', // Formata os ticks da taxa de crescimento
+                },
+            },
+        },
+    };
+    
+
+    const pieOptions = {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'left', // Alinhamento dos labels no lado esquerdo
+            },
+            tooltip: {
+                callbacks: {
+                    label: (context) => `${context.label}: ${context.raw}`,
+                },
+            },
+        },
+    };
+
+    const totalMonthlyRevenue = annualRevenueData.datasets[0].data.reduce((acc, val) => acc + val, 0);
+
+    return (
+        <>
+            <Navbar />
+            <div className="container d-flex flex-column justify-content-between py-3" style={{ maxHeight: 'calc(100vh - 56px)', height: 'calc(100vh - 56px)', padding: '0 5%' }}>
+                <h2 className="text-primary text-center pb-3 m-0">Dashboard Financeira - Tech Tooth</h2>
+
+                <div className="row" style={{ width: '100%', height: '90vh' }}>
+                    <div className="d-flex flex-column justify-content-between align-items-center p-0 m-0" style={{ maxWidth: '55%', width: '55%', height: '100%' }}>
+                        <div className="card p-3 flex-column align-items-center">
+                            <h4 className='align-self-start'>Faturamento Por Período</h4>
+                            <div>
+                                <Bar data={revenueData} options={lineOptions} style={{ height: '33vh', width: 'auto' }} />
+                            </div>
+                            <select onChange={(e) => setTimeframe(e.target.value)} value={timeframe} className="form-select mt-2">
+                                <option value="Diário">Diário</option>
+                                <option value="Semanal">Semanal</option>
+                                <option value="Mensal">Mensal</option>
+                                <option value="Anual">Anual</option>
+                            </select>
+                        </div>
+                        <div className="d-flex justify-content-evenly" style={{ width: '100%' }}>
+
+                            <div className="card p-3">
+                                <h4>Fluxo de Pessoas</h4>
+                                <div>
+                                    <Bar data={dailyFlowData} options={{ responsive: true }} style={{ height: '28vh', width: 'auto' }} />
+                                </div>
+                            </div>
+
+                            <div className="card p-3">
+                                <h4>Serviços Mais Usados</h4>
+                                <div>
+                                    <Pie data={popularServicesData} options={pieOptions} style={{ maxHeight: '23vh', width: 'fit-content' }} />
+                                </div>
+                                <select onChange={(e) => setFilter({ ...filter, timeframe: e.target.value })} value={filter.timeframe} className="form-select mt-2">
+                                    <option value="Mensal">Mensal</option>
+                                    <option value="Anual">Anual</option>
+                                </select>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div className="d-flex flex-column justify-content-evenly align-items-center p-0 m-0" style={{ maxWidth: '45%', width: '45%', height: '100%' }}>
+                        <div className="card p-3">
+                            <h4>Faturamento Anual Por Especialidade</h4>
+                            <div>
+                                <Bar data={annualRevenueData} options={{ responsive: true, scales: { y: { beginAtZero: true } } }} style={{ height: '40vh', width: 'auto' }} />
+                            </div>
+                            <select onChange={(e) => setFilter({ ...filter, specialty: e.target.value })} value={filter.specialty} className="form-select mt-2">
+                                <option value="Todos">Todos</option>
+                                <option value="Ortodontia">Ortodontia</option>
+                                <option value="Implantes">Implantes</option>
+                            </select>
+                        </div>
+                        <div className="card p-3 text-center" style={{ height: '28vh', width: '100%' }} >
+                            <div className="d-flex flex-column justify-content-between" style={{ height: '100%' }}>
+                                <h5 className="text-primary">Descritivo do Mês</h5>
+                                <div className="d-flex justify-content-between align-items-center">
+                                    <div className="d-flex flex-column">
+                                        <div className="d-flex align-items-end p-2">
+                                            <h5 className="text-primary">Faturamento Total: <span className='text-dark'>R${totalMonthlyRevenue.toLocaleString('pt-BR')}</span></h5>
+                                        </div>
+                                        <div className="d-flex align-items-end p-2">
+                                            <h6 className="text-primary">Faturam. Médio Por Consulta: <span className='text-dark'>R${totalMonthlyRevenue.toLocaleString('pt-BR')}</span></h6>
+                                        </div>
+                                        <div className="d-flex align-items-end p-2">
+                                            <h6 className="text-primary">Maior Faturam. Por Consulta: <span className='text-dark'>R${totalMonthlyRevenue.toLocaleString('pt-BR')}</span></h6>
+                                        </div>
+                                        <div className="d-flex align-items-end p-2">
+                                            <h6 className="text-primary">Menor Faturam. Por Consulta: <span className='text-dark'>R${totalMonthlyRevenue.toLocaleString('pt-BR')}</span></h6>
+                                        </div>
+                                    </div>
+                                    <div className="d-flex flex-column">
+                                        <div className="d-flex align-items-end p-2">
+                                            <h6 className="text-primary">Serviço Mais Realizado: <span className='text-dark'>Limpeza</span></h6>
+                                        </div>
+                                        <div className="d-flex align-items-end p-2">
+                                            <h6 className="text-primary">Serviço Menos Realizado: <span className='text-dark'>Implante</span></h6>
+                                        </div>
+                                        <div className="d-flex align-items-end p-2">
+                                            <h6 className="text-primary">Dia Com Maior Demanda: <span className='text-dark'>Segunda-Feira, Dia 06</span></h6>
+                                        </div>
+                                        <div className="d-flex flex-column align-items-end p-2">
+                                            <h6 className="text-primary">Dia Com Menor Demanda: <span className='text-dark'>Segunda-Feira, Dia 06</span></h6>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </>
+    );
+};
+
+export default Dashboard;
