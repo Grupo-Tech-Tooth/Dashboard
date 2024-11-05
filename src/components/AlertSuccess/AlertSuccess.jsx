@@ -3,7 +3,7 @@ import style from './AlertSuccess.module.css'
 
 function SuccessAlert(props) {
   return (
-    <Alert className={style['showAlert']} severity="success">{props.text}</Alert>
+    <Alert className={style['showAlert']} severity="success" style={{right: `${props.right}%`}}>{props.text}</Alert>
   );
 }
 
