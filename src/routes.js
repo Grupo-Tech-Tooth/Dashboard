@@ -8,6 +8,7 @@ import Login from './pages/Login/Login';
 import Consultation from './pages/Consultation/Consultation';
 import Employees from './pages/Employee/Employees';
 import Services from './pages/Services/Services';
+import Dashboard from './pages/Dashboard/Dashboard';
 
 function RequireAuth({ children }) {
   const token = sessionStorage.getItem('token');
@@ -15,7 +16,7 @@ function RequireAuth({ children }) {
 
   if (!token) {
     // Redireciona para login caso não esteja autenticado
-    return <Navigate to="/" state={{ from: location }} replace />;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   return children;
@@ -25,7 +26,7 @@ const AppRoutes = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Login />} />
+        <Route path="/login" element={<Login />} />
         <Route
           path="/index"
           element={
@@ -71,6 +72,14 @@ const AppRoutes = () => {
           element={
             <RequireAuth>
               <Consultation />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/"
+          element={
+            <RequireAuth>
+              <Dashboard />
             </RequireAuth>
           }
         />
