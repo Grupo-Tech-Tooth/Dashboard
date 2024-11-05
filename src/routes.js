@@ -16,7 +16,7 @@ function RequireAuth({ children }) {
 
   if (!token) {
     // Redireciona para login caso não esteja autenticado
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    return <Navigate to="/" state={{ from: location }} replace />;
   }
 
   return children;
@@ -26,23 +26,7 @@ const AppRoutes = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route
-          path="/index"
-          element={
-            <RequireAuth>
-              <Index />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="/consultas"
-          element={
-            <RequireAuth>
-              <Appointments />
-            </RequireAuth>
-          }
-        />
+        <Route path="/" element={<Login />} />
         <Route
           path="/funcionarios"
           element={
@@ -68,7 +52,7 @@ const AppRoutes = () => {
           }
         />
         <Route
-          path="/gestao-consultas"
+          path="/consultas"
           element={
             <RequireAuth>
               <Consultation />
@@ -76,7 +60,7 @@ const AppRoutes = () => {
           }
         />
         <Route
-          path="/"
+          path="/dashboard"
           element={
             <RequireAuth>
               <Dashboard />
