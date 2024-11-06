@@ -8,6 +8,7 @@ import Login from './pages/Login/Login';
 import Consultation from './pages/Consultation/Consultation';
 import Employees from './pages/Employee/Employees';
 import Services from './pages/Services/Services';
+import NotFound from './pages/NotFound/NotFound';
 // import Dashboard from './pages/Dashboard/Dashboard';
 
 function RequireAuth({ children }) {
@@ -57,6 +58,12 @@ const AppRoutes = () => {
             <RequireAuth>
               <Consultation />
             </RequireAuth>
+          }
+        />
+        <Route
+          path="*"
+          element={
+              <NotFound />
           }
         />
         {/* <Route
