@@ -62,7 +62,7 @@ function Employees() {
           name: funcional.nome,
           email: funcional.loginInfo.email,
           phone: funcional.telefone,
-          department: "Funcional",
+          department:funcional.departamento,
           specialization: "-",
           cpf: funcional.cpf,
           dateBirth: funcional.dataNascimento,
