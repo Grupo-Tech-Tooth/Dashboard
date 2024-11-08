@@ -19,6 +19,34 @@ function Patients() {
       { name: "Ações", key: 'acoes' },
     ],
     data: [
+      {
+        id: 1,
+        fullName: "Ana Souza",
+        email: "ana.souza@example.com",
+        phone: "(11) 98765-4321",
+        dateBirth: "20/08/2024",
+      },
+      {
+        id: 2,
+        fullName: "Bruno Lima",
+        email: "bruno.lima@example.com",
+        phone: "(11) 91234-5678",
+        dateBirth: "15/07/2024",
+      },
+      {
+        id: 3,
+        fullName: "Carla Mendes",
+        email: "carla.mendes@example.com",
+        phone: "(11) 99876-5432",
+        dateBirth: "01/09/2024",
+      },
+      {
+        id: 4,
+        fullName: "Diego Oliveira",
+        email: "diego.oliveira@example.com",
+        phone: "(11) 97654-3210",
+        dateBirth: "10/10/2024",
+      },
     ],
     dataNotFilter: [],
     tableId: "patientsTable",
@@ -154,14 +182,6 @@ function Patients() {
               >
                 Limpar Filtro
               </button>
-              <button
-                type="button"
-                onClick={() => abrirModalAdd()}
-                className={style["add"]}
-              >
-                Nova Paciente
-              </button>
-
             </div>
           </div>
           <div className={style['table']}>
@@ -169,16 +189,8 @@ function Patients() {
           </div>
         </div>
       </Container>
-      <div
-        className={`z-3 position-absolute p-5 rounded-3 ${style["boxButton"]}`}
-      >
-        <button
-          type="button"
-          onClick={() => abrirModalAdd()}
-          className={style["add"]}
-        >
-          +
-        </button>
+      <div className={`z-3 position-absolute p-5 rounded-3 ${style['boxButton']}`}>
+        <button type="button" onClick={() => abrirModalAdd()} className={style['add']}>Novo Paciente</button>
       </div>
     </>
   );
@@ -195,67 +207,27 @@ function Patients() {
   }
 
   function buscar() {
-    let listName = [];
-    let listEmail = [];
-    let listCpf = [];
-    let listPhone = [];
+    const filteredData = tableInformation.dataNotFilter.filter((item) => {
+      const matchesName = searchName
+        ? item.fullName?.toLowerCase().includes(searchName.toLowerCase())
+        : true;
+      const matchesEmail = searchEmail
+        ? item.email?.toLowerCase().includes(searchEmail.toLowerCase())
+        : true;
+      const matchesCpf = searchCpf
+        ? item.cpf?.includes(searchCpf)
+        : true;
+      const matchesPhone = searchPhone
+        ? item.phone?.includes(searchPhone)
+        : true;
 
-    if (searchName) {
-      const searchLower = searchName.toLowerCase();
-      listName = tableInformation.dataNotFilter.filter((item) =>
-        item.name.toLowerCase().includes(searchLower)
-      );
-    }
-    if (searchEmail) {
-      const searchLower = searchEmail.toLowerCase();
-      listEmail = tableInformation.dataNotFilter.filter((item) =>
-        item.email.toLowerCase().includes(searchLower)
-      );
-    }
-    if (searchCpf) {
-      // Entregavel Pesquisa Binária
-      const listOrdenada = tableInformation.dataNotFilter.sort((a, b) =>
-        a.cpf.localeCompare(b.cpf)
-      );
-      let start = 0;
-      let end = listOrdenada.length - 1;
+      return matchesName && matchesEmail && matchesCpf && matchesPhone;
+    });
 
-      while (start <= end) {
-        let meio = Math.floor((start + end) / 2);
-
-        if (listOrdenada[meio].cpf.includes(searchCpf)) {
-          listCpf.push(listOrdenada[meio]);
-          break;
-        } else if (searchCpf < listOrdenada[meio].cpf) {
-          end = meio - 1;
-        } else {
-          start = meio + 1;
-        }
-      }
-    }
-    if (searchPhone) {
-      const searchLower = searchPhone;
-      listPhone = tableInformation.dataNotFilter.filter((item) =>
-        item.phone.includes(searchLower)
-      );
-    }
-
-    if (searchName || searchEmail || searchPhone || searchCpf) {
-      let listAll = [...listName, ...listEmail, ...listCpf, ...listPhone];
-
-      setTableInformation((prevTableInformation) => ({
-        ...prevTableInformation,
-        data: listAll,
-      }));
-    } else {
-      const listOrdenada = tableInformation.dataNotFilter.sort(
-        (a, b) => a.id - b.id
-      );
-      setTableInformation((prevTableInformation) => ({
-        ...prevTableInformation,
-        data: listOrdenada,
-      }));
-    }
+    setTableInformation((prevTableInformation) => ({
+      ...prevTableInformation,
+      data: filteredData,
+    }));
   }
 
   function abrirModalAdd() {

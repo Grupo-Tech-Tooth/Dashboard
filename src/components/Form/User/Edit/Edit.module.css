@@ -9,11 +9,11 @@
 
     .form {
         position: fixed;
-        width: 50%;
+        width: 90%;
         max-height: 90vh;
         background-color: #ffffff;
         top: 2rem;
-        left: 25%;
+        left: 5%;
         border: 1px solid gray;
         border-radius: 5px;
         padding: 1rem 2% 2rem 2%;
@@ -70,7 +70,8 @@
                 height: fit-content;
                 flex-direction: column;
                 justify-content: center;
-                gap: 0.4rem;
+                width: 48%;
+                gap: 0;
             }
         }
 
