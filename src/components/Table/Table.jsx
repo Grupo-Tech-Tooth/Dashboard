@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import style from './Table.module.css';
 import FormUser from '../Form/User/Edit/Edit';
 import FormConsultation from '../Form/Consultation/Edit/Edit';
+import FormFunctional from '../Form/Functional/Edit/Edit';
 import FormService from '../Form/Service/EditService/EditService'; // Importando o novo formulário
 import api from '../../api';
 import { Pagination } from 'antd';
@@ -15,6 +16,7 @@ const Table = ({ tableInformation }) => {
     const [consultationEdit, setConsultationEdit] = useState([]);
     const [formService, setFormService] = useState("none"); // Estado para o formulário de serviço
     const [serviceEdit, setServiceEdit] = useState([]); // Estado para armazenar os dados do serviço editado
+    const [formFunctional, setFormFunctional] = useState(["none"]);
     const [modalFinalization, setModalFinalization] = useState('none');
 
     // Estado para paginação
@@ -118,6 +120,13 @@ const Table = ({ tableInformation }) => {
                         close={closeForm}
                     />
                 )}
+                {formFunctional !== "none" && (
+                    <FormFunctional
+                        display={formFunctional}
+                        userData={userEdit}
+                        close={closeForm}
+                    />
+                )}
             </div>
         </>
     );
@@ -143,7 +152,19 @@ const Table = ({ tableInformation }) => {
             }
             setCount(count + 1);
             setFormService("none");
-        } else {
+        }else if(tableInformation.tableId === 'employeesTable') {
+            const position = tableInformation.data.findIndex((item) => item.id === information.id);
+            if (position >= 0) {
+                tableInformation.data[position] = {
+                    ...tableInformation.data[position],
+                    ...information
+                };
+            }
+            setCount(count + 1);
+            setFormFunctional("none");
+
+        } 
+        else {
             const position = tableInformation.data.findIndex((item) => item.id === information.id);
             if (position >= 0) {
                 tableInformation.data[position] = {
@@ -163,6 +184,9 @@ const Table = ({ tableInformation }) => {
         } else if (tableInformation.tableId === 'servicesTable') { // Editar serviço
             setFormService("block");
             setServiceEdit(information);
+        } else if(tableInformation.tableId === 'employeesTable') {
+            setFormFunctional("block");
+            setUserEdit(information);
         } else {
             setFormConsultation("block");
             setConsultationEdit(information);
