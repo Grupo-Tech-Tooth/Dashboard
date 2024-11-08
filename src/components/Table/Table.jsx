@@ -46,7 +46,7 @@ const Table = ({ tableInformation }) => {
             )}
 
 
-            <div className="table-responsive">
+            <div className={`${style['table']} table-responsive`}>
                 <table className="table table-hover" id={tableInformation.tableId}>
                     <thead>
                         <tr>
@@ -167,11 +167,6 @@ const Table = ({ tableInformation }) => {
             setFormConsultation("block");
             setConsultationEdit(information);
         }
-    }
-
-    function editarService(information) { // Função específica para editar serviços
-        setFormService("block");
-        setServiceEdit(information);
     }
 
     function deletar(id) {

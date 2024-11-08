@@ -57,7 +57,7 @@ const Navbar = () => {
               </li> */}
             </ul>
 
-            <Link className="btn btn-outline-primary" to={handleLogout}>Sair</Link>
+            <button className="btn btn-outline-primary" onClick={handleLogout}>Sair</button>
           </div>
         )}
       </div>
