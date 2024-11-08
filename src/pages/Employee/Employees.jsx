@@ -11,7 +11,7 @@ import api from "../../api";
 function Employees() {
   const [tableInformation, setTableInformation] = useState({
     columns: [
-      { name: "#", key: ''},
+      { name: "#", key: '' },
       { name: "Nome", key: 'fullName' },
       { name: "Email", key: 'email' },
       { name: "Departamento", key: 'department' },
@@ -118,7 +118,7 @@ function Employees() {
               />
             </div>
             <div className="col-md-2 mx-auto">
-              <label htmlFor="searchCpf">Cpf do Funcionário</label>
+              <label htmlFor="searchCpf">CPF do Funcionário</label>
               <input
                 id="searchCpf"
                 className="form-control"
@@ -140,36 +140,30 @@ function Employees() {
               />
             </div>
             <div className={`col-md-2 mx-auto ${style["lineButton"]}`}>
-              <Button
-                className={`${style["buttonSearch"]} btn btn-primary`}
-                id="searchButton"
-                onClick={buscar}
-                label="Buscar"
-                style={{ width: "fit-content" }}
-              />
+              <button className="btn btn-primary" type="submit">
+                Filtra
+              </button>
               <button
                 className={`${style["button-limpar"]} btn btn-secondary`}
                 type="button"
                 onClick={resetFields}
               >
-                Limpar
+                Limpar Filtro
+              </button>
+              <button
+                type="button"
+                onClick={() => abrirModalAdd()}
+                className={style["add"]}
+              >
+                Cadastrar Funcionario
               </button>
             </div>
           </div>
-          <Table tableInformation={tableInformation} />
+          <div className={style['table']}>
+            <Table tableInformation={tableInformation} />
+          </div>
         </div>
       </Container>
-      <div
-        className={`z-3 position-absolute p-5 rounded-3 ${style["boxButton"]}`}
-      >
-        <button
-          type="button"
-          onClick={() => abrirModalAdd()}
-          className={style["add"]}
-        >
-          +
-        </button>
-      </div>
     </>
   );
 

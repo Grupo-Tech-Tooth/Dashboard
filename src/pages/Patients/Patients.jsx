@@ -7,17 +7,16 @@ import Table from "../../components/Table/Table";
 import Add from "../../components/Form/User/Add/Add";
 import axios from "axios";
 import api from "../../api";
-// import { width } from '@fortawesome/free-solid-svg-icons/fa0';
 
 function Patients() {
   const [tableInformation, setTableInformation] = useState({
     columns: [
       { name: "#", key: '' },
-      { name: "Nome", key: 'fullName'  },
-      { name: "Email", key: 'email'  },
-      { name: "Telefone", key: 'phone'  },
-      { name: "Última Consulta", key: 'dateBirth'  },
-      { name: "Ações", key: 'acoes'  },
+      { name: "Nome", key: 'fullName' },
+      { name: "Email", key: 'email' },
+      { name: "Telefone", key: 'phone' },
+      { name: "Última Consulta", key: 'dateBirth' },
+      { name: "Ações", key: 'acoes' },
     ],
     data: [
     ],
@@ -36,8 +35,6 @@ function Patients() {
 
   const [viewFormAdd, setViewFormAdd] = useState("none");
 
-  // const [userEdit, setUserEdit] = useState([]);
-
   async function getData(page, size) {
     try {
       const response = await api.get(`/clientes`, {
@@ -47,7 +44,7 @@ function Patients() {
         },
       });
 
-     formatData(response.data.content)
+      formatData(response.data.content)
     } catch (error) {
       console.log("Erro ao obter consultas:", error);
     }
@@ -55,22 +52,22 @@ function Patients() {
       getData(page, size);
     }, 50000);
   }
-  
 
-  function formatData(pacientes){
+
+  function formatData(pacientes) {
     const data = [];
     //Pedir para alterarem o endPoint para trazer o telefone e a data da ultima visita
     pacientes.forEach((paciente) => {
-     data.push({
-      id: paciente.id,
-      fullName: `${paciente.nome} ${paciente.sobrenome ? paciente.sobrenome : ''}`,
-      name: paciente.nome,
-      surname: paciente.sobrenome,
-      email: paciente.loginInfo.email,
-      cpf: paciente.cpf,
-      dateBirth: paciente.dataNascimento,
-      gender: paciente.genero
-     })
+      data.push({
+        id: paciente.id,
+        fullName: `${paciente.nome} ${paciente.sobrenome ? paciente.sobrenome : ''}`,
+        name: paciente.nome,
+        surname: paciente.sobrenome,
+        email: paciente.loginInfo.email,
+        cpf: paciente.cpf,
+        dateBirth: paciente.dataNascimento,
+        gender: paciente.genero
+      })
 
     });
     setTableInformation((prevTableInformation) => ({
@@ -96,7 +93,7 @@ function Patients() {
         <div className={style["card"]}>
           <div
             className="row mb-4"
-            style={{ display: "flex", alignItems: "center" }}
+            style={{ display: "flex", alignItems: "center", gap: '0%', margin: '0' }}
           >
             <div className="col-md-2 mx-auto">
               <label htmlFor="searchNome">Nome do Paciente</label>
@@ -121,12 +118,12 @@ function Patients() {
               />
             </div>
             <div className="col-md-2 mx-auto">
-              <label htmlFor="searchCpf">Cpf do Paciente</label>
+              <label htmlFor="searchCpf">CPF do Paciente</label>
               <input
                 id="searchCpf"
                 className="form-control"
                 type="text"
-                placeholder="Cpf completo"
+                placeholder="CPF completo"
                 value={searchCpf}
                 onChange={(e) => setSearchCpf(e.target.value)}
               />
@@ -147,7 +144,7 @@ function Patients() {
                 className={`${style["buttonSearch"]} btn btn-primary`}
                 id="searchButton"
                 onClick={buscar}
-                label="Buscar"
+                label="Filtrar"
                 style={{ width: "fit-content" }}
               />
               <button
@@ -155,11 +152,21 @@ function Patients() {
                 type="button"
                 onClick={resetFields}
               >
-                Limpar
+                Limpar Filtro
               </button>
+              <button
+                type="button"
+                onClick={() => abrirModalAdd()}
+                className={style["add"]}
+              >
+                Nova Paciente
+              </button>
+
             </div>
           </div>
-          <Table tableInformation={tableInformation} />
+          <div className={style['table']}>
+            <Table tableInformation={tableInformation} />
+          </div>
         </div>
       </Container>
       <div
