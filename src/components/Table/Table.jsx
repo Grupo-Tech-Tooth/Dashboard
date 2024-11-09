@@ -2,8 +2,11 @@ import React, { useState, useEffect } from 'react';
 import style from './Table.module.css';
 import FormUser from '../Form/User/Edit/Edit';
 import FormConsultation from '../Form/Consultation/Edit/Edit';
+import FormFunctional from '../Form/Functional/Edit/Edit';
 import FormService from '../Form/Service/EditService/EditService'; // Importando o novo formulário
 import api from '../../api';
+import { Pagination } from 'antd';
+import ModalFinalization from '../ModalFinalization/ModalFinalization';
 
 const Table = ({ tableInformation }) => {
     const [count, setCount] = useState(0);
@@ -13,113 +16,119 @@ const Table = ({ tableInformation }) => {
     const [consultationEdit, setConsultationEdit] = useState([]);
     const [formService, setFormService] = useState("none"); // Estado para o formulário de serviço
     const [serviceEdit, setServiceEdit] = useState([]); // Estado para armazenar os dados do serviço editado
+    const [formFunctional, setFormFunctional] = useState(["none"]);
+    const [modalFinalization, setModalFinalization] = useState('none');
+
+    // Estado para paginação
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize, setPageSize] = useState(10);
 
     useEffect(() => {
         if (tableInformation && tableInformation.data) {
-            setCount((prev) => prev + 1); 
+            setCount((prev) => prev + 1);
         }
-    }, [tableInformation]); 
+    }, [tableInformation]);
+
+    // Filtra os dados conforme a paginação
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    const paginatedData = tableInformation.data.slice(startIndex, endIndex);
+
+    // Manipuladores de paginação
+    const onPageChange = (page) => setCurrentPage(page);
+    const onShowSizeChange = (current, size) => {
+        setPageSize(size);
+        setCurrentPage(1); // Reseta para a primeira página ao alterar o tamanho
+    };
 
     return (
-        <div className="table-responsive">
-            <table className="table table-hover" id={tableInformation.tableId}>
-                <thead>
-                    <tr>
-                        {tableInformation.columns &&
-                            tableInformation.columns.map((item, index) => (
-                                <th key={index} scope="col" className={style['title']}>{item.name}</th>
+        <>
+            {modalFinalization === 'block' && (
+                <ModalFinalization display={modalFinalization} fecharModal={concluir} agendamento={userEdit} treatments={tableInformation.treatment} />
+            )}
+
+
+            <div className={`${style['table']} table-responsive`}>
+                <table className="table table-hover" id={tableInformation.tableId}>
+                    <thead>
+                        <tr>
+                            {tableInformation.columns &&
+                                tableInformation.columns.map((item, index) => (
+                                    <th key={index} scope="col" className={style['title']}>{item.name}</th>
+                                ))}
+                        </tr>
+                    </thead>
+                    <tbody id={tableInformation.tbodyId}>
+                        {paginatedData &&
+                            paginatedData.map((item, index) => (
+                                <tr key={item.id}>
+                                    {tableInformation.columns.map((col, i) => (
+                                        <>
+                                            {col.key !== 'acoes' ?
+                                                <td key={i}>
+                                                    {col.key === '' ? index + 1 : item[col.key]}
+                                                </td>
+                                                :
+                                                (tableInformation.tbodyId === 'consultationBody') ?
+                                                    <td style={{ display: 'flex', gap: '5px' }}>
+                                                        <button className="btn btn-outline-warning btn-sm" onClick={() => editar(item)}>Editar</button>
+                                                        <button className="btn btn-outline-danger btn-sm" onClick={() => deletar(item.id)}>Cancelar</button>
+                                                        <button className="btn btn-outline-success btn-sm" onClick={() => concluir(item)}>Finalizar</button>
+                                                    </td>
+                                                    :
+                                                    <td style={{ display: 'flex', gap: '5px' }}>
+                                                        <button className="btn btn-outline-warning btn-sm" onClick={() => editar(item)}>Editar</button>
+                                                        <button className="btn btn-outline-danger btn-sm" onClick={() => deletar(item.id)}>Excluir</button>
+                                                    </td>
+                                            }
+
+                                        </>
+                                    ))}
+                                </tr>
                             ))}
-                    </tr>
-                </thead>
-                <tbody id={tableInformation.tbodyId}>
-                    {tableInformation.data &&
-                        tableInformation.data.map((item, index) => (
-                            tableInformation.tbodyId === 'patientsBody' ? (
-                                <tr key={index}>
-                                    <td>{item.id}</td>
-                                    <td>{item.nome} {item.sobrenome}</td>
-                                    <td>{item.email}</td>
-                                    <td>{item.cpf}</td>
-                                    <td>{item.lastVisit}</td>
-                                    <td style={{ display: 'flex', gap: '5px' }}>
-                                        <button className="btn btn-warning btn-sm" onClick={() => editar(item)}>Editar</button>
-                                        <button className="btn btn-danger btn-sm" onClick={() => deletar(item.id)}>Excluir</button>
-                                    </td>
-                                </tr>
-                            ) : (tableInformation.tbodyId === 'employeesBody' ? (
-                                <tr key={index}>
-                                    <td>{item.id}</td>
-                                    <td>{item.name} {item.surname}</td>
-                                    <td>{item.email}</td>
-                                    <td>{item.department}</td>
-                                    <td>{item.specialization}</td>
-                                    <td style={{ display: 'flex', gap: '5px' }}>
-                                        <button className="btn btn-primary btn-sm" onClick={() => editar(item)}>Editar</button>
-                                        <button className="btn btn-danger btn-sm" onClick={() => deletar(item.id)}>Excluir</button>
-                                    </td>
-                                </tr>
-                            ) : tableInformation.tbodyId === 'servicesBody' ? (
-                                <tr key={index}>
-                                    <td>{item.id}</td>
-                                    <td>{item.nome == 'consulta' ? 'Consulta': (item.nome == 'limpeza') ? 'Limpeza' : 'Remover Dente'}</td>
-                                    <td>{item.duracaoMinutos}</td>
-                                    <td>{item.preco}</td>
-                                    <td style={{ display: 'flex', gap: '5px' }}>
-                                        <button className="btn btn-primary btn-sm" onClick={() => editarService(item)}>Editar</button>
-                                        <button className="btn btn-danger btn-sm" onClick={() => deletar(item.id)}>Cancelar</button>
-                                    </td>
-                                </tr>
-                            ) : (
-                                <tr key={index}>
-                                    <td>{item.id}</td>
-                                    <td>{item.nomePaciente}</td>
-                                    <td>{item.date}</td>
-                                    <td>{item.time}</td>
-                                    <td>{item.doctor}</td>
-                                    <td>{item.treatment}</td>
-                                    <td>
-                                        {item.status === 'Confirmado' ? (
-                                            <span className="badge bg-success">{item.status}</span>
-                                        ) : (
-                                            (item.status === 'Cancelado') ? (
-                                                <span className="badge text-bg-danger">{item.status}</span>
-                                            ) : (item.status === 'Remarcado') ? (
-                                                <span className="badge text-bg-primary">{item.status}</span>
-                                            ) : (
-                                                <span className="badge bg-warning">{item.status}</span>
-                                            )
-                                        )}
-                                    </td>
-                                    <td style={{ display: 'flex', gap: '5px' }}>
-                                        <button className="btn btn-primary btn-sm" onClick={() => editar(item)}>Editar</button>
-                                        <button className="btn btn-danger btn-sm" onClick={() => deletar(item.id)}>Cancelar</button>
-                                    </td>
-                                </tr>
-                            ))
-                        ))}
-                </tbody>
-            </table>
-            {formUser !== "none" && (
-                <FormUser display={formUser} userData={userEdit} close={closeForm} />
-            )}
-            {formConsultation !== "none" && (
-                <FormConsultation 
-                    display={formConsultation} 
-                    consultationData={consultationEdit} 
-                    listUsers={tableInformation.data} 
-                    doctors={tableInformation.doctor} 
-                    treatments={tableInformation.treatment} 
-                    close={closeForm} 
-                />
-            )}
-            {formService !== "none" && ( // Condição para o formulário de serviços
-                <FormService 
-                    display={formService} 
-                    serviceData={serviceEdit} 
-                    close={closeForm} 
-                />
-            )}
-        </div>
+                    </tbody>
+                </table>
+                <div className={style['divPagination']}>
+                    <Pagination
+                        current={currentPage}
+                        pageSize={pageSize}
+                        total={tableInformation.data.length}
+                        onChange={onPageChange}
+                        onShowSizeChange={onShowSizeChange}
+                        showSizeChanger
+                        pageSizeOptions={[ '10', '20', '50']}
+                    />
+                </div>
+
+                {formUser !== "none" && (
+                    <FormUser display={formUser} userData={userEdit} close={closeForm} />
+                )}
+                {formConsultation !== "none" && (
+                    <FormConsultation
+                        display={formConsultation}
+                        consultationData={consultationEdit}
+                        listUsers={tableInformation.data}
+                        doctors={tableInformation.doctor}
+                        treatments={tableInformation.treatment}
+                        close={closeForm}
+                    />
+                )}
+                {formService !== "none" && ( // Condição para o formulário de serviços
+                    <FormService
+                        display={formService}
+                        serviceData={serviceEdit}
+                        close={closeForm}
+                    />
+                )}
+                {formFunctional !== "none" && (
+                    <FormFunctional
+                        display={formFunctional}
+                        userData={userEdit}
+                        close={closeForm}
+                    />
+                )}
+            </div>
+        </>
     );
 
     function closeForm(information) {
@@ -141,9 +150,9 @@ const Table = ({ tableInformation }) => {
                     ...information // Usar spread para atualizar os campos do serviço
                 };
             }
-            setCount(count + 1);   
+            setCount(count + 1);
             setFormService("none");
-        } else {
+        }else if(tableInformation.tableId === 'employeesTable') {
             const position = tableInformation.data.findIndex((item) => item.id === information.id);
             if (position >= 0) {
                 tableInformation.data[position] = {
@@ -151,27 +160,37 @@ const Table = ({ tableInformation }) => {
                     ...information
                 };
             }
-            setCount(count + 1);   
+            setCount(count + 1);
+            setFormFunctional("none");
+
+        } 
+        else {
+            const position = tableInformation.data.findIndex((item) => item.id === information.id);
+            if (position >= 0) {
+                tableInformation.data[position] = {
+                    ...tableInformation.data[position],
+                    ...information
+                };
+            }
+            setCount(count + 1);
             setFormConsultation("none");
         }
     }
 
     function editar(information) {
-        if (tableInformation.tableId === 'patientsTable'){
+        if (tableInformation.tableId === 'patientsTable') {
             setFormUser("block");
             setUserEdit(information);
         } else if (tableInformation.tableId === 'servicesTable') { // Editar serviço
             setFormService("block");
             setServiceEdit(information);
+        } else if(tableInformation.tableId === 'employeesTable') {
+            setFormFunctional("block");
+            setUserEdit(information);
         } else {
             setFormConsultation("block");
             setConsultationEdit(information);
         }
-    }
-
-    function editarService(information) { // Função específica para editar serviços
-        setFormService("block");
-        setServiceEdit(information);
     }
 
     function deletar(id) {
@@ -183,10 +202,15 @@ const Table = ({ tableInformation }) => {
         setCount(count + 1);
 
         console.log("Estamos na tela: ", tableInformation.tbodyId);
-        
-        if(tableInformation.tbodyId === 'employeesBody') {
+
+        if (tableInformation.tbodyId === 'employeesBody') {
             api.delete(`/medicos/${id}`);
         }
+    }
+
+    function concluir(item) {
+        modalFinalization == 'block' ? setModalFinalization('none') : setModalFinalization('block');
+        setUserEdit(item);
     }
 }
 

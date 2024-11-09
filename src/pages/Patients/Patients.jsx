@@ -7,151 +7,18 @@ import Table from "../../components/Table/Table";
 import Add from "../../components/Form/User/Add/Add";
 import axios from "axios";
 import api from "../../api";
-// import { width } from '@fortawesome/free-solid-svg-icons/fa0';
 
 function Patients() {
   const [tableInformation, setTableInformation] = useState({
     columns: [
-      { name: "#" },
-      { name: "Nome" },
-      { name: "Email" },
-      { name: "Telefone" },
-      { name: "Última Consulta" },
-      { name: "Ações" },
+      { name: "#", key: '' },
+      { name: "Nome", key: 'fullName' },
+      { name: "Email", key: 'email' },
+      { name: "Telefone", key: 'phone' },
+      { name: "Última Consulta", key: 'dateBirth' },
+      { name: "Ações", key: 'acoes' },
     ],
     data: [
-      {
-        id: 1,
-        name: "João",
-        surname: "da Silva",
-        email: "joao@example.com",
-        phone: "(11) 91234-5678",
-        lastVisit: "2024-08-15",
-        cpf: "12345678909",
-        dateBirth: "2005-05-03",
-        gender: "Masculino",
-      },
-      {
-        id: 2,
-        name: "Maria",
-        surname: "da Silva",
-        email: "maria@example.com",
-        phone: "(21) 99876-5432",
-        lastVisit: "2024-08-20",
-        dateBirth: "2005-05-03",
-        cpf: "98765432100",
-        gender: "Feminino",
-      },
-      {
-        id: 3,
-        name: "Pedro",
-        surname: "Souza",
-        email: "pedro@example.com",
-        phone: "(31) 98765-4321",
-        lastVisit: "2024-08-10",
-        dateBirth: "2005-05-03",
-        cpf: "11122233344",
-        gender: "Masculino",
-      },
-      {
-        id: 4,
-        name: "João",
-        surname: "da Silva",
-        email: "joao2@example.com",
-        phone: "(11) 91234-5678",
-        lastVisit: "2024-08-15",
-        dateBirth: "2005-05-03",
-        cpf: "12345678901",
-        gender: "Masculino",
-      },
-      {
-        id: 5,
-        name: "Maria",
-        surname: "Oliveira",
-        email: "maria.oliveira@example.com",
-        phone: "(21) 99876-5432",
-        lastVisit: "2024-08-20",
-        dateBirth: "2005-05-03",
-        cpf: "22233344455",
-        gender: "Feminino",
-      },
-      {
-        id: 6,
-        name: "Pedro",
-        surname: "Silva",
-        email: "pedro.silva@example.com",
-        phone: "(31) 98765-4321",
-        lastVisit: "2024-08-10",
-        dateBirth: "2005-05-03",
-        cpf: "33344455566",
-        gender: "Masculino",
-      },
-      {
-        id: 7,
-        name: "João",
-        surname: "Santos",
-        email: "joao.santos@example.com",
-        phone: "(11) 91234-5678",
-        lastVisit: "2024-08-15",
-        dateBirth: "2005-05-03",
-        cpf: "44455566677",
-        gender: "Masculino",
-      },
-      {
-        id: 8,
-        name: "Maria",
-        surname: "Pereira",
-        email: "maria.pereira@example.com",
-        phone: "(21) 99876-5432",
-        lastVisit: "2024-08-20",
-        dateBirth: "2005-05-03",
-        cpf: "55566677788",
-        gender: "Feminino",
-      },
-      {
-        id: 9,
-        name: "Pedro",
-        surname: "Lima",
-        email: "pedro.lima@example.com",
-        phone: "(31) 98765-4321",
-        lastVisit: "2024-08-10",
-        dateBirth: "2005-05-03",
-        cpf: "66677788899",
-        gender: "Masculino",
-      },
-      {
-        id: 10,
-        name: "João",
-        surname: "Almeida",
-        email: "joao.almeida@example.com",
-        phone: "(11) 91234-5678",
-        lastVisit: "2024-08-15",
-        dateBirth: "2005-05-03",
-        cpf: "77788899900",
-        gender: "Masculino",
-      },
-      {
-        id: 11,
-        name: "Maria",
-        surname: "Cruz",
-        email: "maria.cruz@example.com",
-        phone: "(21) 99876-5432",
-        lastVisit: "2024-08-20",
-        dateBirth: "2005-05-03",
-        cpf: "88899900011",
-        gender: "Feminino",
-      },
-      {
-        id: 12,
-        name: "Pedro",
-        surname: "Ferreira",
-        email: "pedro.ferreira@example.com",
-        phone: "(31) 98765-4321",
-        lastVisit: "2024-08-10",
-        dateBirth: "2005-05-03",
-        cpf: "99900011122",
-        gender: "Masculino",
-      },
     ],
     dataNotFilter: [],
     tableId: "patientsTable",
@@ -168,8 +35,6 @@ function Patients() {
 
   const [viewFormAdd, setViewFormAdd] = useState("none");
 
-  // const [userEdit, setUserEdit] = useState([]);
-
   async function getData(page, size) {
     try {
       const response = await api.get(`/clientes`, {
@@ -179,17 +44,37 @@ function Patients() {
         },
       });
 
-      setTableInformation((prevTableInformation) => ({
-        ...prevTableInformation,
-        data: response.data.content,
-        dataNotFilter: response.data.sort,
-      }));
+      formatData(response.data.content)
     } catch (error) {
       console.log("Erro ao obter consultas:", error);
     }
     setTimeout(() => {
       getData(page, size);
     }, 50000);
+  }
+
+
+  function formatData(pacientes) {
+    const data = [];
+    //Pedir para alterarem o endPoint para trazer o telefone e a data da ultima visita
+    pacientes.forEach((paciente) => {
+      data.push({
+        id: paciente.id,
+        fullName: `${paciente.nome} ${paciente.sobrenome ? paciente.sobrenome : ''}`,
+        name: paciente.nome,
+        surname: paciente.sobrenome,
+        email: paciente.loginInfo.email,
+        cpf: paciente.cpf,
+        dateBirth: paciente.dataNascimento,
+        gender: paciente.genero
+      })
+
+    });
+    setTableInformation((prevTableInformation) => ({
+      ...prevTableInformation,
+      data: data,
+      dataNotFilter: data,
+    }));
   }
 
   useEffect(() => {
@@ -208,7 +93,7 @@ function Patients() {
         <div className={style["card"]}>
           <div
             className="row mb-4"
-            style={{ display: "flex", alignItems: "center" }}
+            style={{ display: "flex", alignItems: "center", gap: '0%', margin: '0' }}
           >
             <div className="col-md-2 mx-auto">
               <label htmlFor="searchNome">Nome do Paciente</label>
@@ -233,12 +118,12 @@ function Patients() {
               />
             </div>
             <div className="col-md-2 mx-auto">
-              <label htmlFor="searchCpf">Cpf do Paciente</label>
+              <label htmlFor="searchCpf">CPF do Paciente</label>
               <input
                 id="searchCpf"
                 className="form-control"
                 type="text"
-                placeholder="Cpf completo"
+                placeholder="CPF completo"
                 value={searchCpf}
                 onChange={(e) => setSearchCpf(e.target.value)}
               />
@@ -259,7 +144,7 @@ function Patients() {
                 className={`${style["buttonSearch"]} btn btn-primary`}
                 id="searchButton"
                 onClick={buscar}
-                label="Buscar"
+                label="Filtrar"
                 style={{ width: "fit-content" }}
               />
               <button
@@ -267,11 +152,21 @@ function Patients() {
                 type="button"
                 onClick={resetFields}
               >
-                Limpar
+                Limpar Filtro
               </button>
+              <button
+                type="button"
+                onClick={() => abrirModalAdd()}
+                className={style["add"]}
+              >
+                Nova Paciente
+              </button>
+
             </div>
           </div>
-          <Table tableInformation={tableInformation} />
+          <div className={style['table']}>
+            <Table tableInformation={tableInformation} />
+          </div>
         </div>
       </Container>
       <div

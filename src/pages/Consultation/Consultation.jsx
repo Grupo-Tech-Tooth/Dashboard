@@ -8,14 +8,14 @@ import Add from '../../components/Form/Consultation/Add/Add';
 function Consultation() {
     const [tableInformation, setTableInformation] = useState({
         'columns': [
-            { 'name': '#' },
-            { 'name': 'Nome' },
-            { 'name': 'Data' },
-            { 'name': 'Hora' },
-            { 'name': 'Médico' },
-            { 'name': 'Tratamento' },
-            { 'name': 'Status' },
-            { 'name': 'Ações' },
+            { 'name': '#', key: '' },
+            { 'name': 'Nome', key: 'nomePaciente' },
+            { 'name': 'Data', key: 'date' },
+            { 'name': 'Hora', key: 'time' },
+            { 'name': 'Médico', key: 'doctor' },
+            { 'name': 'Tratamento', key: 'treatment' },
+            { 'name': 'Status', key: 'status' },
+            { 'name': 'Ações', key: 'acoes' },
         ],
         'data': [
             {
@@ -271,26 +271,28 @@ function Consultation() {
                         </div>
                         <div className={`col-md-2 mx-auto ml-1 ${style['lineButton']}`}>
                             <button
-                                className={`${style['button-limpar']} btn btn-secondary`}
-                                type="button"
-                                onClick={resetFields}
-                            >
-                                Limpar
-                            </button>
-                            <button
                                 className="btn btn-primary"
                                 type="submit"
                             >
-                                Buscar
+                                Filtra
                             </button>
-
+                            <button
+                                className={`${style["button-limpar"]} btn btn-secondary`}
+                                type="button"
+                                onClick={resetFields}
+                            >
+                                Limpar Filtro
+                            </button>
                         </div>
                     </form>
-
-                    <Table tableInformation={tableInformation} />
+                    <div className={style['table']}>
+                        <Table tableInformation={tableInformation} />
+                    </div>
                 </div>
             </Container>
-            <div className={`z-3 position-absolute p-5 rounded-3 ${style['boxButton']}`}><button type="button" onClick={() => abrirModalAdd()} className={style['add']}>+</button></div>
+            <div className={`z-3 position-absolute p-5 rounded-3 ${style['boxButton']}`}>
+                <button type="button" onClick={() => abrirModalAdd()} className={style['add']}>Nova Consulta</button>
+            </div>
         </>
     );
 
