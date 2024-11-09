@@ -23,6 +23,16 @@ function Employees() {
     dataNotFilter: [],
     tableId: "employeesTable",
     tbodyId: "employeesBody",
+    specialization:[
+      {key: "ORTODONTIA", label:"Ortodontia"},
+      {key: "PERIODONTIA", label:"Periodontia"},
+      {key:"ENDODONTIA", label:"Endodontia"},
+      {key:"CIRURGIA_BUCO_MAXILO", label:"Cirurgia Buco Maxilo"},
+      {key: "IMPLANTODONTIA", label: "Implantodontia"},
+      {key: "PROTESE_DENTARIA", label: "Protese Dentaria"},
+      {key: "ODONTOLOGIA_ESTETICA", label: "Odontologia Estética"},
+      {key: "ODONTO_PEDIATRIA", label: "Odonto Pediatria"}
+    ]
   });
 
   const [searchEmail, setSearchEmail] = useState("");
@@ -39,11 +49,14 @@ function Employees() {
 
     if (responseMedicos.data.length !== 0) {
       responseMedicos.data.forEach((medico) => {
+        console.log(medico);
         data.push({
           id: medico.id,
           fullName: `${medico.nome} ${medico.sobrenome ? medico.sobrenome : ''}`,
           name: medico.nome,
+          surname: medico.sobrenome,
           email: medico.loginInfo.email,
+          crm: medico.crm,
           phone: medico.telefone,
           department: "Médico",
           specialization: medico.especializacao,

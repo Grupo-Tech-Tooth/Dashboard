@@ -96,12 +96,15 @@ const Table = ({ tableInformation }) => {
                         onChange={onPageChange}
                         onShowSizeChange={onShowSizeChange}
                         showSizeChanger
-                        pageSizeOptions={[ '10', '20', '50']}
+                        pageSizeOptions={['10', '20', '50']}
                     />
                 </div>
 
                 {formUser !== "none" && (
-                    <FormUser display={formUser} userData={userEdit} close={closeForm} />
+                    <FormUser 
+                    display={formUser} 
+                    userData={userEdit} 
+                    close={closeForm} />
                 )}
                 {formConsultation !== "none" && (
                     <FormConsultation
@@ -125,6 +128,7 @@ const Table = ({ tableInformation }) => {
                         display={formFunctional}
                         userData={userEdit}
                         close={closeForm}
+                        listSpecialization={tableInformation.specialization}
                     />
                 )}
             </div>
@@ -152,7 +156,7 @@ const Table = ({ tableInformation }) => {
             }
             setCount(count + 1);
             setFormService("none");
-        }else if(tableInformation.tableId === 'employeesTable') {
+        } else if (tableInformation.tableId === 'employeesTable') {
             const position = tableInformation.data.findIndex((item) => item.id === information.id);
             if (position >= 0) {
                 tableInformation.data[position] = {
@@ -163,7 +167,7 @@ const Table = ({ tableInformation }) => {
             setCount(count + 1);
             setFormFunctional("none");
 
-        } 
+        }
         else {
             const position = tableInformation.data.findIndex((item) => item.id === information.id);
             if (position >= 0) {
@@ -184,7 +188,7 @@ const Table = ({ tableInformation }) => {
         } else if (tableInformation.tableId === 'servicesTable') { // Editar serviço
             setFormService("block");
             setServiceEdit(information);
-        } else if(tableInformation.tableId === 'employeesTable') {
+        } else if (tableInformation.tableId === 'employeesTable') {
             setFormFunctional("block");
             setUserEdit(information);
         } else {
