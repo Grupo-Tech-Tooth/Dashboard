@@ -1,7 +1,16 @@
-thead{
-    border-bottom: 1px solid #0D6EFD !important;
+.table {
+    overflow: hidden !important;
 
-    .title {
-        color: #0D6EFD !important;
+    thead {
+        border-bottom: 1px solid #0D6EFD !important;
+
+        .title {
+            color: #0D6EFD !important;
+        }
+    }
+
+    .divPagination {
+        display: flex;
+        justify-content: end;
     }
 }

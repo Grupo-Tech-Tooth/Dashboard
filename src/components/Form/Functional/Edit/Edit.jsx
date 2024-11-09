@@ -178,45 +178,6 @@ const Edit = ({ userData, display, close }) => {
                     <input type="text" className="form-control" id="patientCity" value={userEdit.city}
                         placeholder="Cidade do paciente" disabled />
                 </div>
-                <div className="col-md-6 mb-3">
-                    <label htmlFor="patientState" className="form-label">Estado</label>
-                    <input type="text" className="form-control" id="patientState"
-                        value={userEdit.state}
-                        placeholder="Estado do paciente" disabled />
-                </div>
-                <div className="col-md-6 mb-3">
-                    <Input type="text" className="form-control" name="patientAllergies" value={userEdit.allergies} label={"Alergias"} disabled={disabled} placeholder="Alergias do paciente" />
-                </div>
-                <div className="col-md-6 mb-3">
-                    <Input type="text" className="form-control" name="patientMedications" value={userEdit.medications} label={"Medicamentos em Uso"}
-                        disabled={disabled}
-                        placeholder="Medicamentos que o paciente usa" />
-                </div>
-                <div className="col-md-6 mb-3">
-                    <Input type="text" className="form-control" name="patientDentist" label={"Dentista Responsável"} value={userEdit.dentist}
-                        disabled={disabled} placeholder="Dentista responsável pelo paciente" />
-                </div>
-                <div className="col-md-6 mb-3">
-                    <Input type="date" className="form-control" value={userEdit.lastVisit} label={"Data da Última Consulta"} name="patientLastVisit" disabled={disabled} />
-                </div>
-                <div className="col-12 mb-3">
-                    <label htmlFor="patientNotes" className="form-label">Observações</label>
-                    <textarea
-                        className="form-control"
-                        id="patientNotes"
-                        rows="3"
-                        value={userEdit.notes}
-                        disabled={disabled}
-                        placeholder="Observações sobre o paciente"
-                        onChange={(e) => {
-                            setUserEdit((prevData) => ({
-                                ...prevData,
-                                notes: e.target.value
-                            }));
-                        }}
-                    ></textarea>
-
-                </div>
                 <div className={style['lineButton']}>
                     {
                         disabled ? (

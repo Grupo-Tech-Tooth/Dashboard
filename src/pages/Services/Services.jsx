@@ -11,14 +11,13 @@ import api from '../../api';
 function Services() {
   const [tableInformation, setTableInformation] = useState({
     'columns': [
-      { 'name': '#' },
-      { 'name': 'Nome do Serviço' },
-      { 'name': 'Duração (min)' },
-      { 'name': 'Preço (R$)' },
-      { 'name': 'Ações' }
+      { 'name': '#', key: '' },
+      { 'name': 'Nome do Serviço', key: 'nome' },
+      { 'name': 'Duração (min)', key: 'duracaoMinutos' },
+      { 'name': 'Preço (R$)', key: 'preco' },
+      { 'name': 'Ações', key: 'acoes' }
     ],
     'data': [
-      { id: 1, nome: 'Consulta', duracaoMinutos: 30, preco: 'R$ 100.00' }
     ],
     'dataNotFilter': [],
     'tableId': 'servicesTable',
@@ -108,28 +107,26 @@ function Services() {
               />
             </div>
             <div className={`col-md-2 mx-auto ${style['lineButton']}`}>
-              <Button
-                className={`${style['buttonSearch']} btn btn-primary`}
-                id="searchButton"
-                onClick={buscar}
-                label="Buscar"
-                style={{ width: 'fit-content' }}
-              />
+              <button
+                className="btn btn-primary"
+                type="submit">
+                Filtra
+              </button>
               <button
                 className={`${style['button-limpar']} btn btn-secondary`}
                 type="button"
                 onClick={resetFields}
               >
-                Limpar
+                Limpar Filtro
               </button>
+              <button type="button" onClick={() => abrirModalAdd()} className={style['add']}>Novo Serviço</button>
             </div>
           </div>
-          <Table tableInformation={tableInformation} />
+          <div className={style['table']}>
+            <Table tableInformation={tableInformation} />
+          </div>
         </div>
       </Container>
-      <div className={`z-3 position-absolute p-5 rounded-3 ${style['boxButton']}`}>
-        <button type="button" onClick={() => abrirModalAdd()} className={style['add']}>+</button>
-      </div>
     </>
   );
 

@@ -148,7 +148,7 @@ function Edit({ consultationData, display, close, listUsers, doctors, treatments
                                             disabled />
                                     </div>
                                     <div className="mb-3">
-                                        <label for="appointmentDate" className="form-label">Data</label>
+                                        <label for="appointmentDate" className="form-label">Data De Nascimento</label>
                                         <input type="date" className="form-control" id="date" value={inputValueDate} disabled={disabledInput} onClick={() => updateStep(2)} />
                                     </div>
                                     <div className="mb-3">

@@ -1,0 +1,33 @@
+.formulario{
+    display: flex;
+    width: 70%;
+    height: 560px;
+    padding: 50px;
+    align-items: center;
+    justify-content: space-around;
+
+    background-color: #FFFFFF;
+    border: none;
+    border-top: 4px solid #0D6EFD;
+    border-radius: 6px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.formulario h2{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #0d6efd;
+}
+
+.form{
+    width: 480px;
+    height: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+
+    font-size: 18px;
+    color: #0d6efd;
+}

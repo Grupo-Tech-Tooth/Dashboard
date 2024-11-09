@@ -11,26 +11,14 @@ import api from "../../api";
 function Employees() {
   const [tableInformation, setTableInformation] = useState({
     columns: [
-      { name: "#" },
-      { name: "Nome" },
-      { name: "Email" },
-      { name: "Departamento" },
-      { name: "Especialização" },
-      { name: "Ações" },
+      { name: "#", key: '' },
+      { name: "Nome", key: 'fullName' },
+      { name: "Email", key: 'email' },
+      { name: "Departamento", key: 'department' },
+      { name: "Especialização", key: 'specialization' },
+      { name: "Ações", key: 'acoes' },
     ],
     data: [
-      {
-        id: 1,
-        name: "João",
-        surname: "da Silva",
-        email: "joao@example.com",
-        phone: "(11) 91234-5678",
-        department: "Recepção",
-        specialization: "-",
-        cpf: "12345678909",
-        dateBirth: "2005-05-03",
-        gender: "Masculino",
-      },
     ],
     dataNotFilter: [],
     tableId: "employeesTable",
@@ -53,8 +41,9 @@ function Employees() {
       responseMedicos.data.forEach((medico) => {
         data.push({
           id: medico.id,
+          fullName: `${medico.nome} ${medico.sobrenome ? medico.sobrenome : ''}`,
           name: medico.nome,
-          email: medico.email,
+          email: medico.loginInfo.email,
           phone: medico.telefone,
           department: "Médico",
           specialization: medico.especializacao,
@@ -66,12 +55,14 @@ function Employees() {
 
     if (responseFuncionais.data.length !== 0) {
       responseFuncionais.data.forEach((funcional) => {
+        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
         data.push({
           id: funcional.id,
+          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
           name: funcional.nome,
-          email: funcional.email,
+          email: funcional.loginInfo.email,
           phone: funcional.telefone,
-          department: "Funcional",
+          department:funcional.departamento,
           specialization: "-",
           cpf: funcional.cpf,
           dateBirth: funcional.dataNascimento,
@@ -127,7 +118,7 @@ function Employees() {
               />
             </div>
             <div className="col-md-2 mx-auto">
-              <label htmlFor="searchCpf">Cpf do Funcionário</label>
+              <label htmlFor="searchCpf">CPF do Funcionário</label>
               <input
                 id="searchCpf"
                 className="form-control"
@@ -149,36 +140,30 @@ function Employees() {
               />
             </div>
             <div className={`col-md-2 mx-auto ${style["lineButton"]}`}>
-              <Button
-                className={`${style["buttonSearch"]} btn btn-primary`}
-                id="searchButton"
-                onClick={buscar}
-                label="Buscar"
-                style={{ width: "fit-content" }}
-              />
+              <button className="btn btn-primary" type="submit">
+                Filtra
+              </button>
               <button
                 className={`${style["button-limpar"]} btn btn-secondary`}
                 type="button"
                 onClick={resetFields}
               >
-                Limpar
+                Limpar Filtro
+              </button>
+              <button
+                type="button"
+                onClick={() => abrirModalAdd()}
+                className={style["add"]}
+              >
+                Cadastrar Funcionario
               </button>
             </div>
           </div>
-          <Table tableInformation={tableInformation} />
+          <div className={style['table']}>
+            <Table tableInformation={tableInformation} />
+          </div>
         </div>
       </Container>
-      <div
-        className={`z-3 position-absolute p-5 rounded-3 ${style["boxButton"]}`}
-      >
-        <button
-          type="button"
-          onClick={() => abrirModalAdd()}
-          className={style["add"]}
-        >
-          +
-        </button>
-      </div>
     </>
   );
 
