@@ -36,7 +36,7 @@ const Dashboard = () => {
         datasets: [{
             label: 'Serviços Mais Usados',
             data: [200, 150, 100, 80, 60],
-            backgroundColor: ['#0D6EFD', '#94CFED', '#0D6EFD', '#94CFED', '#0D6EFD']
+            backgroundColor: ['#0D6EFD', '#2563EB', '#60A5FA', '#BFDBFE', '#E0F2FE']
         }]
     };
 
@@ -60,7 +60,7 @@ const Dashboard = () => {
                 data: timeframe === 'diário' ? [300, 500, 200, 400, 600, 700, 100] :
                     timeframe === 'semanal' ? [1500, 2000, 1750, 1800] :
                         [12000, 15000, 14000, 16000, 17000, 13000, 18000, 15000, 14000, 16000, 15000, 17000],
-                backgroundColor: '#94CFED',
+                backgroundColor: '#93C5FD',
                 type: 'bar'
             }
         ]
@@ -86,7 +86,7 @@ const Dashboard = () => {
                 label: 'Cartão de Crédito',
                 // data: [6000, 7500, 7000, 8000, 8500, 6500, 9000, 7500, 7000, 8000, 7500, 8500],
                 data: [9000, 7500, 7000, 8000, 7500, 8500],
-                backgroundColor: '#FF6384',
+                backgroundColor: '#1D4ED8',
                 yAxisID: 'y', // Usa o eixo padrão
             },
             {
@@ -94,7 +94,7 @@ const Dashboard = () => {
                 label: 'Cartão de Débito',
                 // data: [3000, 3750, 3500, 4000, 4250, 3250, 4500, 3750, 3500, 4000, 3750, 4250],
                 data: [4500, 3750, 3500, 4000, 3750, 4250],
-                backgroundColor: '#36A2EB',
+                backgroundColor: '#3B82F6',
                 yAxisID: 'y',
             },
             {
@@ -102,7 +102,7 @@ const Dashboard = () => {
                 label: 'Dinheiro',
                 // data: [2000, 2500, 2300, 2600, 2700, 2100, 2800, 2500, 2400, 2600, 2500, 2700],
                 data: [2800, 2500, 2400, 2600, 2500, 2700],
-                backgroundColor: '#FFCE56',
+                backgroundColor: '#60A5FA',
                 yAxisID: 'y',
             },
             {
@@ -110,7 +110,7 @@ const Dashboard = () => {
                 label: 'Pix',
                 // data: [1000, 1250, 1200, 1300, 1350, 1050, 1400, 1250, 1200, 1300, 1250, 1350],
                 data: [1400, 1250, 1200, 1300, 1250, 1350],
-                backgroundColor: '#4BC0C0',
+                backgroundColor: '#93C5FD',
                 yAxisID: 'y',
             },
         ],
@@ -161,7 +161,7 @@ const Dashboard = () => {
         scales: {
             y: { 
                 beginAtZero: true,
-                title: { display: true, text: 'Faturamento' },
+                title: { display: true, text: 'Faturamento (em Reais)' },
             },
             growth: {
                 position: 'right',
@@ -268,7 +268,7 @@ const Dashboard = () => {
                 <div className="row" style={{ width: '100%', height: '90vh' }}>
                     <div className="d-flex flex-column justify-content-between align-items-center m-0" style={{ maxWidth: '55%', width: '55%', height: '100%', padding: '0 1%' }}>
                         <div className="card p-3 flex-column align-items-center" style={{width: '100%', height: '55%'}}>
-                            <h4 className='align-self-start'>Faturamento Por Período <span style={{ fontSize: '14px'}}>(Valor Bruto)</span></h4>
+                            <h4 className='text-primary align-self-start'>Faturamento Por Período <span style={{ fontSize: '14px'}}>(Valor Bruto)</span></h4>
                             <div>
                                 <Bar data={revenueData} options={lineOptions} style={{ height: '33vh', width: 'auto' }} />
                             </div>
@@ -282,14 +282,14 @@ const Dashboard = () => {
                         <div className="d-flex justify-content-between" style={{ width: '100%', height: '43%' }}>
 
                             <div className="card p-3" style={{ width: '49%' }}>
-                                <h4>Fluxo de Pessoas <span style={{ fontSize: '14px'}}>(Total Mensal)</span></h4>
+                                <h4 className="text-primary">Fluxo de Pessoas <span style={{ fontSize: '14px'}}>(Total Mensal)</span></h4>
                                 <div className="my-auto">
                                     <Bar data={dailyFlowData} options={{ responsive: true, plugins:{ datalabels:{ backgroundColor: '#fffa', color: '#000', font:{ size: 14, weight: 'bold' } }} }} style={{ height: '29vh', width: 'auto' }} />
                                 </div>
                             </div>
 
                             <div className="card p-3" style={{ width: '49%' }}>
-                                <h4>Serviços Mais Usados</h4> <span style={{ fontSize: '14px'}}>(Nº Absoluto)</span>
+                                <h4 className="text-primary">Serviços Mais Usados</h4> <span style={{ fontSize: '14px'}}>(Nº Absoluto)</span>
                                 <div>
                                     <Pie data={popularServicesData} options={pieOptions} style={{ maxHeight: '21vh', minWidth: '100%' }} />
                                 </div>
@@ -304,7 +304,7 @@ const Dashboard = () => {
 
                     <div className="d-flex flex-column justify-content-between align-items-center p-0 m-0" style={{ maxWidth: '45%', width: '45%', height: '100%', padding: '0 1%' }}>
                         <div className="card p-3" style={{width: '100%', height: '65%'}}>
-                            <h4>Faturamento Semestral Por Especialidade <span style={{ fontSize: '14px'}}>(Valor Bruto)</span></h4>
+                            <h4 className="text-primary">Faturamento Semestral Por Especialidade <span style={{ fontSize: '14px'}}>(Valor Bruto)</span></h4>
                             <div>
                                 <Bar data={annualRevenueData} options={ lineOptions2 } style={{ height: '40vh', width: 'auto' }} />
                             </div>
