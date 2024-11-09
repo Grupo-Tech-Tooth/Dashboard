@@ -18,9 +18,9 @@ const AppRoutes = () => {
         <Route path="/funcionarios" element={<Employees />} />
         <Route path="/pacientes" element={<Patients />} />
         <Route path="/servicos" element={<Services />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/" element={<Login />} />
         <Route path='/gestao-consultas' element={<Consultation />} />
-        <Route path='/' element={<Dashboard />} />
+        <Route path='/Dashboard' element={<Dashboard />} />
       </Routes>
     </Router>
   );
