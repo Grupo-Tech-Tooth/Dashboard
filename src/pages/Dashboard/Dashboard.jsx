@@ -268,7 +268,7 @@ const Dashboard = () => {
 
                 <div className="row" style={{ width: '100%', height: '90vh' }}>
                     <div className="d-flex flex-column justify-content-between align-items-center m-0" style={{ maxWidth: '55%', width: '55%', height: '100%', padding: '0 1%' }}>
-                        <div className="card p-3 flex-column align-items-center" style={{ width: '100%', height: '55%', maxHeight: '55%' }}>
+                        <div className="card p-3 flex-column align-items-center" style={{ width: '100%',  height: 'fit-content', marginBottom: '2%'}}>
                             <h4 className='text-primary align-self-start'>Faturamento Por Período <span style={{ fontSize: '14px' }}>(Valor Bruto)</span></h4>
                             <div style={{ height: '33vh', maxHeight: '33vh', width: '100%', justifyItems: 'center' }} >
                                 <Bar data={revenueData} options={lineOptions} />
@@ -280,18 +280,18 @@ const Dashboard = () => {
                                 <option value="Anual">Anual</option>
                             </select>
                         </div>
-                        <div className="d-flex justify-content-between" style={{ width: '100%', height: '43%', maxHeight: '43%' }}>
+                        <div className="d-flex justify-content-between" style={{ width: '100%', height: 'fit-content' }}>
 
                             <div className="card p-3" style={{ width: '49%', maxHeight: '100%' }}>
                                 <h4 className="text-primary">Fluxo de Pessoas <span style={{ fontSize: '14px' }}>(Total Mensal)</span></h4>
-                                <div className="my-auto" style={{ height: '29vh', maxHeight: '29vh', width: 'auto', alignContent: 'center' }} >
+                                <div className="my-auto" style={{ height: 'fit-content', width: 'auto', alignContent: 'center' }} >
                                     <Bar data={dailyFlowData} options={{ responsive: true, plugins: { datalabels: { backgroundColor: '#fffa', color: '#000', font: { size: 14, weight: 'bold' } } } }} />
                                 </div>
                             </div>
 
                             <div className="card p-3" style={{ width: '49%', maxHeight: '100%' }}>
                                 <h4 className="text-primary">Serviços Mais Usados <span style={{ fontSize: '14px' }}>(Nº Absoluto)</span></h4>
-                                <div style={{ height: '23vh', maxHeight: '23vh', minWidth: '100%' }} >
+                                <div style={{ height: 'fit-content', minWidth: '100%' }} >
                                     <Pie data={popularServicesData} options={pieOptions} style={{ maxHeight: '23vh', minWidth: '60%' }} />
                                 </div>
                                 <select onChange={(e) => setFilter({ ...filter, timeframe: e.target.value })} value={filter.timeframe} className="form-select mt-2">
@@ -304,7 +304,7 @@ const Dashboard = () => {
                     </div>
 
                     <div className="d-flex flex-column justify-content-between align-items-center p-0 m-0" style={{ maxWidth: '45%', width: '45%', height: '100%', maxHeight: '100%', padding: '0 1%' }}>
-                        <div className="card p-3" style={{ width: '100%', height: '65%', maxHeight: '65%' }}>
+                        <div className="card p-3" style={{ width: '100%', height: 'fit-content', marginBottom: '2%' }}>
                             <h4 className="text-primary">Faturamento Semestral Por Especialidade <span style={{ fontSize: '14px' }}>(Valor Bruto)</span></h4>
                             <div style={{ height: '40vh', maxHeight: '40vh', width: 'auto' }} >
                                 <Bar data={annualRevenueData} options={lineOptions2} />
@@ -315,8 +315,8 @@ const Dashboard = () => {
                                 <option value="Implantes">Implantes</option>
                             </select>
                         </div>
-                        <div className="card p-3 text-center" style={{ height: '28vh', width: '100%' }} >
-                            <div className="d-flex flex-column justify-content-between" style={{ height: '100%' }}>
+                        <div className="card p-3 text-center" style={{ height: 'fit-content', width: '100%'}} >
+                            <div className="d-flex flex-column justify-content-between" style={{ height: '100%', maxHeight: '100%' }}>
                                 <h5 className="text-primary">Descritivo do Mês</h5>
                                 <div className="d-flex justify-content-between align-items-center">
                                     <div className="d-flex flex-column" style={{ maxWidth: '45%', alignItems: 'start' }}>
