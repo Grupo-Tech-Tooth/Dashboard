@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import Input from '../../../Input/Input';
 import InputMask from 'react-input-mask';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import logo from "../../../../assets/Tech-Tooth-Logo.png";
 import SuccessAlert from '../../../AlertSuccess/AlertSuccess';
 
 const Edit = ({ userData, display, close, listSpecialization }) => {
@@ -51,9 +50,9 @@ const Edit = ({ userData, display, close, listSpecialization }) => {
                     <Input name={'lastName'} type={'text'} label={'Sobrenome'} placeholder={'Digite seu sobrenome'} disabled={disabled} value={userEdit.surname} />
                 </div>
                 <div className="col-md-3">
-                    <label htmlFor="inputState" className="form-label">Sexo</label>
+                    <label htmlFor="inputGender" className="form-label">Sexo</label>
                     <select
-                        id="inputState"
+                        id="inputGender"
                         className="form-select"
                         disabled={disabled}
                         value={userEdit.gender || ''}
@@ -66,7 +65,6 @@ const Edit = ({ userData, display, close, listSpecialization }) => {
                     >
                         <option value="Masculino">Masculino</option>
                         <option value="Feminino">Feminino</option>
-                        <option value="Binario">Não binário</option>
                         <option value="Outros">Outros</option>
                     </select>
                 </div>
@@ -119,7 +117,7 @@ const Edit = ({ userData, display, close, listSpecialization }) => {
                             }));
                         }}
                     >
-                          <option value="">Não se aplica</option>
+                          <option value="-">Não se aplica</option>
                         {listSpecialization &&
                             listSpecialization.map((item) => (
                                 <option value={item.key}>{item.label}</option>
@@ -232,17 +230,14 @@ const Edit = ({ userData, display, close, listSpecialization }) => {
             phone: user.target.phone.value,
             email: user.target.email.value,
             cpf: user.target.cpf.value,
-            gender: user.target.patientState.value,
+            gender: user.target.inputGender.value,
             cep: user.target.patientCep.value,
             street: user.target.patientStreet.value,
             number: user.target.patientNumber.value,
             neighborhood: user.target.patientNeighborhood.value,
             city: user.target.patientCity.value,
-            allergies: user.target.patientAllergies.value,
-            medications: user.target.patientMedications.value,
-            dentist: user.target.patientDentist.value,
-            lastVisit: user.target.patientLastVisit.value,
-            notes: user.target.patientNotes.value
+            crm: user.target.crm.value,
+            specialization: user.target.inputSpecialization.value
         };
         setUserUpdate(data);
         setAlertSucess(true);

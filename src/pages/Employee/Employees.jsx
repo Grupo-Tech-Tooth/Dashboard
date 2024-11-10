@@ -2,9 +2,8 @@ import React, { useState, useEffect } from "react";
 import style from "./Employees.module.css";
 import Navbar from "../../components/Navbar/Navbar";
 import Container from "../../components/Container/Container";
-import Button from "../../components/Botao/Botao";
 import Table from "../../components/Table/Table";
-import Add from "../../components/Form/User/Add/Add";
+import Add from "../../components/Form/Functional/Add/Add";
 import api from "../../api";
 // import { width } from '@fortawesome/free-solid-svg-icons/fa0';
 
@@ -91,7 +90,6 @@ function Employees() {
 
   useEffect(() => {
     tableInformation.dataNotFilter = tableInformation.data;
-
     getData();
   }, []);
 
@@ -101,7 +99,7 @@ function Employees() {
       <h2 className="text-primary text-center my-3">Gerenciar Funcionários</h2>
       <Container>
         {viewFormAdd === "block" && (
-          <Add Display={viewFormAdd} close={closeForm} />
+          <Add Display={viewFormAdd} close={closeForm} listSpecialization={tableInformation.specialization}/>
         )}
         <div className={style["card"]}>
           <div
@@ -153,7 +151,7 @@ function Employees() {
               />
             </div>
             <div className={`col-md-2 mx-auto ${style["lineButton"]}`}>
-              <button className="btn btn-primary" type="submit">
+              <button className="btn btn-primary" type="submit" onClick={buscar}>
                 Filtra
               </button>
               <button
@@ -185,10 +183,7 @@ function Employees() {
     setSearchEmail("");
     setSearchCpf("");
     setSearchDepartment("");
-    setTableInformation((prevTableInformation) => ({
-      ...prevTableInformation,
-      data: tableInformation.dataNotFilter,
-    }));
+    getData();
   }
 
   function buscar() {
