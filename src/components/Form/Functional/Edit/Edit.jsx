@@ -1,14 +1,12 @@
 import style from './Edit.module.css';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Input from '../../../Input/Input';
 import InputMask from 'react-input-mask';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import logo from "../../../../assets/Tech-Tooth-Logo.png";
 import SuccessAlert from '../../../AlertSuccess/AlertSuccess';
 
-const Edit = ({ userData, display, close }) => {
-    // const [date, setDate] = useState(userData.lastVisit);
-    const [dateBirth, setDateBirth] = useState(userData.dateBirth);
+const Edit = ({ userData, display, close, listSpecialization }) => {
     const [error, setError] = useState('');
     const [disabled, setDisabled] = useState(true);
     const [AlertSuccess, setAlertSucess] = useState(false);
@@ -30,9 +28,9 @@ const Edit = ({ userData, display, close }) => {
     };
 
 
-    // useEffect(() => {
-    //     setUserUpdate(userData);
-    // }, [userData])
+    useEffect(() => {
+        setUserEdit(userData);
+    }, [userEdit, userData])
 
 
     return (
@@ -41,70 +39,18 @@ const Edit = ({ userData, display, close }) => {
             <form className={`${style['form']} row g-3`} onSubmit={saveFields}>
                 <div className={style['lineTitle']}>
                     <div>
-                        <img className="logo" src={logo} width={'40px'} />
-                        <h3>Editar</h3>
+                        <h3>Editar Funcionário</h3>
                     </div>
-                    <label className={style['button']} onClick={() => close(userUpdate)}>X</label>
+                    <button type="button" className="btn-close"
+                        onClick={() => close(userUpdate)}></button>
                 </div>
-                <div className="col-md-6">
+                <div className="col-md-3">
                     <Input name={'firstName'} type={'text'} label={'Nome'} placeholder={'Digite seu nome'} required={'true'} disabled={disabled} value={userEdit.name} />
                 </div>
-                <div className="col-md-6">
+                <div className="col-md-3">
                     <Input name={'lastName'} type={'text'} label={'Sobrenome'} placeholder={'Digite seu sobrenome'} disabled={disabled} value={userEdit.surname} />
                 </div>
-                <div className={style['lineData']}>
-                    <div className={`${style['data']} col-md-6`} style={{ display: 'flex', justifyContent: 'end', flexDirection: 'column' }}>
-                        <label htmlFor="date">Data De Nascimento</label>
-                        <InputMask
-                            mask="99/99/9999"
-                            className={`form-control ${error ? 'is-invalid' : ''}`}
-                            id="date"
-                            placeholder="dd/mm/yyyy"
-                            value={dateBirth}
-                            onChange={(e) => {
-                                const inputValue = e.target.value;
-                                setDateBirth(inputValue);
-                                setUserEdit((prevData) => ({
-                                    ...prevData,
-                                    dateBirth: inputValue
-                                }));
-                                if (inputValue.length === 10) {
-                                    const validationError = validateDate(inputValue);
-                                    setError(validationError);
-                                } else {
-                                    setError('');
-                                }
-                            }}
-                            disabled={disabled}
-                        />
-
-                        {error && <div className="invalid-feedback">{error}</div>}
-                    </div>
-                    <div className="col-md-6">
-                        <Input name={'phone'} type={'text'} label={'Telefone'} placeholder={'Digite seu telefone'} disabled={disabled} value={userEdit.phone} />
-                    </div>
-                </div>
-                <div className="col-md-6">
-                    <Input name={'email'} type={'email'} label={'E-mail'} placeholder={'Digite seu e-mail'} disabled={disabled} value={userEdit.email} />
-                </div>
-                <div className="col-md-6">
-                    <label htmlFor="cpf" className="form-label">CPF</label>
-                    <InputMask
-                        mask="999.999.999-99"
-                        className="form-control"
-                        id="cpf"
-                        placeholder="Digite seu CPF"
-                        disabled={disabled}
-                        value={userEdit.cpf}
-                        onChange={(e) => {
-                            setUserEdit(prevData => ({
-                                ...prevData,
-                                cpf: e.target.value
-                            }));
-                        }}
-                    />
-                </div>
-                <div className="col-md-6">
+                <div className="col-md-3">
                     <label htmlFor="inputState" className="form-label">Sexo</label>
                     <select
                         id="inputState"
@@ -123,10 +69,81 @@ const Edit = ({ userData, display, close }) => {
                         <option value="Binario">Não binário</option>
                         <option value="Outros">Outros</option>
                     </select>
-
-
                 </div>
-                <div className="col-md-6 mb-3">
+                <div className={`${style['data']} col-md-3`}>
+                    <label htmlFor="date">Data De Nascimento</label>
+                    <InputMask
+                        mask="99/99/9999"
+                        className={`form-control ${error ? 'is-invalid' : ''}`}
+                        id="date"
+                        placeholder="dd/mm/yyyy"
+                        value={userEdit.dateBirth}
+                        onChange={(e) => {
+                            const inputValue = e.target.value;
+                            setUserEdit((prevData) => ({
+                                ...prevData,
+                                dateBirth: inputValue
+                            }));
+                            if (inputValue.length === 10) {
+                                const validationError = validateDate(inputValue);
+                                setError(validationError);
+                            } else {
+                                setError('');
+                            }
+                        }}
+                        disabled={disabled}
+                    />
+
+                    {error && <div className="invalid-feedback">{error}</div>}
+                </div>
+                <div className="col-md-3">
+                    <Input name={'phone'} type={'text'} label={'Telefone'} placeholder={'Digite seu telefone'} disabled={disabled} value={userEdit.phone} />
+                </div>
+                <div className="col-md-3">
+                    <Input name={'email'} type={'email'} label={'E-mail'} placeholder={'Digite seu e-mail'} disabled={disabled} value={userEdit.email} />
+                </div>
+                <div className="col-md-3">
+                    <Input name={'crm'} type={'text'} label={'CRM'} placeholder={'Digite seu CRM'} disabled={disabled} value={userEdit.crm} />
+                </div>
+                <div className="col-md-3">
+                    <label htmlFor="inputSpecialization" className="form-label">Especialização</label>
+                    <select
+                        id="inputSpecialization"
+                        className="form-select"
+                        disabled={disabled}
+                        value={userEdit.specialization || "Não se aplica"}
+                        onChange={(e) => {
+                            setUserEdit((prevData) => ({
+                                ...prevData,
+                                specialization: e.target.value
+                            }));
+                        }}
+                    >
+                          <option value="">Não se aplica</option>
+                        {
+                            listSpecialization.map((item) => (
+                                <option value={item.key}>{item.label}</option>
+                            ))}
+                    </select>
+                </div>
+                <div className="col-md-3">
+                    <label htmlFor="cpf" className="form-label">CPF</label>
+                    <InputMask
+                        mask="999.999.999-99"
+                        className="form-control"
+                        id="cpf"
+                        placeholder="Digite seu CPF"
+                        disabled={disabled}
+                        value={userEdit.cpf}
+                        onChange={(e) => {
+                            setUserEdit(prevData => ({
+                                ...prevData,
+                                cpf: e.target.value
+                            }));
+                        }}
+                    />
+                </div>
+                <div className="col-md-3">
                     <label htmlFor="patientCep" className="form-label">CEP*</label>
                     <input
                         type="text"
@@ -145,12 +162,12 @@ const Edit = ({ userData, display, close }) => {
                         }}
                     />
                 </div>
-                <div className="col-md-6 mb-3">
+                <div className="col-md-3">
                     <label htmlFor="patientStreet" className="form-label">Rua</label>
                     <input type="text" className="form-control" id="patientStreet" value={userEdit.street} placeholder="Rua do paciente"
                         disabled />
                 </div>
-                <div className="col-md-6 mb-3">
+                <div className="col-md-3">
                     <Input
                         type="text"
                         value={userEdit.number}
@@ -168,12 +185,12 @@ const Edit = ({ userData, display, close }) => {
                     />
 
                 </div>
-                <div className="col-md-6 mb-3">
+                <div className="col-md-3">
                     <label htmlFor="patientNeighborhood" className="form-label">Bairro</label>
                     <input type="text" className="form-control" id="patientNeighborhood" value={userEdit.neighborhood}
                         placeholder="Bairro do paciente" disabled />
                 </div>
-                <div className="col-md-6 mb-3">
+                <div className="col-md-3">
                     <label htmlFor="patientCity" className="form-label">Cidade</label>
                     <input type="text" className="form-control" id="patientCity" value={userEdit.city}
                         placeholder="Cidade do paciente" disabled />
@@ -182,12 +199,12 @@ const Edit = ({ userData, display, close }) => {
                     {
                         disabled ? (
                             <>
-                                <label className="btn btn-primary" onClick={() => editUser()}>Editar</label>
+                                <button className="btn btn-primary" onClick={() => editUser()} type='button'>Editar</button>
                                 <button type="submit" className="btn" disabled>Salvar</button>
                             </>
                         ) : (
                             <>
-                                <label className={style['btnSecund']} onClick={() => editUser()}>Editar</label>
+                                <button className={style['btnSecund']} onClick={() => editUser()}type='button'>Editar</button>
                                 <button type="submit" className="btn btn-primary">Salvar</button>
                             </>
                         )
