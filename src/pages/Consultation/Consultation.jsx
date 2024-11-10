@@ -201,7 +201,7 @@ function Consultation() {
                     <Add Display={viewFormAdd} close={closeForm} listUsers={tableInformation.data} doctors={tableInformation.doctor} treatments={tableInformation.treatment} />
                 }
 
-                <div className={`${style['box']} container my-4 p-3`}>
+                <div className={`${style['box']} container my-4 p-3 pb-0`}>
 
                     <form className="row mb-4 container-sm" onSubmit={buscar}>
                         <div className="col-md-2 mx-auto">
