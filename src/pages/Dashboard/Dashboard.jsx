@@ -3,6 +3,7 @@ import { Line, Bar, Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
 import Navbar from '../../components/Navbar/Navbar';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import styles from './Dashboard.module.css';
 ChartJS.register(ChartDataLabels);
 
 
@@ -150,7 +151,7 @@ const Dashboard = () => {
                         ? `${value}%`
                         : ``;
                 },
-                backgroundColor: (context) => 
+                backgroundColor: (context) =>
                     context.dataset.type === 'line' ? '#fffb' : null,
                 font: {
                     weight: 'regular',
@@ -159,7 +160,7 @@ const Dashboard = () => {
             },
         },
         scales: {
-            y: { 
+            y: {
                 beginAtZero: true,
                 title: { display: true, text: 'Faturamento (em Reais)' },
             },
@@ -173,21 +174,21 @@ const Dashboard = () => {
             },
         },
     };
-    
+
     const barMaxValue = Math.max(
         ...annualRevenueData.datasets
             .filter(dataset => dataset.type === 'bar')
             .flatMap(dataset => dataset.data)
     );
     const suggestedBarMax = barMaxValue * 1.1;
-    
+
     const lineMaxValue = Math.max(
         ...annualRevenueData.datasets
             .filter(dataset => dataset.type === 'line')
             .flatMap(dataset => dataset.data)
     );
     const suggestedLineMax = lineMaxValue * 1.1;
-    
+
     const lineOptions2 = {
         responsive: true,
         scales: {
@@ -232,7 +233,7 @@ const Dashboard = () => {
             },
         },
     };
-    
+
 
     const pieOptions = {
         responsive: true,
@@ -262,15 +263,15 @@ const Dashboard = () => {
     return (
         <>
             <Navbar />
-            <div className="container d-flex flex-column justify-content-between py-3" style={{ maxHeight: 'calc(100vh - 56px)', height: 'calc(100vh - 56px)', padding: '0 5%' }}>
+            <div className="container d-flex flex-column justify-content-between py-3" style={{ maxHeight: 'calc(100vh - 57px)', height: 'calc(100vh - 56px)', padding: '0 5%' }}>
                 <h2 className="text-primary text-center pb-3 m-0">Dashboard Financeira - Tech Tooth</h2>
 
                 <div className="row" style={{ width: '100%', height: '90vh' }}>
                     <div className="d-flex flex-column justify-content-between align-items-center m-0" style={{ maxWidth: '55%', width: '55%', height: '100%', padding: '0 1%' }}>
-                        <div className="card p-3 flex-column align-items-center" style={{width: '100%', height: '55%'}}>
-                            <h4 className='text-primary align-self-start'>Faturamento Por Período <span style={{ fontSize: '14px'}}>(Valor Bruto)</span></h4>
-                            <div>
-                                <Bar data={revenueData} options={lineOptions} style={{ height: '33vh', width: 'auto' }} />
+                        <div className="card p-3 flex-column align-items-center" style={{ width: '100%', height: '55%', maxHeight: '55%' }}>
+                            <h4 className='text-primary align-self-start'>Faturamento Por Período <span style={{ fontSize: '14px' }}>(Valor Bruto)</span></h4>
+                            <div style={{ height: '33vh', maxHeight: '33vh', width: '100%', justifyItems: 'center' }} >
+                                <Bar data={revenueData} options={lineOptions} />
                             </div>
                             <select onChange={(e) => setTimeframe(e.target.value)} value={timeframe} className="form-select mt-2">
                                 <option value="Diário">Diário</option>
@@ -279,19 +280,19 @@ const Dashboard = () => {
                                 <option value="Anual">Anual</option>
                             </select>
                         </div>
-                        <div className="d-flex justify-content-between" style={{ width: '100%', height: '43%' }}>
+                        <div className="d-flex justify-content-between" style={{ width: '100%', height: '43%', maxHeight: '43%' }}>
 
-                            <div className="card p-3" style={{ width: '49%' }}>
-                                <h4 className="text-primary">Fluxo de Pessoas <span style={{ fontSize: '14px'}}>(Total Mensal)</span></h4>
-                                <div className="my-auto">
-                                    <Bar data={dailyFlowData} options={{ responsive: true, plugins:{ datalabels:{ backgroundColor: '#fffa', color: '#000', font:{ size: 14, weight: 'bold' } }} }} style={{ height: '29vh', width: 'auto' }} />
+                            <div className="card p-3" style={{ width: '49%', maxHeight: '100%' }}>
+                                <h4 className="text-primary">Fluxo de Pessoas <span style={{ fontSize: '14px' }}>(Total Mensal)</span></h4>
+                                <div className="my-auto" style={{ height: '29vh', maxHeight: '29vh', width: 'auto', alignContent: 'center' }} >
+                                    <Bar data={dailyFlowData} options={{ responsive: true, plugins: { datalabels: { backgroundColor: '#fffa', color: '#000', font: { size: 14, weight: 'bold' } } } }} />
                                 </div>
                             </div>
 
-                            <div className="card p-3" style={{ width: '49%' }}>
-                                <h4 className="text-primary">Serviços Mais Usados</h4> <span style={{ fontSize: '14px'}}>(Nº Absoluto)</span>
-                                <div>
-                                    <Pie data={popularServicesData} options={pieOptions} style={{ maxHeight: '21vh', minWidth: '100%' }} />
+                            <div className="card p-3" style={{ width: '49%', maxHeight: '100%' }}>
+                                <h4 className="text-primary">Serviços Mais Usados <span style={{ fontSize: '14px' }}>(Nº Absoluto)</span></h4>
+                                <div style={{ height: '23vh', maxHeight: '23vh', minWidth: '100%' }} >
+                                    <Pie data={popularServicesData} options={pieOptions} style={{ maxHeight: '23vh', minWidth: '60%' }} />
                                 </div>
                                 <select onChange={(e) => setFilter({ ...filter, timeframe: e.target.value })} value={filter.timeframe} className="form-select mt-2">
                                     <option value="Mensal">Mensal</option>
@@ -302,11 +303,11 @@ const Dashboard = () => {
                         </div>
                     </div>
 
-                    <div className="d-flex flex-column justify-content-between align-items-center p-0 m-0" style={{ maxWidth: '45%', width: '45%', height: '100%', padding: '0 1%' }}>
-                        <div className="card p-3" style={{width: '100%', height: '65%'}}>
-                            <h4 className="text-primary">Faturamento Semestral Por Especialidade <span style={{ fontSize: '14px'}}>(Valor Bruto)</span></h4>
-                            <div>
-                                <Bar data={annualRevenueData} options={ lineOptions2 } style={{ height: '40vh', width: 'auto' }} />
+                    <div className="d-flex flex-column justify-content-between align-items-center p-0 m-0" style={{ maxWidth: '45%', width: '45%', height: '100%', maxHeight: '100%', padding: '0 1%' }}>
+                        <div className="card p-3" style={{ width: '100%', height: '65%', maxHeight: '65%' }}>
+                            <h4 className="text-primary">Faturamento Semestral Por Especialidade <span style={{ fontSize: '14px' }}>(Valor Bruto)</span></h4>
+                            <div style={{ height: '40vh', maxHeight: '40vh', width: 'auto' }} >
+                                <Bar data={annualRevenueData} options={lineOptions2} />
                             </div>
                             <select onChange={(e) => setFilter({ ...filter, specialty: e.target.value })} value={filter.specialty} className="form-select mt-2">
                                 <option value="Todos">Todos</option>
@@ -318,31 +319,31 @@ const Dashboard = () => {
                             <div className="d-flex flex-column justify-content-between" style={{ height: '100%' }}>
                                 <h5 className="text-primary">Descritivo do Mês</h5>
                                 <div className="d-flex justify-content-between align-items-center">
-                                    <div className="d-flex flex-column" style={{maxWidth: '45%', alignItems: 'start'}}>
-                                        <div className="d-flex align-items-end p-2">
-                                            <h5 className="text-primary">Faturamento Total: <span className='text-dark'>R${totalMonthlyRevenue.toLocaleString('pt-BR')}</span></h5>
+                                    <div className="d-flex flex-column" style={{ maxWidth: '45%', alignItems: 'start' }}>
+                                        <div className="d-flex align-items-end py-2">
+                                            <h6 className="text-primary">Faturamento Total: <span className='text-dark'>R${totalMonthlyRevenue.toLocaleString('pt-BR')}</span></h6>
                                         </div>
-                                        <div className="d-flex align-items-end p-2">
+                                        <div className="d-flex align-items-end py-2">
                                             <h6 className="text-primary">Faturam. Médio Por Consulta: <span className='text-dark'>R${totalMonthlyRevenue.toLocaleString('pt-BR')}</span></h6>
                                         </div>
-                                        <div className="d-flex align-items-end p-2">
+                                        <div className="d-flex align-items-end py-2">
                                             <h6 className="text-primary">Maior Faturam. Por Consulta: <span className='text-dark'>R${totalMonthlyRevenue.toLocaleString('pt-BR')}</span></h6>
                                         </div>
-                                        <div className="d-flex align-items-end p-2">
+                                        <div className="d-flex align-items-end py-2">
                                             <h6 className="text-primary">Menor Faturam. Por Consulta: <span className='text-dark'>R${totalMonthlyRevenue.toLocaleString('pt-BR')}</span></h6>
                                         </div>
                                     </div>
-                                    <div className="d-flex flex-column" style={{maxWidth: '55%', alignItems: 'start'}}>
-                                        <div className="d-flex align-items-end p-2">
-                                            <h6 className="text-primary">Serviço Mais Realizado: <span className='text-dark'>Limpeza <span style={{ fontSize: '14px'}}>(60 procedimentos)</span></span></h6>
+                                    <div className="d-flex flex-column" style={{ maxWidth: '55%', alignItems: 'start' }}>
+                                        <div className="d-flex align-items-end py-2">
+                                            <h6 className="text-primary">Serviço Mais Realizado: <span className='text-dark'>Limpeza <span style={{ fontSize: '14px' }}>(60 proced.)</span></span></h6>
                                         </div>
-                                        <div className="d-flex align-items-end p-2">
-                                            <h6 className="text-primary">Serviço Menos Realizado: <span className='text-dark'>Implante <span style={{ fontSize: '14px'}}>(20 procedimentos)</span></span></h6>
+                                        <div className="d-flex align-items-end py-2">
+                                            <h6 className="text-primary">Serviço Menos Realizado: <span className='text-dark'>Implante <span style={{ fontSize: '14px' }}>(20 proced.)</span></span></h6>
                                         </div>
-                                        <div className="d-flex align-items-end p-2">
+                                        <div className="d-flex align-items-end py-2">
                                             <h6 className="text-primary">Dia Com Mais Consultas: <span className='text-dark'>Segunda-Feira, Dia 06</span></h6>
                                         </div>
-                                        <div className="d-flex flex-column align-items-end p-2">
+                                        <div className="d-flex align-items-end py-2">
                                             <h6 className="text-primary">Dia Com Menos Consultas: <span className='text-dark'>Segunda-Feira, Dia 06</span></h6>
                                         </div>
                                     </div>
