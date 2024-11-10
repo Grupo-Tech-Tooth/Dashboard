@@ -21,7 +21,7 @@ const Table = ({ tableInformation }) => {
 
     // Estado para paginação
     const [currentPage, setCurrentPage] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(6);
 
     useEffect(() => {
         if (tableInformation && tableInformation.data) {
@@ -66,7 +66,7 @@ const Table = ({ tableInformation }) => {
                                         <>
                                             {col.key !== 'acoes' ?
                                                 <td key={i}>
-                                                    {col.key === '' ? index + 1 : item[col.key]}
+                                                    {col.key === '' ? (index + 1) + ((currentPage-1) * pageSize) : item[col.key]}
                                                 </td>
                                                 :
                                                 (tableInformation.tbodyId === 'consultationBody') ?
