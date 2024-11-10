@@ -120,7 +120,7 @@ const Edit = ({ userData, display, close, listSpecialization }) => {
                         }}
                     >
                           <option value="">Não se aplica</option>
-                        {
+                        {listSpecialization &&
                             listSpecialization.map((item) => (
                                 <option value={item.key}>{item.label}</option>
                             ))}
