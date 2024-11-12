@@ -25,7 +25,6 @@ function RequireAuth({ children }) {
 
 const AppRoutes = () => {
   return (
-    <Router>
       <Routes>
         <Route path="/" element={<Login />} />
         <Route
@@ -75,7 +74,6 @@ const AppRoutes = () => {
           }
         />
       </Routes>
-    </Router>
   );
 };
 
