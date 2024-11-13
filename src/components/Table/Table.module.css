@@ -8,6 +8,14 @@
             color: #0D6EFD !important;
         }
     }
+    
+    tbody{
+        tr{
+            td{
+               vertical-align: baseline;
+            }
+        }
+    }
 
     .divPagination {
         display: flex;
