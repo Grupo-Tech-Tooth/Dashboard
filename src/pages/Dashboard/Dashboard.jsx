@@ -31,11 +31,12 @@ ChartJS.register(
 
 const Dashboard = () => {
   const [timeframe, setTimeframe] = useState("Mensal");
+
   const [filter, setFilter] = useState({
     year: "2024",
     specialty: "Todos",
     paymentType: "Todos",
-    periodo: timeframe,
+    periodo: "Mensal",
   });
 
   const [dailyFlowData, setDailyFlowData] = useState({
@@ -90,6 +91,8 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchServicesData = async () => {
       try {
+        console.log("Buscando dados dos serviços mais usados...");
+        
         const response = await api.get("/servicos/usados", {
           params: {
             periodo: filter.periodo,
@@ -122,7 +125,9 @@ const Dashboard = () => {
     };
 
     fetchServicesData();
-  }, []);
+  }, [
+    filter.periodo,
+  ]);
 
   const revenueData = {
     labels:
@@ -480,7 +485,7 @@ const Dashboard = () => {
                 </div>
                 <select
                   onChange={(e) =>
-                    setFilter({ ...filter, timeframe: e.target.value})
+                    setFilter({ ...filter, periodo: e.target.value,  })
                   }
                   value={filter.timeframe}
                   className="form-select mt-2"
