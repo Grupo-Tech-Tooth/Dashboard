@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState } from 'react';
 import { Line, Bar, Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
 import Navbar from '../../components/Navbar/Navbar';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import styles from './Dashboard.module.css';
+import api from "../../api";
 ChartJS.register(ChartDataLabels);
 
 
@@ -23,14 +23,34 @@ const Dashboard = () => {
     const [timeframe, setTimeframe] = useState('Mensal');
     const [filter, setFilter] = useState({ year: '2024', specialty: 'Todos', paymentType: 'Todos' });
 
-    const dailyFlowData = {
-        labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
+    const [dailyFlowData, setDailyFlowData] = useState({
+        labels: [],
         datasets: [{
             label: 'Fluxo de Pessoas',
-            data: [30, 40, 45, 35, 60, 50, 20],
+            data: [],
             backgroundColor: '#0D6EFD',
         }]
-    };
+    });
+
+    useEffect(() => {
+        // Chamada para o backend
+        api.get('/clientes/fluxo-mensal')
+            .then(response => {
+                const fluxoMensal = response.data;
+                console.log('Dados de fluxo mensal:', fluxoMensal);
+                 // Lista retornada pelo backend
+                setDailyFlowData(prevData => ({
+                    ...prevData,
+                    datasets: [{
+                        ...prevData.datasets[0],
+                        data: fluxoMensal, // Popula o campo `data`
+                    }]
+                }));
+            })
+            .catch(error => {
+                console.error('Erro ao buscar os dados de fluxo mensal:', error);
+            });
+    }, []);
 
     const popularServicesData = {
         labels: ['Consulta', 'Limpeza', 'Ortodontia', 'Implante', 'Extração'],
