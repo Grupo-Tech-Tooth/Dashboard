@@ -7,6 +7,7 @@ import Login from './pages/Login/Login';
 import Consultation from './pages/Consultation/Consultation';
 import Employees from './pages/Employee/Employees';
 import Services from './pages/Services/Services';
+import Financeiro from './pages/Financeiro/Financeiro';
 
 const AppRoutes = () => {
   return (
@@ -19,6 +20,7 @@ const AppRoutes = () => {
         <Route path="/servicos" element={<Services />} />
         <Route path="/" element={<Login />} />
         <Route path='/gestao-consultas' element={<Consultation />} />
+        <Route path='/gestao-financeira' element={<Financeiro />} />
       </Routes>
     </Router>
   );
