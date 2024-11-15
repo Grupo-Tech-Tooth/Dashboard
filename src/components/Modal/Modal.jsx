@@ -6,7 +6,7 @@ const Modal = ({ show = true, onClose, title, content }) => {
   if (!show) return null; // Caso o modal não deva ser exibido
 
   return (
-    <div className={styles.modal} tabIndex="-1">
+    <div className={styles.modal} tabIndex="-1">  
       <div className={styles.modalDialog}>      
         <div className={`${styles.modalContent} p-4 text-align-center`}>
           <div className={`${styles.modalHeader} px-0 pt-0`}>
