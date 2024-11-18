@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import style from './Table.module.css';
 import FormUser from '../Form/User/Edit/Edit';
 import FormConsultation from '../Form/Consultation/Edit/Edit';
+import FormFunctional from '../Form/Functional/Edit/Edit';
 import FormService from '../Form/Service/EditService/EditService';
 import FormFinance from '../Form/Finance/EditFinance/EditFinance'; // Importando o formulário de finanças
 import api from '../../api';
@@ -18,11 +19,12 @@ const Table = ({ tableInformation }) => {
     const [serviceEdit, setServiceEdit] = useState([]);
     const [formFinance, setFormFinance] = useState("none"); // Estado para o formulário de finanças
     const [financeEdit, setFinanceEdit] = useState([]); // Estado para armazenar os dados de finanças editados
+    const [formFunctional, setFormFunctional] = useState(["none"]);
     const [modalFinalization, setModalFinalization] = useState('none');
 
     // Estado para paginação
     const [currentPage, setCurrentPage] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(6);
 
     useEffect(() => {
         if (tableInformation && tableInformation.data) {
@@ -48,7 +50,8 @@ const Table = ({ tableInformation }) => {
                 <ModalFinalization display={modalFinalization} fecharModal={concluir} agendamento={userEdit} treatments={tableInformation.treatment} />
             )}
 
-            <div className="table-responsive">
+
+            <div className={`${style['table']} table-responsive`}>
                 <table className="table table-hover" id={tableInformation.tableId}>
                     <thead>
                         <tr>
@@ -65,8 +68,8 @@ const Table = ({ tableInformation }) => {
                                     {tableInformation.columns.map((col, i) => (
                                         <React.Fragment key={i}>
                                             {col.key !== 'acoes' ?
-                                                <td>
-                                                    {col.key === '' ? index + 1 : item[col.key]}
+                                                <td key={i}>
+                                                    {col.key === '' ? (index + 1) + ((currentPage-1) * pageSize) : item[col.key]}
                                                 </td>
                                                 :
                                                 (tableInformation.tbodyId === 'consultationBody') ?
@@ -105,7 +108,10 @@ const Table = ({ tableInformation }) => {
                 </div>
 
                 {formUser !== "none" && (
-                    <FormUser display={formUser} userData={userEdit} close={closeForm} />
+                    <FormUser 
+                    display={formUser} 
+                    userData={userEdit} 
+                    close={closeForm} />
                 )}
                 {formConsultation !== "none" && (
                     <FormConsultation
@@ -129,6 +135,14 @@ const Table = ({ tableInformation }) => {
                         display={formFinance}
                         financeData={financeEdit}
                         close={closeForm}
+                    />
+                )}
+                {formFunctional !== "none" && (
+                    <FormFunctional
+                        display={formFunctional}
+                        userData={userEdit}
+                        close={closeForm}
+                        listSpecialization={tableInformation.specialization}
                     />
                 )}
             </div>
@@ -167,6 +181,19 @@ const Table = ({ tableInformation }) => {
             setCount(count + 1);
             setFormFinance("none");
         } else {
+        } else if (tableInformation.tableId === 'employeesTable') {
+            const position = tableInformation.data.findIndex((item) => item.id === information.id);
+            if (position >= 0) {
+                tableInformation.data[position] = {
+                    ...tableInformation.data[position],
+                    ...information
+                };
+            }
+            setCount(count + 1);
+            setFormFunctional("none");
+
+        }
+        else {
             const position = tableInformation.data.findIndex((item) => item.id === information.id);
             if (position >= 0) {
                 tableInformation.data[position] = {
@@ -189,6 +216,9 @@ const Table = ({ tableInformation }) => {
         } else if (tableInformation.tableId === 'financesTable') {
             setFormFinance("block");
             setFinanceEdit(information);
+        } else if (tableInformation.tableId === 'employeesTable') {
+            setFormFunctional("block");
+            setUserEdit(information);
         } else {
             setFormConsultation("block");
             setConsultationEdit(information);

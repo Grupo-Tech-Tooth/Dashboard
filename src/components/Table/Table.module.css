@@ -1,12 +1,24 @@
-thead{
-    border-bottom: 1px solid #0D6EFD !important;
+.table {
+    overflow: hidden !important;
 
-    .title {
-        color: #0D6EFD !important;
+    thead {
+        border-bottom: 1px solid #0D6EFD !important;
+
+        .title {
+            color: #0D6EFD !important;
+        }
     }
-}
+    
+    tbody{
+        tr{
+            td{
+               vertical-align: baseline;
+            }
+        }
+    }
 
-.divPagination{
-    display: flex;
-    justify-content: end;
+    .divPagination {
+        display: flex;
+        justify-content: end;
+    }
 }

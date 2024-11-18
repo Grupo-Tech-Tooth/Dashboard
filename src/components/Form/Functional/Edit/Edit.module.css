@@ -1,0 +1,114 @@
+.bottom {
+    width: 100%;
+    max-height: 100vh;
+    z-index: 10;
+    position: absolute;
+    top: 0%;
+    left: 0%;
+
+
+    .form {
+        position: fixed;
+        width: 80%;
+        max-height: 90vh;
+        background-color: #ffffff;
+        top: 6rem;
+        left: 10%;
+        border: 1px solid gray;
+        border-radius: 5px;
+        padding: 1rem 2% 2rem 2%;
+        overflow-y: hidden;
+        background-color: #FFFFFF;
+        border: none;
+        border-top: 4px solid #0D6EFD;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+
+        .lineTitle {
+            display: flex;
+            justify-content: space-between;
+
+            div {
+                display: flex;
+                gap: 3%;
+                align-items: center;
+                justify-content: center;
+
+
+                h3 {
+                    color: #007bff;
+                }
+            }
+
+            div{
+                padding: 0%;
+                margin: 0%;
+                height: fit-content;
+            }
+
+            .button {
+                color: #339FBE;
+                background-color: #ffffff;
+                padding: 0% 2%;
+                border-radius: 5px;
+                font-size: 1.5rem;
+                font-weight: 600;
+                transition: 0.5s;
+                border: 2px solid transparent;
+            }
+
+            .button:hover {
+                border: 2px solid #339FBE;
+                transition: 0.5s;
+            }
+        }
+
+        .lineData {
+            display: flex;
+            align-items: baseline;
+            height: fit-content;
+            gap: 2%;
+
+            .data {
+                display: flex;
+                height: fit-content;
+                flex-direction: column;
+                justify-content: center;
+                gap: 0.4rem;
+            }
+        }
+
+        .lineButton {
+            width: 100%;
+            display: flex;
+            gap: 1%;
+            justify-content: end;
+
+            .btnSecund {
+                background-color: #ffffff;
+                border-radius: 5px;
+                border: 1px solid #007bff;
+                color: #007bff;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 0 1%;
+            }
+        }
+
+        input:focus {
+            outline: none;
+            box-shadow: none;
+        }
+    }
+}
+
+@media (max-width: 767px) {
+    .bottom {
+        .form {
+            width: 70%;
+            left: 15%;
+            top: 2rem;
+        }
+    }
+}
