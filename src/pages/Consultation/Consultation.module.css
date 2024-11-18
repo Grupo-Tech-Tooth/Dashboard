@@ -63,7 +63,7 @@ thead {
 
 .add {
     position: fixed;
-    z-index: 10;
+    z-index: 1;
     top: 5rem;
     right: 5%;
     background-color: #0D6EFD;

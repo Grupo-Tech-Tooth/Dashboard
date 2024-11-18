@@ -19,7 +19,7 @@ const Appointments = () => {
   // Dados do modal de avaliar consultas
   const [showEvaluationModal, setShowEvaluationModal] = useState(false);
   // Dados do modal de cancelar consultas
-  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [showCancelModal, setShowCancelModal] = useState(true);
   // Passo atual do modal de marcar/remarcar consultas
   const [step, setStep] = useState(0);
 
