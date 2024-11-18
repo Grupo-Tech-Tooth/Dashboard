@@ -180,7 +180,6 @@ const Table = ({ tableInformation }) => {
             }
             setCount(count + 1);
             setFormFinance("none");
-        } else {
         } else if (tableInformation.tableId === 'employeesTable') {
             const position = tableInformation.data.findIndex((item) => item.id === information.id);
             if (position >= 0) {
