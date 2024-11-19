@@ -18,7 +18,7 @@ const Navbar = () => {
   return (
     <nav className={`${styles.navbar} navbar navbar-expand-lg navbar-light bg-white shadow-sm w-100`}>
       <div className="container-fluid p-0 d-flex justify-content-between align-items-center" style={{ width: '80%' }}>
-        <Link className="navbar-brand text-primary m-0" to="/">
+        <Link className="navbar-brand text-primary m-0" to="/dashboard">
           <FontAwesomeIcon icon={faTooth} /> Tech Tooth
         </Link>
         <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -29,7 +29,7 @@ const Navbar = () => {
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav ms-auto">
               <li className="nav-item">
-                <Link className={`${styles.nav_link} nav-link text-primary`} to="/gestao-consultas">Início</Link>
+                <Link className={`${styles.nav_link} nav-link text-primary`} to="/dashboard">Início</Link>
               </li>
               {/* <li className="nav-item">
                 <Link className={`${styles.nav_link} nav-link text-primary`} to="/meu-perfil">Meu Perfil</Link>
