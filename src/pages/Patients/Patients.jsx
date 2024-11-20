@@ -5,7 +5,6 @@ import Container from "../../components/Container/Container";
 import Button from "../../components/Botao/Botao";
 import Table from "../../components/Table/Table";
 import Add from "../../components/Form/User/Add/Add";
-import axios from "axios";
 import api from "../../api";
 
 function Patients() {
@@ -173,27 +172,19 @@ function Patients() {
   const [searchName, setSearchName] = useState("");
   const [searchCpf, setSearchCpf] = useState("");
   const [searchPhone, setSearchPhone] = useState("");
-  const [page, setPage] = useState(0);
-  const [size, setSize] = useState(10);
-  const [totalPages, setTotalPages] = useState(1);
 
   const [viewFormAdd, setViewFormAdd] = useState("none");
 
-  async function getData(page, size) {
+  async function getData() {
     try {
-      const response = await api.get(`/clientes`, {
-        params: {
-          page: page,
-          size: size,
-        },
-      });
+      const response = await api.get(`/clientes`);
 
       formatData(response.data.content)
     } catch (error) {
       console.log("Erro ao obter consultas:", error);
     }
     setTimeout(() => {
-      getData(page, size);
+      getData();
     }, 50000);
   }
 
@@ -223,8 +214,8 @@ function Patients() {
 
   useEffect(() => {
     tableInformation.dataNotFilter = tableInformation.data;
-    getData(page, size);
-  }, [page, size]);
+    getData();
+  });
 
   return (
     <>
