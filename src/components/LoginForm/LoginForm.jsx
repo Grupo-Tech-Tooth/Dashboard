@@ -15,7 +15,7 @@ const LoginForm = () => {
     event.preventDefault();
 
     try {
-      const response = await axios.post("http://localhost:8080/login", {
+      const response = await axios.post("https://back-end-teth-tooth.azurewebsites.net/login", {
         email: email,
         senha: password,
       });
