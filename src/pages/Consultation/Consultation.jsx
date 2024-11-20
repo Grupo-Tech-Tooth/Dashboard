@@ -8,13 +8,12 @@ import Modal from '../../components/Modal/Modal';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { height } from '@mui/system';
 
 function Consultation() {
     
     const [pacientes, setPacientes] = useState([]);
 
-    const [showEvaluationModal, setShowEvaluationModal] = useState(true);
+    const [showEvaluationModal] = useState(true);
     const [tableInformation, setTableInformation] = useState({
         'columns': [
             { 'name': '#', key: '' },
