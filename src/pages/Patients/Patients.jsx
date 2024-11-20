@@ -181,12 +181,7 @@ function Patients() {
 
   async function getData(page, size) {
     try {
-      const response = await api.get(`/clientes`, {
-        params: {
-          page: page,
-          size: size,
-        },
-      });
+      const response = await api.get(`/clientes`);
 
       formatData(response.data.content)
     } catch (error) {
