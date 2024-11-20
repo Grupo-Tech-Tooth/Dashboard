@@ -13,8 +13,7 @@ import style from './Appointments.module.css';
 
 const Appointments = () => {
   //
-  const [loading, setLoading] = useState(false);
-  // Dados do modal de marcar/remarcar consultas
+  // Dados do modal de marcar/remarcar consultasx
   const [showModal, setShowModal] = useState(false);
   // Dados do modal de avaliar consultas
   const [showEvaluationModal, setShowEvaluationModal] = useState(false);
@@ -45,10 +44,10 @@ const Appointments = () => {
   const [searchFinalDate, setSearchFinalDate] = useState('');
 
   //Logica dos Inuts dos filtros
-  const [optionsTreatments, setOptionsTreatments] = useState([]);
-  const [inputValueTreatment, setInputValueTreatment] = useState(searchTreatment);
-  const [optionsDoctors, setOptionsDoctors] = useState([]);
-  const [inputValueDoctor, setInputValueDoctor] = useState(searchDoctor);
+  const [optionsTreatments] = useState([]);
+  const [inputValueTreatment] = useState(searchTreatment);
+  const [optionsDoctors] = useState([]);
+  const [inputValueDoctor] = useState(searchDoctor);
 
 
   //consultas
@@ -190,9 +189,7 @@ const Appointments = () => {
     return new Date(year, month, day, hours, minutes);
   };
 
-  const findTreatment = (id) => {
-    return treatments.find(treatment => treatment.id === id);
-  };
+
 
   const findAppointment = (id) => {
     return consultas.find(appointment => appointment.id === id);
@@ -244,28 +241,6 @@ const Appointments = () => {
     setStep(step + 1);
   };
 
-  //função para avançar os passos do modal de marcar/remarcar consultas
-  const handleBackardStep = () => {
-    if (step === 1) {
-      obterDatasDisponiveis(selectedDoctor, selectedTreatment);
-
-    }
-    if (step === 3) {
-      if (schedulementId === '') {
-        //post consulta
-      }
-      else {
-        const consulta = consultas.find(consulta => consulta.id === schedulementId);
-        if (consulta) {
-          //logica para atualizar/remarcar consulta
-        }
-        else {
-          console.log('Consulta não encontrada');
-        }
-      }
-    }
-    setStep(step + 1);
-  };
 
   //função para abrir o modal de avaliar consultas
   const handleOpenEvaluationModal = (id) => {
@@ -622,7 +597,7 @@ const Appointments = () => {
   const getLastAppointment = (appointments = consultas) => {
     if (!Array.isArray(appointments)) {
       console.error('appointments não é um array:', appointments);
-      appointments.length == 1 ? (new Date(appointments[0].dataHora) < new Date() ? setLastAppointment(appointments[0]) : setLastAppointment(null)) : setLastAppointment(null);
+      appointments.length === 1 ? (new Date(appointments[0].dataHora) < new Date() ? setLastAppointment(appointments[0]) : setLastAppointment(null)) : setLastAppointment(null);
       return;
     }
 
@@ -641,7 +616,7 @@ const Appointments = () => {
   const getNextAppointment = (appointments = consultas) => {
     if (!Array.isArray(appointments)) {
       console.error('appointments não é um array:', appointments);
-      appointments.length == 1 ? (new Date(appointments[0].dataHora) > new Date() ? setNextAppointment(appointments[0]) : setNextAppointment(null)) : setNextAppointment(null);
+      appointments.length === 1 ? (new Date(appointments[0].dataHora) > new Date() ? setNextAppointment(appointments[0]) : setNextAppointment(null)) : setNextAppointment(null);
       return;
     }
 
@@ -821,7 +796,6 @@ const Appointments = () => {
         throw new Error('Erro ao obter consultas');
       }
       const data = await response.json();
-      const dataFiltered = data.filter(consulta => consulta.status !== 'Remarcado');
       setConsultas(data);
       fillAppointmentsData(data);
       getLastAppointment(data);
@@ -920,7 +894,6 @@ const Appointments = () => {
   const cancelarConsulta = async (idConsulta) => {
     try {
       const token = sessionStorage.getItem('token');
-      const consulta = findAppointment(idConsulta);
       const response = await fetch(`http://localhost:8080/agendamentos/${idConsulta}/cancelar`, {
         method: 'PUT',
         headers: {
@@ -933,7 +906,6 @@ const Appointments = () => {
       if (!response.ok) {
         throw new Error('Erro ao cancelar consulta');
       }
-      const data = await response.json();
       const newAppointmentList = consultas.map(consulta => {
         if (consulta.id === idConsulta) {
           return { ...consulta, status: 'Cancelado' };
@@ -1040,7 +1012,7 @@ const Appointments = () => {
 
   useEffect(() => {
     obterDadosBanco();
-  }, [])
+  })
 
 
   return (
