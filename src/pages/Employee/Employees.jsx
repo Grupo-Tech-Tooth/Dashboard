@@ -72,7 +72,7 @@ function Employees() {
           id: funcional.id,
           fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
           name: funcional.nome,
-          email: funcional.loginInfo.email,
+          email: funcional.email,
           phone: funcional.telefone,
           department:funcional.departamento,
           specialization: "-",
@@ -91,7 +91,7 @@ function Employees() {
   useEffect(() => {
     tableInformation.dataNotFilter = tableInformation.data;
     getData();
-  }, []);
+  });
 
   return (
     <>
