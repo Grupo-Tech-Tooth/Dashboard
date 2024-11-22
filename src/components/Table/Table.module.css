@@ -9,9 +9,9 @@
         }
     }
     
-    tbody{
-        tr{
-            td{
+    tbody {
+        tr {
+            td {
                vertical-align: baseline;
             }
         }
@@ -20,5 +20,9 @@
     .divPagination {
         display: flex;
         justify-content: end;
+    }
+
+    .buttonActions {
+        border-radius: 5px !important;
     }
 }

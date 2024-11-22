@@ -5,7 +5,6 @@ import Container from "../../components/Container/Container";
 import Button from "../../components/Botao/Botao";
 import Table from "../../components/Table/Table";
 import Add from "../../components/Form/User/Add/Add";
-import axios from "axios";
 import api from "../../api";
 
 function Patients() {
@@ -15,154 +14,154 @@ function Patients() {
       { name: "Nome", key: 'fullName' },
       { name: "Email", key: 'email' },
       { name: "Telefone", key: 'phone' },
-      { name: "Última Consulta", key: 'dateBirth' },
+      { name: "Última Consulta", key: 'lastVisit' },
       { name: "Ações", key: 'acoes' },
     ],
     data: [
-        {
-          id: 1,
-          name: "João",
-          surname: "da Silva",
-          fullName: "João da Silva",
-          email: "joao@example.com",
-          phone: "(11) 91234-5678",
-          lastVisit: "2024-08-15",
-          cpf: "12345678909",
-          dateBirth: "2005-05-03",
-          gender: "Masculino"
-        },
-        {
-          id: 2,
-          name: "Maria",
-          surname: "da Silva",
-          fullName: "Maria da Silva",
-          email: "maria@example.com",
-          phone: "(21) 99876-5432",
-          lastVisit: "2024-08-20",
-          dateBirth: "2005-05-03",
-          cpf: "98765432100",
-          gender: "Feminino"
-        },
-        {
-          id: 3,
-          name: "Pedro",
-          surname: "Souza",
-          fullName: "Pedro Souza",
-          email: "pedro@example.com",
-          phone: "(31) 98765-4321",
-          lastVisit: "2024-08-10",
-          dateBirth: "2005-05-03",
-          cpf: "11122233344",
-          gender: "Masculino"
-        },
-        {
-          id: 4,
-          name: "João",
-          surname: "da Silva",
-          fullName: "João da Silva",
-          email: "joao2@example.com",
-          phone: "(11) 91234-5678",
-          lastVisit: "2024-08-15",
-          dateBirth: "2005-05-03",
-          cpf: "12345678901",
-          gender: "Masculino"
-        },
-        {
-          id: 5,
-          name: "Maria",
-          surname: "Oliveira",
-          fullName: "Maria Oliveira",
-          email: "maria.oliveira@example.com",
-          phone: "(21) 99876-5432",
-          lastVisit: "2024-08-20",
-          dateBirth: "2005-05-03",
-          cpf: "22233344455",
-          gender: "Feminino"
-        },
-        {
-          id: 6,
-          name: "Pedro",
-          surname: "Silva",
-          fullName: "Pedro Silva",
-          email: "pedro.silva@example.com",
-          phone: "(31) 98765-4321",
-          lastVisit: "2024-08-10",
-          dateBirth: "2005-05-03",
-          cpf: "33344455566",
-          gender: "Masculino"
-        },
-        {
-          id: 7,
-          name: "João",
-          surname: "Santos",
-          fullName: "João Santos",
-          email: "joao.santos@example.com",
-          phone: "(11) 91234-5678",
-          lastVisit: "2024-08-15",
-          dateBirth: "2005-05-03",
-          cpf: "44455566677",
-          gender: "Masculino"
-        },
-        {
-          id: 8,
-          name: "Maria",
-          surname: "Pereira",
-          fullName: "Maria Pereira",
-          email: "maria.pereira@example.com",
-          phone: "(21) 99876-5432",
-          lastVisit: "2024-08-20",
-          dateBirth: "2005-05-03",
-          cpf: "55566677788",
-          gender: "Feminino"
-        },
-        {
-          id: 9,
-          name: "Pedro",
-          surname: "Lima",
-          fullName: "Pedro Lima",
-          email: "pedro.lima@example.com",
-          phone: "(31) 98765-4321",
-          lastVisit: "2024-08-10",
-          dateBirth: "2005-05-03",
-          cpf: "66677788899",
-          gender: "Masculino"
-        },
-        {
-          id: 10,
-          name: "João",
-          surname: "Almeida",
-          fullName: "João Almeida",
-          email: "joao.almeida@example.com",
-          phone: "(11) 91234-5678",
-          lastVisit: "2024-08-15",
-          dateBirth: "2005-05-03",
-          cpf: "77788899900",
-          gender: "Masculino"
-        },
-        {
-          id: 11,
-          name: "Maria",
-          surname: "Cruz",
-          fullName: "Maria Cruz",
-          email: "maria.cruz@example.com",
-          phone: "(21) 99876-5432",
-          lastVisit: "2024-08-20",
-          dateBirth: "2005-05-03",
-          cpf: "88899900011",
-          gender: "Feminino"
-        },
-        {
-          id: 12,
-          name: "Pedro",
-          surname: "Ferreira",
-          fullName: "Pedro Ferreira",
-          email: "pedro.ferreira@example.com",
-          phone: "(31) 98765-4321",
-          lastVisit: "2024-08-10",
-          dateBirth: "2005-05-03",
-          cpf: "99900011122",
-          gender: "Masculino"
-        }      
+      {
+        id: 1,
+        name: "João",
+        surname: "da Silva",
+        fullName: "João da Silva",
+        email: "joao@example.com",
+        phone: "(11) 91234-5678",
+        lastVisit: "2024-08-15",
+        cpf: "12345678909",
+        dateBirth: "2005-05-03",
+        gender: "Masculino"
+      },
+      {
+        id: 2,
+        name: "Maria",
+        surname: "da Silva",
+        fullName: "Maria da Silva",
+        email: "maria@example.com",
+        phone: "(21) 99876-5432",
+        lastVisit: "2024-08-20",
+        dateBirth: "2005-05-03",
+        cpf: "98765432100",
+        gender: "Feminino"
+      },
+      {
+        id: 3,
+        name: "Pedro",
+        surname: "Souza",
+        fullName: "Pedro Souza",
+        email: "pedro@example.com",
+        phone: "(31) 98765-4321",
+        lastVisit: "2024-08-10",
+        dateBirth: "2005-05-03",
+        cpf: "11122233344",
+        gender: "Masculino"
+      },
+      {
+        id: 4,
+        name: "João",
+        surname: "da Silva",
+        fullName: "João da Silva",
+        email: "joao2@example.com",
+        phone: "(11) 91234-5678",
+        lastVisit: "2024-08-15",
+        dateBirth: "2005-05-03",
+        cpf: "12345678901",
+        gender: "Masculino"
+      },
+      {
+        id: 5,
+        name: "Maria",
+        surname: "Oliveira",
+        fullName: "Maria Oliveira",
+        email: "maria.oliveira@example.com",
+        phone: "(21) 99876-5432",
+        lastVisit: "2024-08-20",
+        dateBirth: "2005-05-03",
+        cpf: "22233344455",
+        gender: "Feminino"
+      },
+      {
+        id: 6,
+        name: "Pedro",
+        surname: "Silva",
+        fullName: "Pedro Silva",
+        email: "pedro.silva@example.com",
+        phone: "(31) 98765-4321",
+        lastVisit: "2024-08-10",
+        dateBirth: "2005-05-03",
+        cpf: "33344455566",
+        gender: "Masculino"
+      },
+      {
+        id: 7,
+        name: "João",
+        surname: "Santos",
+        fullName: "João Santos",
+        email: "joao.santos@example.com",
+        phone: "(11) 91234-5678",
+        lastVisit: "2024-08-15",
+        dateBirth: "2005-05-03",
+        cpf: "44455566677",
+        gender: "Masculino"
+      },
+      {
+        id: 8,
+        name: "Maria",
+        surname: "Pereira",
+        fullName: "Maria Pereira",
+        email: "maria.pereira@example.com",
+        phone: "(21) 99876-5432",
+        lastVisit: "2024-08-20",
+        dateBirth: "2005-05-03",
+        cpf: "55566677788",
+        gender: "Feminino"
+      },
+      {
+        id: 9,
+        name: "Pedro",
+        surname: "Lima",
+        fullName: "Pedro Lima",
+        email: "pedro.lima@example.com",
+        phone: "(31) 98765-4321",
+        lastVisit: "2024-08-10",
+        dateBirth: "2005-05-03",
+        cpf: "66677788899",
+        gender: "Masculino"
+      },
+      {
+        id: 10,
+        name: "João",
+        surname: "Almeida",
+        fullName: "João Almeida",
+        email: "joao.almeida@example.com",
+        phone: "(11) 91234-5678",
+        lastVisit: "2024-08-15",
+        dateBirth: "2005-05-03",
+        cpf: "77788899900",
+        gender: "Masculino"
+      },
+      {
+        id: 11,
+        name: "Maria",
+        surname: "Cruz",
+        fullName: "Maria Cruz",
+        email: "maria.cruz@example.com",
+        phone: "(21) 99876-5432",
+        lastVisit: "2024-08-20",
+        dateBirth: "2005-05-03",
+        cpf: "88899900011",
+        gender: "Feminino"
+      },
+      {
+        id: 12,
+        name: "Pedro",
+        surname: "Ferreira",
+        fullName: "Pedro Ferreira",
+        email: "pedro.ferreira@example.com",
+        phone: "(31) 98765-4321",
+        lastVisit: "2024-08-10",
+        dateBirth: "2005-05-03",
+        cpf: "99900011122",
+        gender: "Masculino"
+      }
     ],
     dataNotFilter: [],
     tableId: "patientsTable",
@@ -173,27 +172,19 @@ function Patients() {
   const [searchName, setSearchName] = useState("");
   const [searchCpf, setSearchCpf] = useState("");
   const [searchPhone, setSearchPhone] = useState("");
-  const [page, setPage] = useState(0);
-  const [size, setSize] = useState(10);
-  const [totalPages, setTotalPages] = useState(1);
 
   const [viewFormAdd, setViewFormAdd] = useState("none");
 
-  async function getData(page, size) {
+  async function getData() {
     try {
-      const response = await api.get(`/clientes`, {
-        params: {
-          page: page,
-          size: size,
-        },
-      });
+      const response = await api.get(`/clientes`);
 
       formatData(response.data.content)
     } catch (error) {
       console.log("Erro ao obter consultas:", error);
     }
     setTimeout(() => {
-      getData(page, size);
+      getData();
     }, 50000);
   }
 
@@ -223,8 +214,8 @@ function Patients() {
 
   useEffect(() => {
     tableInformation.dataNotFilter = tableInformation.data;
-    getData(page, size);
-  }, [page, size]);
+    getData();
+  });
 
   return (
     <>
@@ -298,14 +289,6 @@ function Patients() {
               >
                 Limpar Filtro
               </button>
-              <button
-                type="button"
-                onClick={() => abrirModalAdd()}
-                className={style["add"]}
-              >
-                Nova Paciente
-              </button>
-
             </div>
           </div>
           <div className={style['table']}>
@@ -313,16 +296,8 @@ function Patients() {
           </div>
         </div>
       </Container>
-      <div
-        className={`z-3 position-absolute p-5 rounded-3 ${style["boxButton"]}`}
-      >
-        <button
-          type="button"
-          onClick={() => abrirModalAdd()}
-          className={style["add"]}
-        >
-          +
-        </button>
+      <div className={`z-3 position-absolute p-5 rounded-3 ${style['boxButton']}`}>
+        <button type="button" onClick={() => abrirModalAdd()} className={style['add']}>Novo Paciente</button>
       </div>
     </>
   );
@@ -339,67 +314,27 @@ function Patients() {
   }
 
   function buscar() {
-    let listName = [];
-    let listEmail = [];
-    let listCpf = [];
-    let listPhone = [];
+    const filteredData = tableInformation.dataNotFilter.filter((item) => {
+      const matchesName = searchName
+        ? item.fullName?.toLowerCase().includes(searchName.toLowerCase())
+        : true;
+      const matchesEmail = searchEmail
+        ? item.email?.toLowerCase().includes(searchEmail.toLowerCase())
+        : true;
+      const matchesCpf = searchCpf
+        ? item.cpf?.includes(searchCpf)
+        : true;
+      const matchesPhone = searchPhone
+        ? item.phone?.includes(searchPhone)
+        : true;
 
-    if (searchName) {
-      const searchLower = searchName.toLowerCase();
-      listName = tableInformation.dataNotFilter.filter((item) =>
-        item.name.toLowerCase().includes(searchLower)
-      );
-    }
-    if (searchEmail) {
-      const searchLower = searchEmail.toLowerCase();
-      listEmail = tableInformation.dataNotFilter.filter((item) =>
-        item.email.toLowerCase().includes(searchLower)
-      );
-    }
-    if (searchCpf) {
-      // Entregavel Pesquisa Binária
-      const listOrdenada = tableInformation.dataNotFilter.sort((a, b) =>
-        a.cpf.localeCompare(b.cpf)
-      );
-      let start = 0;
-      let end = listOrdenada.length - 1;
+      return matchesName && matchesEmail && matchesCpf && matchesPhone;
+    });
 
-      while (start <= end) {
-        let meio = Math.floor((start + end) / 2);
-
-        if (listOrdenada[meio].cpf.includes(searchCpf)) {
-          listCpf.push(listOrdenada[meio]);
-          break;
-        } else if (searchCpf < listOrdenada[meio].cpf) {
-          end = meio - 1;
-        } else {
-          start = meio + 1;
-        }
-      }
-    }
-    if (searchPhone) {
-      const searchLower = searchPhone;
-      listPhone = tableInformation.dataNotFilter.filter((item) =>
-        item.phone.includes(searchLower)
-      );
-    }
-
-    if (searchName || searchEmail || searchPhone || searchCpf) {
-      let listAll = [...listName, ...listEmail, ...listCpf, ...listPhone];
-
-      setTableInformation((prevTableInformation) => ({
-        ...prevTableInformation,
-        data: listAll,
-      }));
-    } else {
-      const listOrdenada = tableInformation.dataNotFilter.sort(
-        (a, b) => a.id - b.id
-      );
-      setTableInformation((prevTableInformation) => ({
-        ...prevTableInformation,
-        data: listOrdenada,
-      }));
-    }
+    setTableInformation((prevTableInformation) => ({
+      ...prevTableInformation,
+      data: filteredData,
+    }));
   }
 
   function abrirModalAdd() {

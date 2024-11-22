@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  site-tech-tooth:
+    image: marcosfloriano/site-tech-tooth:latest
+    ports:
+      - "8080:80"
+
+  site-oi-sorria:
+    image: marcosfloriano/site-oi-sorria:latest
+    ports:
+      - "8081:80"
+
+  dashboard:
+    image: marcosfloriano/dashboard:latest
+    ports:
+      - "8082:80"

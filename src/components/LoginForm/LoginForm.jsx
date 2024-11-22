@@ -15,7 +15,7 @@ const LoginForm = () => {
     event.preventDefault();
 
     try {
-      const response = await axios.post("http://localhost:8080/login", {
+      const response = await axios.post("https://back-end-teth-tooth.azurewebsites.net/login", {
         email: email,
         senha: password,
       });
@@ -88,7 +88,7 @@ const LoginForm = () => {
         <Botao label="Entrar" className="btn-primary" />
         {error && <div className="mt-3 text-danger text-center">{error}</div>}
         <div className="mt-3 text-center">
-          <a href="#" className="text-decoration-none text-primary">
+          <a href="https://witty-island-0e048820f.5.azurestaticapps.net/#contato" target="blank" className="text-decoration-none text-primary">
             Esqueceu a senha?
           </a>
         </div>
