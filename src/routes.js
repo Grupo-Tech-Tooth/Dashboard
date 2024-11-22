@@ -8,6 +8,7 @@ import Login from './pages/Login/Login';
 import Consultation from './pages/Consultation/Consultation';
 import Employees from './pages/Employee/Employees';
 import Services from './pages/Services/Services';
+import Financeiro from './pages/Financeiro/Financeiro';
 import Dashboard from './pages/Dashboard/Dashboard';
 import NotFound from './pages/NotFound/NotFound';
 
@@ -27,6 +28,8 @@ const AppRoutes = () => {
   return (
       <Routes>
         <Route path="/" element={<Login />} />
+        <Route path='/gestao-consultas' element={<Consultation />} />
+        <Route path='/gestao-financeira' element={<Financeiro />} />
         <Route
           path="/funcionarios"
           element={
