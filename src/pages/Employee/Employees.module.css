@@ -12,8 +12,7 @@
 
     .table{
         width: 100%;
-        max-height: 60vh;
-        overflow-y: scroll;
+        height: 70vh;
     }
 
     label {
@@ -29,13 +28,11 @@
         width: fit-content;
         display: flex;
         flex-direction: row;
-        gap: 2%;
+        gap: 3%;
         height: fit-content;
         padding-top: 2rem;
-        padding-left: 1%;
         justify-content: center;
         align-items: center;
-        
 
         .buttonSearch {
             border-radius: 5px;
@@ -44,7 +41,7 @@
         .buttonAdd {
             height: fit-content;
         }
-
+        
         .button-limpar{
             white-space: nowrap;
         }
@@ -53,23 +50,7 @@
 
 .add {
     position: fixed;
-    top: 5rem;
+    z-index: 2;
+    top: 4.5rem;
     right: 5%;
-    background-color: #0D6EFD;
-    color: #FFFFFF;
-    font-weight: 400;
-    font-size: 1.2em;
-    height: fit-content;
-    padding: 0rem 1vw 0.2rem 1vw;
-    border: 1px solid #0D6EFD;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: 0.5s;
-}
-
-.add:hover {
-    background-color: #FFFFFF;
-    color: #0D6EFD;
-    border: 1px solid #0D6EFD;
-    transition: 0.5s;
 }

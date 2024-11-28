@@ -44,10 +44,10 @@ const Edit = ({ userData, display, close, listSpecialization }) => {
                         onClick={() => close(userUpdate)}></button>
                 </div>
                 <div className="col-md-3">
-                    <Input name={'firstName'} type={'text'} label={'Nome'} placeholder={'Digite seu nome'} required={'true'} disabled={disabled} value={userEdit.name} />
+                    <Input name={'firstName'} type={'text'} label={'Nome'} placeholder={'Nome do Funcionário'} required={'true'} disabled={disabled} value={userEdit.name} />
                 </div>
                 <div className="col-md-3">
-                    <Input name={'lastName'} type={'text'} label={'Sobrenome'} placeholder={'Digite seu sobrenome'} disabled={disabled} value={userEdit.surname} />
+                    <Input name={'lastName'} type={'text'} label={'Sobrenome'} placeholder={'Sobrenome do Funcionário'} disabled={disabled} value={userEdit.surname} />
                 </div>
                 <div className="col-md-3">
                     <label htmlFor="inputGender" className="form-label">Sexo</label>
@@ -74,7 +74,7 @@ const Edit = ({ userData, display, close, listSpecialization }) => {
                         mask="99/99/9999"
                         className={`form-control ${error ? 'is-invalid' : ''}`}
                         id="date"
-                        placeholder="dd/mm/yyyy"
+                        placeholder="Data de Nascimento (DD/MM/YYYY)"
                         value={userEdit.dateBirth}
                         onChange={(e) => {
                             const inputValue = e.target.value;
@@ -94,14 +94,32 @@ const Edit = ({ userData, display, close, listSpecialization }) => {
 
                     {error && <div className="invalid-feedback">{error}</div>}
                 </div>
+                            <div className="col-md-3">
+                                <label htmlFor="cpf" className="form-label">CPF</label>
+                                <InputMask
+                                    mask="999.999.999-99"
+                                    className="form-control"
+                                    id="cpf"
+                                    placeholder="CPF do Funcionário"
+                                    disabled={disabled}
+                                    value={userEdit.cpf}
+                                    onChange={(e) => {
+                                        setUserEdit(prevData => ({
+                                            ...prevData,
+                                            cpf: e.target.value
+                                        }));
+                                    }}
+                                />
+                            </div>
                 <div className="col-md-3">
-                    <Input name={'phone'} type={'text'} label={'Telefone'} placeholder={'Digite seu telefone'} disabled={disabled} value={userEdit.phone} />
+                    <Input name={'phone'} type={'text'} label={'Telefone'} placeholder={'Telefone do Funcionário'} disabled={disabled} value={userEdit.phone} />
                 </div>
                 <div className="col-md-3">
-                    <Input name={'email'} type={'email'} label={'E-mail'} placeholder={'Digite seu e-mail'} disabled={disabled} value={userEdit.email} />
+                    <Input name={'email'} type={'email'} label={'E-mail'} placeholder={'E-mail do Funcionário'} disabled={disabled} value={userEdit.email} />
                 </div>
+                <div className="col-md-3"></div>
                 <div className="col-md-3">
-                    <Input name={'crm'} type={'text'} label={'CRM'} placeholder={'Digite seu CRM'} disabled={disabled} value={userEdit.crm} />
+                    <Input name={'crm'} type={'text'} label={'CRM'} placeholder={'CRM do Funcionário (Se for Médico)'} disabled={disabled} value={userEdit.crm} />
                 </div>
                 <div className="col-md-3">
                     <label htmlFor="inputSpecialization" className="form-label">Especialização</label>
@@ -125,21 +143,10 @@ const Edit = ({ userData, display, close, listSpecialization }) => {
                     </select>
                 </div>
                 <div className="col-md-3">
-                    <label htmlFor="cpf" className="form-label">CPF</label>
-                    <InputMask
-                        mask="999.999.999-99"
-                        className="form-control"
-                        id="cpf"
-                        placeholder="Digite seu CPF"
-                        disabled={disabled}
-                        value={userEdit.cpf}
-                        onChange={(e) => {
-                            setUserEdit(prevData => ({
-                                ...prevData,
-                                cpf: e.target.value
-                            }));
-                        }}
-                    />
+                    <Input name={'department'} type={'text'} label={'Setor'} placeholder={'Setor do Funcionário'} required={'true'} disabled={disabled}/>
+                </div>
+                <div className="col-md-3">
+                    <Input name={'registry'} type={'text'} label={'Matrícula'} placeholder={'Matrícula do Funcionário'} required={'true'} disabled={disabled}/>
                 </div>
                 <div className="col-md-3">
                     <label htmlFor="patientCep" className="form-label">CEP*</label>
@@ -149,7 +156,7 @@ const Edit = ({ userData, display, close, listSpecialization }) => {
                         id="patientCep"
                         value={userEdit.cep}
                         disabled={disabled}
-                        placeholder="Digite o CEP do paciente"
+                        placeholder="CEP do Funcionário"
                         onBlur={() => fetchAddress()}
                         required
                         onChange={(e) => {
@@ -162,7 +169,7 @@ const Edit = ({ userData, display, close, listSpecialization }) => {
                 </div>
                 <div className="col-md-3">
                     <label htmlFor="patientStreet" className="form-label">Rua</label>
-                    <input type="text" className="form-control" id="patientStreet" value={userEdit.street} placeholder="Rua do paciente"
+                    <input type="text" className="form-control" id="patientStreet" value={userEdit.street} placeholder="Rua do Funcionário"
                         disabled />
                 </div>
                 <div className="col-md-3">
@@ -173,7 +180,7 @@ const Edit = ({ userData, display, close, listSpecialization }) => {
                         name="patientNumber"
                         disabled={disabled}
                         label={"Número"}
-                        placeholder="Número do endereço"
+                        placeholder="Número da Casa"
                         onChange={(e) => {
                             setUserEdit((prevData) => ({
                                 ...prevData,
@@ -184,14 +191,18 @@ const Edit = ({ userData, display, close, listSpecialization }) => {
 
                 </div>
                 <div className="col-md-3">
+                    <label htmlFor="employeesComplement" className="form-label">Complemento</label>
+                    <input type="text" className="form-control" id="employeesComplement" placeholder="Complemento da Casa" disabled={disabled}/>
+                </div>
+                <div className="col-md-3">
                     <label htmlFor="patientNeighborhood" className="form-label">Bairro</label>
                     <input type="text" className="form-control" id="patientNeighborhood" value={userEdit.neighborhood}
-                        placeholder="Bairro do paciente" disabled />
+                        placeholder="Bairro do Funcionário" disabled />
                 </div>
                 <div className="col-md-3">
                     <label htmlFor="patientCity" className="form-label">Cidade</label>
                     <input type="text" className="form-control" id="patientCity" value={userEdit.city}
-                        placeholder="Cidade do paciente" disabled />
+                        placeholder="Cidade do Funcionário" disabled />
                 </div>
                 <div className={style['lineButton']}>
                     {

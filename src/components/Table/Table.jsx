@@ -87,8 +87,8 @@ const Table = ({ tableInformation }) => {
             )}
 
 
-            <div className={`${style['table']} table-responsive`}>
-                <table className="table table-hover" id={tableInformation.tableId}>
+            <div className={`${style['table']} table-responsive ${pageSize === 10 ? 'overflow-hidden' : ''}`}>
+                <table className="table table-hover mb-2" id={tableInformation.tableId}>
                     <thead>
                         <tr>
                             {tableInformation.columns &&

@@ -85,7 +85,7 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
 
     return (
         <>
-            <div className="modal" id="viewCalendarModal" tabIndex="-1" aria-labelledby="viewCalendarModalLabel" style={{ display: Display }}
+            <div className={`${style['bottom']} modal `} id="viewCalendarModal" tabIndex="-1" aria-labelledby="viewCalendarModalLabel" style={{ display: Display }}
                 aria-hidden="true">
                 <div className="modal-dialog modal-md modal-dialog-scrollable">
                     <div className="modal-content"
