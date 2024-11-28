@@ -4,8 +4,16 @@ import Container from '../../components/Container/Container';
 import Table from '../../components/Table/Table';
 import React, { useState, useEffect } from 'react';
 import Add from '../../components/Form/Consultation/Add/Add';
+import Modal from '../../components/Modal/Modal';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 
 function Consultation() {
+    
+    const [pacientes, setPacientes] = useState([]);
+
+    const [showEvaluationModal] = useState(true);
     const [tableInformation, setTableInformation] = useState({
         'columns': [
             { 'name': '#', key: '' },
@@ -190,8 +198,53 @@ function Consultation() {
         }));
     }, []);
 
+    // useEffect(() => {
+    //     // Busca a fila de chegada do backend
+    //     axios.get('/api/fila-chegada')  // Troque para o endpoint correto do seu backend
+    //         .then(response => setPacientes(response.data))
+    //         .catch(error => console.error('Erro ao buscar pacientes:', error));
+    // }, []);
+
+    useEffect(() => {
+        // Mock de dados para a fila de chegada
+        const mockPacientes = [
+            { horario: "09:00", nome: "Luiz Fernando" },
+            { horario: "10:00", nome: "Camila Silva" },
+            { horario: "10:30", nome: "Rafael Andrade" },
+            { horario: "10:30", nome: "Rafael Andrade" },
+            { horario: "10:30", nome: "Rafael Andrade" },
+            { horario: "10:30", nome: "Rafael Andrade" },
+            { horario: "10:30", nome: "Rafael Andrade" },
+            { horario: "10:30", nome: "Rafael Andrade" },
+            { horario: "10:30", nome: "Rafael Andrade" },
+            { horario: "10:30", nome: "Rafael Andrade" },
+            { horario: "10:30", nome: "Rafael Andrade" },
+            { horario: "10:30", nome: "Rafael Andrade" },
+            { horario: "10:30", nome: "Rafael Andrade" },
+            { horario: "10:30", nome: "Rafael Andrade" },
+            { horario: "10:30", nome: "Rafael Andrade" },
+            { horario: "10:30", nome: "Rafael Andrade" },
+            { horario: "10:30", nome: "Rafael Andrade" },
+            { horario: "10:30", nome: "Rafael Andrade" },
+            { horario: "10:30", nome: "Rafael Andrade" },
+            { horario: "10:30", nome: "Rafael Andrade" },
+            { horario: "10:30", nome: "Rafael Andrade" },
+            { horario: "10:30", nome: "Rafael Andrade" },
+            { horario: "10:30", nome: "Rafael Andrade" },
+            { horario: "10:30", nome: "Rafael Andrade" },
+            { horario: "10:30", nome: "Rafael Andrade" },
+            { horario: "10:30", nome: "Rafael Andrade" },
+            { horario: "10:30", nome: "Rafael Andrade" },
+            { horario: "10:30", nome: "Rafael Andrade" },
+            { horario: "10:30", nome: "Rafael Andrade" },
+            { horario: "10:30", nome: "Rafael Andrade" },
+
+        ];
+        setPacientes(mockPacientes);
+    }, []);
 
     return (
+
         <>
             <Navbar />
             <h2 className="text-primary text-center my-3">Gerenciar Consultas</h2>
@@ -285,6 +338,33 @@ function Consultation() {
                         <Table tableInformation={tableInformation} />
                     </div>
                 </div>
+                <Modal
+                    show={showEvaluationModal}
+                    title={`Fila de chegada`}
+                    content={
+                        <div style={{height: '600px', overflow: 'scroll'}}>
+                            {
+                                pacientes.length > 0 ? (
+                                pacientes.map((paciente, index) => (
+                                    <div key={index} className={`py-2`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 10px'}}>
+                                        <p>{paciente.horario} - {paciente.nome}</p>
+                                        <div>
+                                            <button style={{ background: 'none', border: 'none', color: 'green' }}>
+                                                <FontAwesomeIcon icon={faCheck} />
+                                            </button>
+                                            <button style={{ background: 'none', border: 'none', color: 'red' }}>
+                                                <FontAwesomeIcon icon={faTimes} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))
+                            ) : (
+                                <p>Nenhum paciente na fila de chegada.</p>
+                            )
+                            }
+                        </div>
+                    }
+                />
             </Container>
             <div className={`position-absolute p-5 rounded-3 ${style['boxButton']}`}>
                 <button type="button" onClick={() => abrirModalAdd()} className={`${style['add']} btn btn-primary`}>Marcar Nova Consulta</button>

@@ -4,7 +4,8 @@ import { Button, Dropdown, Space, MenuProps } from 'antd';
 import FormUser from '../Form/User/Edit/Edit';
 import FormConsultation from '../Form/Consultation/Edit/Edit';
 import FormFunctional from '../Form/Functional/Edit/Edit';
-import FormService from '../Form/Service/EditService/EditService'; // Importando o novo formulário
+import FormService from '../Form/Service/EditService/EditService';
+import FormFinance from '../Form/Finance/EditFinance/EditFinance'; // Importando o formulário de finanças
 import api from '../../api';
 import { Pagination } from 'antd';
 import ModalFinalization from '../ModalFinalization/ModalFinalization';
@@ -16,8 +17,10 @@ const Table = ({ tableInformation }) => {
     const [userEdit, setUserEdit] = useState([]);
     const [formConsultation, setFormConsultation] = useState("none");
     const [consultationEdit, setConsultationEdit] = useState([]);
-    const [formService, setFormService] = useState("none"); // Estado para o formulário de serviço
-    const [serviceEdit, setServiceEdit] = useState([]); // Estado para armazenar os dados do serviço editado
+    const [formService, setFormService] = useState("none");
+    const [serviceEdit, setServiceEdit] = useState([]);
+    const [formFinance, setFormFinance] = useState("none"); // Estado para o formulário de finanças
+    const [financeEdit, setFinanceEdit] = useState([]); // Estado para armazenar os dados de finanças editados
     const [formFunctional, setFormFunctional] = useState(["none"]);
     const [modalFinalization, setModalFinalization] = useState('none');
     const [modalViewQuery, setModalViewQuery] = useState(false);
@@ -169,10 +172,17 @@ const Table = ({ tableInformation }) => {
                         close={closeForm}
                     />
                 )}
-                {formService !== "none" && ( // Condição para o formulário de serviços
+                {formService !== "none" && (
                     <FormService
                         display={formService}
                         serviceData={serviceEdit}
+                        close={closeForm}
+                    />
+                )}
+                {formFinance !== "none" && (
+                    <FormFinance
+                        display={formFinance}
+                        financeData={financeEdit}
                         close={closeForm}
                     />
                 )}
@@ -201,21 +211,31 @@ const Table = ({ tableInformation }) => {
             if (position !== -1) {
                 tableInformation.data[position] = {
                     ...tableInformation.data[position],
-                    ...information // Usar spread para atualizar os campos do paciente
+                    ...information
                 };
             }
             setCount(count + 1);
             setFormUser("none");
-        } else if (tableInformation.tableId === 'servicesTable') { // Lógica para o formulário de serviços
+        } else if (tableInformation.tableId === 'servicesTable') {
             const position = tableInformation.data.findIndex((item) => item.id === information.id);
             if (position >= 0) {
                 tableInformation.data[position] = {
                     ...tableInformation.data[position],
-                    ...information // Usar spread para atualizar os campos do serviço
+                    ...information
                 };
             }
             setCount(count + 1);
             setFormService("none");
+        } else if (tableInformation.tableId === 'financesTable') {
+            const position = tableInformation.data.findIndex((item) => item.id === information.id);
+            if (position >= 0) {
+                tableInformation.data[position] = {
+                    ...tableInformation.data[position],
+                    ...information
+                };
+            }
+            setCount(count + 1);
+            setFormFinance("none");
         } else if (tableInformation.tableId === 'employeesTable') {
             const position = tableInformation.data.findIndex((item) => item.id === information.id);
             if (position >= 0) {
@@ -248,9 +268,12 @@ const Table = ({ tableInformation }) => {
         if (tableInformation.tableId === 'patientsTable') {
             setFormUser("block");
             setUserEdit(information);
-        } else if (tableInformation.tableId === 'servicesTable') { // Editar serviço
+        } else if (tableInformation.tableId === 'servicesTable') {
             setFormService("block");
             setServiceEdit(information);
+        } else if (tableInformation.tableId === 'financesTable') {
+            setFormFinance("block");
+            setFinanceEdit(information);
         } else if (tableInformation.tableId === 'employeesTable') {
             setFormFunctional("block");
             setUserEdit(information);
@@ -262,7 +285,7 @@ const Table = ({ tableInformation }) => {
 
     function deletar(id) {
         if (!window.confirm('Deseja realmente excluir este registro?')) {
-            return
+            return;
         }
         tableInformation.data = tableInformation.data.filter((item) => item.id !== id);
         tableInformation.dataNotFilter = tableInformation.dataNotFilter.filter((item) => item.id !== id);
@@ -276,7 +299,7 @@ const Table = ({ tableInformation }) => {
     }
 
     function concluir(item) {
-        modalFinalization == 'block' ? setModalFinalization('none') : setModalFinalization('block');
+        modalFinalization === 'block' ? setModalFinalization('none') : setModalFinalization('block');
         setUserEdit(item);
     }
 
