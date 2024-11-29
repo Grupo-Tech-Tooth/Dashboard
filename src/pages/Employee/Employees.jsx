@@ -22,15 +22,15 @@ function Employees() {
     dataNotFilter: [],
     tableId: "employeesTable",
     tbodyId: "employeesBody",
-    specialization:[
-      {key: "ORTODONTIA", label:"Ortodontia"},
-      {key: "PERIODONTIA", label:"Periodontia"},
-      {key:"ENDODONTIA", label:"Endodontia"},
-      {key:"CIRURGIA_BUCO_MAXILO", label:"Cirurgia Buco Maxilo"},
-      {key: "IMPLANTODONTIA", label: "Implantodontia"},
-      {key: "PROTESE_DENTARIA", label: "Protese Dentaria"},
-      {key: "ODONTOLOGIA_ESTETICA", label: "Odontologia Estética"},
-      {key: "ODONTO_PEDIATRIA", label: "Odonto Pediatria"}
+    specialization: [
+      { key: "ORTODONTIA", label: "Ortodontia" },
+      { key: "PERIODONTIA", label: "Periodontia" },
+      { key: "ENDODONTIA", label: "Endodontia" },
+      { key: "CIRURGIA_BUCO_MAXILO", label: "Cirurgia Buco Maxilo" },
+      { key: "IMPLANTODONTIA", label: "Implantodontia" },
+      { key: "PROTESE_DENTARIA", label: "Protese Dentaria" },
+      { key: "ODONTOLOGIA_ESTETICA", label: "Odontologia Estética" },
+      { key: "ODONTO_PEDIATRIA", label: "Odonto Pediatria" }
     ]
   });
 
@@ -74,7 +74,231 @@ function Employees() {
           name: funcional.nome,
           email: funcional.email,
           phone: funcional.telefone,
-          department:funcional.departamento,
+          department: funcional.departamento,
+          specialization: "-",
+          cpf: funcional.cpf,
+          dateBirth: funcional.dataNascimento,
+        });
+      });
+      responseFuncionais.data.forEach((funcional) => {
+        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
+        data.push({
+          id: funcional.id,
+          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
+          name: funcional.nome,
+          email: funcional.loginInfo.email,
+          phone: funcional.telefone,
+          department: funcional.departamento,
+          specialization: "-",
+          cpf: funcional.cpf,
+          dateBirth: funcional.dataNascimento,
+        });
+      });
+      responseFuncionais.data.forEach((funcional) => {
+        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
+        data.push({
+          id: funcional.id,
+          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
+          name: funcional.nome,
+          email: funcional.loginInfo.email,
+          phone: funcional.telefone,
+          department: funcional.departamento,
+          specialization: "-",
+          cpf: funcional.cpf,
+          dateBirth: funcional.dataNascimento,
+        });
+      });
+      responseFuncionais.data.forEach((funcional) => {
+        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
+        data.push({
+          id: funcional.id,
+          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
+          name: funcional.nome,
+          email: funcional.loginInfo.email,
+          phone: funcional.telefone,
+          department: funcional.departamento,
+          specialization: "-",
+          cpf: funcional.cpf,
+          dateBirth: funcional.dataNascimento,
+        });
+      });
+      responseFuncionais.data.forEach((funcional) => {
+        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
+        data.push({
+          id: funcional.id,
+          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
+          name: funcional.nome,
+          email: funcional.loginInfo.email,
+          phone: funcional.telefone,
+          department: funcional.departamento,
+          specialization: "-",
+          cpf: funcional.cpf,
+          dateBirth: funcional.dataNascimento,
+        });
+      });
+      responseFuncionais.data.forEach((funcional) => {
+        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
+        data.push({
+          id: funcional.id,
+          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
+          name: funcional.nome,
+          email: funcional.loginInfo.email,
+          phone: funcional.telefone,
+          department: funcional.departamento,
+          specialization: "-",
+          cpf: funcional.cpf,
+          dateBirth: funcional.dataNascimento,
+        });
+      });
+      responseFuncionais.data.forEach((funcional) => {
+        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
+        data.push({
+          id: funcional.id,
+          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
+          name: funcional.nome,
+          email: funcional.loginInfo.email,
+          phone: funcional.telefone,
+          department: funcional.departamento,
+          specialization: "-",
+          cpf: funcional.cpf,
+          dateBirth: funcional.dataNascimento,
+        });
+      });
+      responseFuncionais.data.forEach((funcional) => {
+        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
+        data.push({
+          id: funcional.id,
+          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
+          name: funcional.nome,
+          email: funcional.loginInfo.email,
+          phone: funcional.telefone,
+          department: funcional.departamento,
+          specialization: "-",
+          cpf: funcional.cpf,
+          dateBirth: funcional.dataNascimento,
+        });
+      });
+      responseFuncionais.data.forEach((funcional) => {
+        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
+        data.push({
+          id: funcional.id,
+          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
+          name: funcional.nome,
+          email: funcional.loginInfo.email,
+          phone: funcional.telefone,
+          department: funcional.departamento,
+          specialization: "-",
+          cpf: funcional.cpf,
+          dateBirth: funcional.dataNascimento,
+        });
+      });
+      responseFuncionais.data.forEach((funcional) => {
+        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
+        data.push({
+          id: funcional.id,
+          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
+          name: funcional.nome,
+          email: funcional.loginInfo.email,
+          phone: funcional.telefone,
+          department: funcional.departamento,
+          specialization: "-",
+          cpf: funcional.cpf,
+          dateBirth: funcional.dataNascimento,
+        });
+      });
+      responseFuncionais.data.forEach((funcional) => {
+        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
+        data.push({
+          id: funcional.id,
+          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
+          name: funcional.nome,
+          email: funcional.loginInfo.email,
+          phone: funcional.telefone,
+          department: funcional.departamento,
+          specialization: "-",
+          cpf: funcional.cpf,
+          dateBirth: funcional.dataNascimento,
+        });
+      });
+      responseFuncionais.data.forEach((funcional) => {
+        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
+        data.push({
+          id: funcional.id,
+          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
+          name: funcional.nome,
+          email: funcional.loginInfo.email,
+          phone: funcional.telefone,
+          department: funcional.departamento,
+          specialization: "-",
+          cpf: funcional.cpf,
+          dateBirth: funcional.dataNascimento,
+        });
+      });
+      responseFuncionais.data.forEach((funcional) => {
+        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
+        data.push({
+          id: funcional.id,
+          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
+          name: funcional.nome,
+          email: funcional.loginInfo.email,
+          phone: funcional.telefone,
+          department: funcional.departamento,
+          specialization: "-",
+          cpf: funcional.cpf,
+          dateBirth: funcional.dataNascimento,
+        });
+      });
+      responseFuncionais.data.forEach((funcional) => {
+        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
+        data.push({
+          id: funcional.id,
+          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
+          name: funcional.nome,
+          email: funcional.loginInfo.email,
+          phone: funcional.telefone,
+          department: funcional.departamento,
+          specialization: "-",
+          cpf: funcional.cpf,
+          dateBirth: funcional.dataNascimento,
+        });
+      });
+      responseFuncionais.data.forEach((funcional) => {
+        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
+        data.push({
+          id: funcional.id,
+          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
+          name: funcional.nome,
+          email: funcional.loginInfo.email,
+          phone: funcional.telefone,
+          department: funcional.departamento,
+          specialization: "-",
+          cpf: funcional.cpf,
+          dateBirth: funcional.dataNascimento,
+        });
+      });
+      responseFuncionais.data.forEach((funcional) => {
+        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
+        data.push({
+          id: funcional.id,
+          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
+          name: funcional.nome,
+          email: funcional.loginInfo.email,
+          phone: funcional.telefone,
+          department: funcional.departamento,
+          specialization: "-",
+          cpf: funcional.cpf,
+          dateBirth: funcional.dataNascimento,
+        });
+      });
+      responseFuncionais.data.forEach((funcional) => {
+        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
+        data.push({
+          id: funcional.id,
+          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
+          name: funcional.nome,
+          email: funcional.loginInfo.email,
+          phone: funcional.telefone,
+          department: funcional.departamento,
           specialization: "-",
           cpf: funcional.cpf,
           dateBirth: funcional.dataNascimento,
@@ -99,12 +323,12 @@ function Employees() {
       <h2 className="text-primary text-center my-3">Gerenciar Funcionários</h2>
       <Container>
         {viewFormAdd === "block" && (
-          <Add Display={viewFormAdd} close={closeForm} listSpecialization={tableInformation.specialization}/>
+          <Add Display={viewFormAdd} close={closeForm} listSpecialization={tableInformation.specialization} />
         )}
         <div className={style["card"]}>
           <div
-            className="row mb-4"
-            style={{ display: "flex", alignItems: "center" }}
+            className="row mb-2"
+            style={{ display: "flex", alignItems: "center", gap: '0%', margin: '0' }}
           >
             <div className="col-md-2 mx-auto">
               <label htmlFor="searchNome">Nome do Funcionário</label>
@@ -134,25 +358,25 @@ function Employees() {
                 id="searchCpf"
                 className="form-control"
                 type="text"
-                placeholder="Cpf completo"
+                placeholder="Filtrar por CPF"
                 value={searchCpf}
                 onChange={(e) => setSearchCpf(e.target.value)}
               />
             </div>
             <div className="col-md-2 mx-auto">
-              <label htmlFor="searchDepartment">Departamento</label>
+              <label htmlFor="searchDepartment">Setor</label>
               <input
                 id="searchDepartment"
                 className="form-control"
                 type="text"
-                placeholder="Departamento"
+                placeholder="Filtrar por Setor"
                 value={searchDepartment}
                 onChange={(e) => setSearchDepartment(e.target.value)}
               />
             </div>
             <div className={`col-md-2 mx-auto ${style["lineButton"]}`}>
               <button className="btn btn-primary" type="submit" onClick={buscar}>
-                Filtra
+                Filtrar
               </button>
               <button
                 className={`${style["button-limpar"]} btn btn-secondary`}
@@ -161,13 +385,6 @@ function Employees() {
               >
                 Limpar Filtro
               </button>
-              <button
-                type="button"
-                onClick={() => abrirModalAdd()}
-                className={style["add"]}
-              >
-                Cadastrar Funcionario
-              </button>
             </div>
           </div>
           <div className={style['table']}>
@@ -175,6 +392,13 @@ function Employees() {
           </div>
         </div>
       </Container>
+      <button
+        type="button"
+        onClick={() => abrirModalAdd()}
+        className={`${style['add']} btn btn-primary`}
+      >
+        Cadastrar Funcionario
+      </button>
     </>
   );
 

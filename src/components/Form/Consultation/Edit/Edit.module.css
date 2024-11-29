@@ -1,4 +1,8 @@
-.modal {
+.bottom {
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    
     .modal-dialog {
 
         .modal-content {
@@ -12,7 +16,6 @@
 
             .modal-header {
                 width: 100%;
-
             }
 
             .modal-body {
@@ -99,7 +102,7 @@
                         .suggestions {
                             position: absolute;
                             background-color: #ffffff;
-                            border: 1px solid #ddd;
+                            /* border: 1px solid #ddd; */
                             z-index: 1000;
                             max-height: 200px;
                             overflow-y: auto;
