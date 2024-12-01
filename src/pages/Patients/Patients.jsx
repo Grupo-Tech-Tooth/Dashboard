@@ -10,7 +10,7 @@ import api from "../../api";
 function Patients() {
   const [tableInformation, setTableInformation] = useState({
     columns: [
-      { name: "#", key: '' },
+      { name: "#", key: 'id' },
       { name: "Nome", key: 'fullName' },
       { name: "Email", key: 'email' },
       { name: "Telefone", key: 'phone' },
@@ -18,150 +18,6 @@ function Patients() {
       { name: "Ações", key: 'acoes' },
     ],
     data: [
-      {
-        id: 1,
-        name: "João",
-        surname: "da Silva",
-        fullName: "João da Silva",
-        email: "joao@example.com",
-        phone: "(11) 91234-5678",
-        lastVisit: "2024-08-15",
-        cpf: "12345678909",
-        dateBirth: "2005-05-03",
-        gender: "Masculino"
-      },
-      {
-        id: 2,
-        name: "Maria",
-        surname: "da Silva",
-        fullName: "Maria da Silva",
-        email: "maria@example.com",
-        phone: "(21) 99876-5432",
-        lastVisit: "2024-08-20",
-        dateBirth: "2005-05-03",
-        cpf: "98765432100",
-        gender: "Feminino"
-      },
-      {
-        id: 3,
-        name: "Pedro",
-        surname: "Souza",
-        fullName: "Pedro Souza",
-        email: "pedro@example.com",
-        phone: "(31) 98765-4321",
-        lastVisit: "2024-08-10",
-        dateBirth: "2005-05-03",
-        cpf: "11122233344",
-        gender: "Masculino"
-      },
-      {
-        id: 4,
-        name: "João",
-        surname: "da Silva",
-        fullName: "João da Silva",
-        email: "joao2@example.com",
-        phone: "(11) 91234-5678",
-        lastVisit: "2024-08-15",
-        dateBirth: "2005-05-03",
-        cpf: "12345678901",
-        gender: "Masculino"
-      },
-      {
-        id: 5,
-        name: "Maria",
-        surname: "Oliveira",
-        fullName: "Maria Oliveira",
-        email: "maria.oliveira@example.com",
-        phone: "(21) 99876-5432",
-        lastVisit: "2024-08-20",
-        dateBirth: "2005-05-03",
-        cpf: "22233344455",
-        gender: "Feminino"
-      },
-      {
-        id: 6,
-        name: "Pedro",
-        surname: "Silva",
-        fullName: "Pedro Silva",
-        email: "pedro.silva@example.com",
-        phone: "(31) 98765-4321",
-        lastVisit: "2024-08-10",
-        dateBirth: "2005-05-03",
-        cpf: "33344455566",
-        gender: "Masculino"
-      },
-      {
-        id: 7,
-        name: "João",
-        surname: "Santos",
-        fullName: "João Santos",
-        email: "joao.santos@example.com",
-        phone: "(11) 91234-5678",
-        lastVisit: "2024-08-15",
-        dateBirth: "2005-05-03",
-        cpf: "44455566677",
-        gender: "Masculino"
-      },
-      {
-        id: 8,
-        name: "Maria",
-        surname: "Pereira",
-        fullName: "Maria Pereira",
-        email: "maria.pereira@example.com",
-        phone: "(21) 99876-5432",
-        lastVisit: "2024-08-20",
-        dateBirth: "2005-05-03",
-        cpf: "55566677788",
-        gender: "Feminino"
-      },
-      {
-        id: 9,
-        name: "Pedro",
-        surname: "Lima",
-        fullName: "Pedro Lima",
-        email: "pedro.lima@example.com",
-        phone: "(31) 98765-4321",
-        lastVisit: "2024-08-10",
-        dateBirth: "2005-05-03",
-        cpf: "66677788899",
-        gender: "Masculino"
-      },
-      {
-        id: 10,
-        name: "João",
-        surname: "Almeida",
-        fullName: "João Almeida",
-        email: "joao.almeida@example.com",
-        phone: "(11) 91234-5678",
-        lastVisit: "2024-08-15",
-        dateBirth: "2005-05-03",
-        cpf: "77788899900",
-        gender: "Masculino"
-      },
-      {
-        id: 11,
-        name: "Maria",
-        surname: "Cruz",
-        fullName: "Maria Cruz",
-        email: "maria.cruz@example.com",
-        phone: "(21) 99876-5432",
-        lastVisit: "2024-08-20",
-        dateBirth: "2005-05-03",
-        cpf: "88899900011",
-        gender: "Feminino"
-      },
-      {
-        id: 12,
-        name: "Pedro",
-        surname: "Ferreira",
-        fullName: "Pedro Ferreira",
-        email: "pedro.ferreira@example.com",
-        phone: "(31) 98765-4321",
-        lastVisit: "2024-08-10",
-        dateBirth: "2005-05-03",
-        cpf: "99900011122",
-        gender: "Masculino"
-      }
     ],
     dataNotFilter: [],
     tableId: "patientsTable",
@@ -177,45 +33,41 @@ function Patients() {
 
   async function getData() {
     try {
-      const response = await api.get(`/clientes`);
-
-      formatData(response.data.content)
+      const response = await api.get(`/clientes/agendamentos`);
+      console.log(response.data);  // Verifique os dados recebidos
+      formatData(response.data);   // Chame a função com os dados diretamente
     } catch (error) {
       console.log("Erro ao obter consultas:", error);
     }
-    setTimeout(() => {
-      getData();
-    }, 50000);
+    // setTimeout(() => {
+    //   getData();
+    // }, 50000);
   }
 
 
   function formatData(pacientes) {
     const data = [];
-    //Pedir para alterarem o endPoint para trazer o telefone e a data da ultima visita
     pacientes.forEach((paciente) => {
       data.push({
         id: paciente.id,
         fullName: `${paciente.nome} ${paciente.sobrenome ? paciente.sobrenome : ''}`,
-        name: paciente.nome,
-        surname: paciente.sobrenome,
-        email: paciente.loginInfo.email,
-        cpf: paciente.cpf,
-        dateBirth: paciente.dataNascimento,
-        gender: paciente.genero
-      })
-
+        email: paciente.email,
+        phone: paciente.telefone,
+        lastVisit: paciente.ultimoAgendamento
+          ? `${new Date(paciente.ultimoAgendamento.dataHora).toISOString().split('T')[0]} - ${new Date(paciente.ultimoAgendamento.dataHora).toTimeString().split(' ')[0].substring(0, 5)}`
+          : 'Não agendado',  // Caso não haja agendamento, exibe 'Não agendado'
+      });
     });
     setTableInformation((prevTableInformation) => ({
       ...prevTableInformation,
       data: data,
       dataNotFilter: data,
     }));
-  }
+  }  
 
   useEffect(() => {
-    tableInformation.dataNotFilter = tableInformation.data;
     getData();
-  });
+  }, []);  // Isso vai garantir que getData seja chamado uma vez quando o componente for montado.  
 
   return (
     <>
@@ -346,17 +198,26 @@ function Patients() {
     saveFields(newUser);
   }
 
-  function saveFields(newUser) {
-    if (newUser?.name) {
-      newUser.id =
-        tableInformation.dataNotFilter[
-          tableInformation.dataNotFilter.length - 1
-        ].id + 1;
-      tableInformation.dataNotFilter.push(newUser);
+  // Atualize o código de salvar para chamar a API
+async function saveFields(newUser) {
+  if (newUser?.name) {
+    try {
+      const response = await api.post('/clientes', newUser); // Adiciona o paciente via API
+      const savedPatient = response.data; // Resposta da API com o paciente criado
+      alert("Paciente adicionado com sucesso!");
 
-      alert("Usar essa função para salvar");
+      // Atualize a tabela com o paciente recém-criado
+      setTableInformation((prevTableInformation) => ({
+        ...prevTableInformation,
+        data: [...prevTableInformation.data, savedPatient],
+        dataNotFilter: [...prevTableInformation.data, savedPatient],
+      }));
+    } catch (error) {
+      alert("Erro ao adicionar paciente.");
+      console.error(error);
     }
   }
+}
 }
 
 export default Patients;

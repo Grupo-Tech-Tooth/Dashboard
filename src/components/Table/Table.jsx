@@ -11,7 +11,7 @@ import { Pagination } from 'antd';
 import ModalFinalization from '../ModalFinalization/ModalFinalization';
 import ViewQuery from '../ViewQuery/ViewQuery';
 
-const Table = ({ tableInformation }) => {
+const Table = ({ tableInformation, setTableInformation }) => {
     const [count, setCount] = useState(0);
     const [formUser, setFormUser] = useState("none");
     const [userEdit, setUserEdit] = useState([]);
@@ -283,20 +283,26 @@ const Table = ({ tableInformation }) => {
         }
     }
 
-    function deletar(id) {
-        if (!window.confirm('Deseja realmente excluir este registro?')) {
-            return;
+    async function deletar(id) {
+        try {
+          const response = await api.delete(`/clientes/${id}`); // Deleta o paciente via API
+          if (response.status === 200) {
+            // Remove o paciente da tabela localmente
+            setTableInformation((prevTableInformation) => ({
+              ...prevTableInformation,
+              data: prevTableInformation.data.filter((patient) => patient.id !== id),
+              dataNotFilter: prevTableInformation.dataNotFilter.filter(
+                (patient) => patient.id !== id
+              ),
+            }));
+      
+            alert("Paciente deletado com sucesso!");
+          }
+        } catch (error) {
+          alert("Erro ao deletar paciente.");
+          console.error(error);
         }
-        tableInformation.data = tableInformation.data.filter((item) => item.id !== id);
-        tableInformation.dataNotFilter = tableInformation.dataNotFilter.filter((item) => item.id !== id);
-        setCount(count + 1);
-
-        console.log("Estamos na tela: ", tableInformation.tbodyId);
-
-        if (tableInformation.tbodyId === 'employeesBody') {
-            api.delete(`/medicos/${id}`);
-        }
-    }
+      }      
 
     function concluir(item) {
         modalFinalization === 'block' ? setModalFinalization('none') : setModalFinalization('block');

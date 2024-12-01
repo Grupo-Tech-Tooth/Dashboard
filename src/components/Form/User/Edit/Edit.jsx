@@ -5,6 +5,7 @@ import InputMask from 'react-input-mask';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import logo from "../../../../assets/Tech-Tooth-Logo.png";
 import SuccessAlert from '../../../AlertSuccess/AlertSuccess';
+import { atualizarCliente } from '../../../../api';
 
 const Edit = ({ userData, display, close }) => {
     // const [date, setDate] = useState(userData.lastVisit);
@@ -38,7 +39,7 @@ const Edit = ({ userData, display, close }) => {
     return (
         <div className={style['bottom']} style={{ display: display }}>
             {AlertSuccess && <SuccessAlert text={'Usuário alterado com sucesso!'} />}
-            <form className={`${style['form']} row g-3`} onSubmit={saveFields}>
+            <form className={`${style['form']} row g-3`} onSubmit={editPaciente}>
                 <div className={style['lineTitle']}>
                     <div>
                         <img className="logo" src={logo} width={'40px'} />
@@ -244,9 +245,11 @@ const Edit = ({ userData, display, close }) => {
         }
     }
 
-    function saveFields(user) {
+    async function editPaciente(user) {
         user.preventDefault();
-        let data = {
+    
+        // Prepare os dados para envio
+        const data = {
             id: userEdit.id,
             name: user.target.firstName.value,
             surname: user.target.lastName.value,
@@ -266,9 +269,22 @@ const Edit = ({ userData, display, close }) => {
             lastVisit: user.target.patientLastVisit.value,
             notes: user.target.patientNotes.value
         };
+    
         setUserUpdate(data);
-        setAlertSucess(true);
-        setTimeout(() => setAlertSucess(false), 1500);
+    
+        try {
+            // Chamando a função atualizarCliente
+            const updatedClient = await atualizarCliente(userEdit.id, data);
+    
+            if (updatedClient) {
+                setAlertSucess(true);
+                setTimeout(() => setAlertSucess(false), 1500);
+            } else {
+                console.error('Erro ao atualizar cliente');
+            }
+        } catch (error) {
+            console.error('Erro ao atualizar cliente:', error);
+        }
     }
 
     function fetchAddress() {
