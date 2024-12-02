@@ -61,8 +61,8 @@ function Patients() {
       email: paciente.email,
       phone: paciente.telefone,
       lastVisit: paciente.ultimoAgendamento
-    ? new Date(paciente.ultimoAgendamento.dataHora).toISOString().split('T')[0] // Apenas a data
-    : 'Não agendado',
+        ? new Date(paciente.ultimoAgendamento.dataHora).toISOString().split('T')[0] // Apenas a data
+        : 'Não agendado',
     }));
 
     setTableInformation((prevTableInformation) => ({
@@ -130,7 +130,7 @@ function Patients() {
 
         // Definir o atributo hierarquia como "CLIENTE"
         newUser.hierarquia = "CLIENTE";
-        
+
         const response = await criarCliente(newUser); // Envia o novo paciente para a API
         const savedPatient = response.data; // Recebe o paciente recém-criado
 
@@ -226,7 +226,7 @@ function Patients() {
         </div>
       </Container>
       <div className={`z-3 position-absolute p-5 rounded-3 ${style['boxButton']}`}>
-        <button type="button" onClick={abrirModalAdd} className={style['add']}>Novo Paciente</button>
+        <button type="button" onClick={() => abrirModalAdd()} className={`${style['add']} btn btn-primary`}>Cadastrar Paciente</button>
       </div>
     </>
   );
