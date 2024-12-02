@@ -6,6 +6,8 @@ import Button from "../../components/Botao/Botao";
 import Table from "../../components/Table/Table";
 import Add from "../../components/Form/User/Add/Add";
 import api from "../../api";
+import { filtrarClientes } from '../../api';
+import { criarCliente } from '../../api';
 
 function Patients() {
   const [tableInformation, setTableInformation] = useState({
@@ -17,8 +19,7 @@ function Patients() {
       { name: "Última Consulta", key: 'lastVisit' },
       { name: "Ações", key: 'acoes' },
     ],
-    data: [
-    ],
+    data: [],
     dataNotFilter: [],
     tableId: "patientsTable",
     tbodyId: "patientsBody",
@@ -31,43 +32,122 @@ function Patients() {
 
   const [viewFormAdd, setViewFormAdd] = useState("none");
 
+  // Função para pegar os dados dos pacientes
   async function getData() {
     try {
       const response = await api.get(`/clientes/agendamentos`);
-      console.log(response.data);  // Verifique os dados recebidos
-      formatData(response.data);   // Chame a função com os dados diretamente
+      console.log(response.data);
+      resetFields();
+      formatData(response.data); // Passa os dados diretamente
     } catch (error) {
       console.log("Erro ao obter consultas:", error);
     }
-    // setTimeout(() => {
-    //   getData();
-    // }, 50000);
   }
 
-
+  // Função para formatar os dados dos pacientes
   function formatData(pacientes) {
-    const data = [];
-    pacientes.forEach((paciente) => {
-      data.push({
-        id: paciente.id,
-        fullName: `${paciente.nome} ${paciente.sobrenome ? paciente.sobrenome : ''}`,
-        email: paciente.email,
-        phone: paciente.telefone,
-        lastVisit: paciente.ultimoAgendamento
-          ? `${new Date(paciente.ultimoAgendamento.dataHora).toISOString().split('T')[0]} - ${new Date(paciente.ultimoAgendamento.dataHora).toTimeString().split(' ')[0].substring(0, 5)}`
-          : 'Não agendado',  // Caso não haja agendamento, exibe 'Não agendado'
-      });
-    });
+    if (!Array.isArray(pacientes) || pacientes.length === 0) {
+      setTableInformation((prevTableInformation) => ({
+        ...prevTableInformation,
+        data: [],
+        dataNotFilter: [],
+      }));
+      return;
+    }
+
+    const data = pacientes.map((paciente) => ({
+      id: paciente.id,
+      fullName: `${paciente.nome} ${paciente.sobrenome || ''}`,
+      email: paciente.email,
+      phone: paciente.telefone,
+      lastVisit: paciente.ultimoAgendamento
+    ? new Date(paciente.ultimoAgendamento.dataHora).toISOString().split('T')[0] // Apenas a data
+    : 'Não agendado',
+    }));
+
     setTableInformation((prevTableInformation) => ({
       ...prevTableInformation,
       data: data,
       dataNotFilter: data,
     }));
-  }  
+  }
 
   useEffect(() => {
     getData();
-  }, []);  // Isso vai garantir que getData seja chamado uma vez quando o componente for montado.  
+  }, []); // Chama getData ao montar o componente
+
+  // Função para limpar os filtros
+  function resetFields() {
+    setSearchName("");
+    setSearchEmail("");
+    setSearchCpf("");
+    setSearchPhone("");
+  }
+
+  // Função de busca para filtrar os pacientes
+  async function buscar() {
+    try {
+      const filtros = {
+        nome: searchName || undefined,
+        email: searchEmail || undefined,
+        cpf: searchCpf || undefined,
+        telefone: searchPhone || undefined,
+      };
+
+      const filtrosValidos = Object.fromEntries(
+        Object.entries(filtros).filter(([_, v]) => v != null)
+      );
+
+      const response = await filtrarClientes(filtrosValidos);
+
+      if (!response || response.length === 0) {
+        formatData([]); // Limpa a tabela se não encontrar resultados
+        console.warn('Nenhum cliente encontrado.');
+        return;
+      }
+
+      formatData(response); // Atualiza a tabela com os resultados
+    } catch (error) {
+      console.error('Erro ao filtrar clientes:', error);
+    }
+  }
+
+  // Função para abrir o modal de adicionar paciente
+  function abrirModalAdd() {
+    setViewFormAdd("block");
+  }
+
+  // Função para fechar o formulário de adicionar paciente e salvar
+  function closeForm(newUser) {
+    setViewFormAdd("none");
+    saveFields(newUser);
+  }
+
+  // Função assíncrona para salvar o paciente
+  async function saveFields(newUser) {
+    if (newUser?.name) {
+      try {
+
+        // Definir o atributo hierarquia como "CLIENTE"
+        newUser.hierarquia = "CLIENTE";
+        
+        const response = await criarCliente(newUser); // Envia o novo paciente para a API
+        const savedPatient = response.data; // Recebe o paciente recém-criado
+
+        alert("Paciente adicionado com sucesso!");
+
+        // Atualiza a tabela com o novo paciente
+        setTableInformation((prevTableInformation) => ({
+          ...prevTableInformation,
+          data: [...prevTableInformation.data, savedPatient],
+          dataNotFilter: [...prevTableInformation.data, savedPatient],
+        }));
+      } catch (error) {
+        alert("Erro ao adicionar paciente.");
+        console.error(error);
+      }
+    }
+  }
 
   return (
     <>
@@ -78,10 +158,7 @@ function Patients() {
           <Add Display={viewFormAdd} close={closeForm} />
         )}
         <div className={style["card"]}>
-          <div
-            className="row mb-4"
-            style={{ display: "flex", alignItems: "center", gap: '0%', margin: '0' }}
-          >
+          <div className="row mb-4" style={{ display: "flex", alignItems: "center", gap: '0%', margin: '0' }}>
             <div className="col-md-2 mx-auto">
               <label htmlFor="searchNome">Nome do Paciente</label>
               <input
@@ -137,7 +214,7 @@ function Patients() {
               <button
                 className={`${style["button-limpar"]} btn btn-secondary`}
                 type="button"
-                onClick={resetFields}
+                onClick={getData}
               >
                 Limpar Filtro
               </button>
@@ -149,75 +226,10 @@ function Patients() {
         </div>
       </Container>
       <div className={`z-3 position-absolute p-5 rounded-3 ${style['boxButton']}`}>
-        <button type="button" onClick={() => abrirModalAdd()} className={style['add']}>Novo Paciente</button>
+        <button type="button" onClick={abrirModalAdd} className={style['add']}>Novo Paciente</button>
       </div>
     </>
   );
-
-  function resetFields() {
-    setSearchName("");
-    setSearchEmail("");
-    setSearchCpf("");
-    setSearchPhone("");
-    setTableInformation((prevTableInformation) => ({
-      ...prevTableInformation,
-      data: tableInformation.dataNotFilter,
-    }));
-  }
-
-  function buscar() {
-    const filteredData = tableInformation.dataNotFilter.filter((item) => {
-      const matchesName = searchName
-        ? item.fullName?.toLowerCase().includes(searchName.toLowerCase())
-        : true;
-      const matchesEmail = searchEmail
-        ? item.email?.toLowerCase().includes(searchEmail.toLowerCase())
-        : true;
-      const matchesCpf = searchCpf
-        ? item.cpf?.includes(searchCpf)
-        : true;
-      const matchesPhone = searchPhone
-        ? item.phone?.includes(searchPhone)
-        : true;
-
-      return matchesName && matchesEmail && matchesCpf && matchesPhone;
-    });
-
-    setTableInformation((prevTableInformation) => ({
-      ...prevTableInformation,
-      data: filteredData,
-    }));
-  }
-
-  function abrirModalAdd() {
-    setViewFormAdd("block");
-  }
-
-  function closeForm(newUser) {
-    setViewFormAdd("none");
-    saveFields(newUser);
-  }
-
-  // Atualize o código de salvar para chamar a API
-async function saveFields(newUser) {
-  if (newUser?.name) {
-    try {
-      const response = await api.post('/clientes', newUser); // Adiciona o paciente via API
-      const savedPatient = response.data; // Resposta da API com o paciente criado
-      alert("Paciente adicionado com sucesso!");
-
-      // Atualize a tabela com o paciente recém-criado
-      setTableInformation((prevTableInformation) => ({
-        ...prevTableInformation,
-        data: [...prevTableInformation.data, savedPatient],
-        dataNotFilter: [...prevTableInformation.data, savedPatient],
-      }));
-    } catch (error) {
-      alert("Erro ao adicionar paciente.");
-      console.error(error);
-    }
-  }
-}
 }
 
 export default Patients;

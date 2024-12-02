@@ -20,7 +20,7 @@ api.interceptors.request.use(
 // Função para criar cliente
 export async function criarCliente(clienteData) {
     try {
-        const response = await fetch('/clientes', {
+        const response = await fetch('http://localhost:8080/clientes', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -56,7 +56,7 @@ export async function buscarClientesComUltimosAgendamentos() {
 // Função para atualizar cliente
 export async function atualizarCliente(id, clienteData) {
     try {
-        const response = await fetch(`/clientes/${id}`, {
+        const response = await fetch(`http://localhost:8080/clientes/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -95,14 +95,11 @@ export async function deletarCliente(id) {
 export async function filtrarClientes(filtros) {
     try {
         const params = new URLSearchParams(filtros).toString();
-        const response = await fetch(`/clientes/filtrar?${params}`);
-        if (response.ok) {
-            return await response.json(); // Retorna os clientes filtrados
-        } else {
-            throw new Error('Erro ao filtrar clientes');
-        }
+        const response = await api.get(`/clientes/filtrar?${params}`);
+        console.log(response)
+        return response.data; // axios já processa a resposta como JSON
     } catch (error) {
-        console.error('Erro:', error);
+        console.error('Erro ao filtrar clientes:', error);
         throw error;
     }
 }
