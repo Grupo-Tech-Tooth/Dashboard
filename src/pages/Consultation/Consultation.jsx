@@ -5,6 +5,7 @@ import Table from '../../components/Table/Table';
 import React, { useState, useEffect } from 'react';
 import Add from '../../components/Form/Consultation/Add/Add';
 import Modal from '../../components/Modal/Modal';
+import api from '../../api';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
@@ -13,7 +14,7 @@ function Consultation() {
     
     const [pacientes, setPacientes] = useState([]);
 
-    const [showEvaluationModal] = useState(true);
+    const [showEvaluationModal, setShowEvaluationModal] = useState(true);
     const [tableInformation, setTableInformation] = useState({
         'columns': [
             { 'name': '#', key: '' },
@@ -183,6 +184,57 @@ function Consultation() {
             }
         ]
     });
+
+    const handleLogout = () => {
+        setShowEvaluationModal(false);
+      };
+
+    async function getData() {
+    try {
+        const response = await api.get(`/agendamentos`);
+        formatData(response.data);
+        console.log("Consultas obtidas com sucesso:", response.data);
+        
+    } catch (error) {
+        console.log("Erro ao obter consultas:", error);
+    }
+    setTimeout(() => {
+        getData();
+    }, 50000);
+    }
+
+    function formatData(consultas) {
+        const data = [];
+        //Pedir para alterarem o endPoint para trazer o telefone e a data da ultima visita
+        consultas.forEach((consulta) => {
+
+            let date = new Date(consulta.dataHora);
+            let day = date.getDate().toString().padStart(2, '0');
+            let month = (date.getMonth() + 1).toString().padStart(2, '0');
+            let year = date.getFullYear();
+            let hour = date.getHours().toString().padStart(2, '0');
+            let minutes = date.getMinutes().toString().padStart(2, '0');
+            let formattedDate = `${day}/${month}/${year}`;
+            let formattedTime = `${hour}:${minutes}`;
+
+          data.push({
+            id: consulta.id,
+            nomePaciente: consulta.paciente.nome,
+            date: formattedDate,
+            time: formattedTime,
+            status: consulta.status,
+            treatment: consulta.tratamento,
+            doctor: consulta.medico.nome,
+          })
+    
+        });
+        setTableInformation((prevTableInformation) => ({
+          ...prevTableInformation,
+          data: data,
+          dataNotFilter: data,
+        }));
+      }
+
     const [viewFormAdd, setViewFormAdd] = useState("none");
 
     const [searchPatient, setSearchPatient] = useState('');
@@ -196,6 +248,7 @@ function Consultation() {
             ...prevTableInformation,
             dataNotFilter: prevTableInformation.data,
         }));
+        getData();
     }, []);
 
     // useEffect(() => {
@@ -204,6 +257,8 @@ function Consultation() {
     //         .then(response => setPacientes(response.data))
     //         .catch(error => console.error('Erro ao buscar pacientes:', error));
     // }, []);
+
+
 
     useEffect(() => {
         // Mock de dados para a fila de chegada
@@ -364,6 +419,7 @@ function Consultation() {
                             }
                         </div>
                     }
+                    onClose={handleLogout}
                 />
             </Container>
             <div className={`position-absolute p-5 rounded-3 ${style['boxButton']}`}>
