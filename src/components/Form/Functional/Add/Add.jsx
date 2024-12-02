@@ -36,10 +36,10 @@ const Add = ({ display, close, listSpecialization }) => {
                         onClick={() => close()}></button>
                 </div>
                 <div className="col-md-3">
-                    <Input name={'firstName'} type={'text'} label={'Nome'} placeholder={'Digite seu nome'} required={'true'} />
+                    <Input name={'firstName'} type={'text'} label={'Nome'} placeholder={'Nome do Funcionário'} required={'true'} />
                 </div>
                 <div className="col-md-3">
-                    <Input name={'lastName'} type={'text'} label={'Sobrenome'} placeholder={'Digite seu sobrenome'} />
+                    <Input name={'lastName'} type={'text'} label={'Sobrenome'} placeholder={'Sobrenome do Funcionário'} />
                 </div>
                 <div className="col-md-3">
                     <label htmlFor="inputGender" className="form-label">Sexo</label>
@@ -52,12 +52,12 @@ const Add = ({ display, close, listSpecialization }) => {
                     </select>
                 </div>
                 <div className={`${style['data']} col-md-3`}>
-                    <label htmlFor="date">Data De Nascimento</label>
+                    <label htmlFor="date" className='mb-2'>Data De Nascimento</label>
                     <InputMask
                         mask="99/99/9999"
                         className={`form-control ${error ? 'is-invalid' : ''}`}
                         id="date"
-                        placeholder="dd/mm/yyyy"
+                        placeholder="Data de Nascimento (DD/MM/YYYY)"
                         onChange={(e) => {
                             const inputValue = e.target.value;
                             if (inputValue.length === 10) {
@@ -72,13 +72,22 @@ const Add = ({ display, close, listSpecialization }) => {
                     {error && <div className="invalid-feedback">{error}</div>}
                 </div>
                 <div className="col-md-3">
-                    <Input name={'phone'} type={'text'} label={'Telefone'} placeholder={'Digite seu telefone'} />
+                    <label htmlFor="cpf" className="form-label">CPF</label>
+                    <InputMask
+                        mask="999.999.999-99"
+                        className="form-control"
+                        id="cpf"
+                        placeholder="CPF do Funcionário" />
                 </div>
                 <div className="col-md-3">
-                    <Input name={'email'} type={'email'} label={'E-mail'} placeholder={'Digite seu e-mail'} />
+                    <Input name={'phone'} type={'text'} label={'Telefone'} placeholder={'Telefone do Funcionário'} />
                 </div>
                 <div className="col-md-3">
-                    <Input name={'crm'} type={'text'} label={'CRM'} placeholder={'Digite seu CRM'} />
+                    <Input name={'email'} type={'email'} label={'E-mail'} placeholder={'E-mail do Funcionário'} />
+                </div>
+                <div className="col-md-3"></div>
+                <div className="col-md-3">
+                    <Input name={'crm'} type={'text'} label={'CRM'} placeholder={'CRM do Funcionário (Se for Médico)'} />
                 </div>
                 <div className="col-md-3">
                     <label htmlFor="inputSpecialization" className="form-label">Especialização</label>
@@ -93,12 +102,10 @@ const Add = ({ display, close, listSpecialization }) => {
                     </select>
                 </div>
                 <div className="col-md-3">
-                    <label htmlFor="cpf" className="form-label">CPF</label>
-                    <InputMask
-                        mask="999.999.999-99"
-                        className="form-control"
-                        id="cpf"
-                        placeholder="Digite seu CPF" />
+                    <Input name={'department'} type={'text'} label={'Setor'} placeholder={'Setor do Funcionário'} required={'true'} />
+                </div>
+                <div className="col-md-3">
+                    <Input name={'registry'} type={'text'} label={'Matrícula'} placeholder={'Matrícula do Funcionário'} required={'true'} />
                 </div>
                 <div className="col-md-3">
                     <label htmlFor="patientCep" className="form-label">CEP*</label>
@@ -106,13 +113,13 @@ const Add = ({ display, close, listSpecialization }) => {
                         type="text"
                         className="form-control"
                         id="patientCep"
-                        placeholder="Digite o CEP do paciente"
+                        placeholder="CEP do Funcionário"
                         onBlur={() => fetchAddress()}
                         required />
                 </div>
                 <div className="col-md-3">
                     <label htmlFor="employeesStreet" className="form-label">Rua</label>
-                    <input type="text" className="form-control" id="employeesStreet" placeholder="Rua do paciente"
+                    <input type="text" className="form-control" id="employeesStreet" placeholder="Rua do Funcionário"
                         disabled />
                 </div>
                 <div className="col-md-3">
@@ -121,19 +128,22 @@ const Add = ({ display, close, listSpecialization }) => {
                         className="form-control"
                         name="patientNumber"
                         label={"Número"}
-                        placeholder="Número do endereço" />
+                        placeholder="Número da Casa" />
 
                 </div>
                 <div className="col-md-3">
+                    <label htmlFor="employeesComplement" className="form-label">Complemento</label>
+                    <input type="text" className="form-control" id="employeesComplement" placeholder="Complemento da Casa" />
+                </div>
+                <div className="col-md-3">
                     <label htmlFor="employeesNeighborhood" className="form-label">Bairro</label>
-                    <input type="text" className="form-control" id="employeesNeighborhood" placeholder="Bairro do paciente" disabled />
+                    <input type="text" className="form-control" id="employeesNeighborhood" placeholder="Bairro do Funcionário" disabled />
                 </div>
                 <div className="col-md-3">
                     <label htmlFor="employeesCity" className="form-label">Cidade</label>
-                    <input type="text" className="form-control" id="employeesCity" placeholder="Cidade do paciente" disabled />
+                    <input type="text" className="form-control" id="employeesCity" placeholder="Cidade do Funcionário" disabled />
                 </div>
                 <div className={style['lineButton']}>
-                    <button className={`${style.btn} btn`} onClick={() => close()} type='button'>Fechar</button>
                     <button type="submit" className="btn btn-primary">Salvar</button>
                 </div>
             </form>

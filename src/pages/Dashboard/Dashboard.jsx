@@ -92,7 +92,7 @@ const Dashboard = () => {
     const fetchServicesData = async () => {
       try {
         console.log("Buscando dados dos serviços mais usados...");
-        
+
         const response = await api.get("/servicos/usados", {
           params: {
             periodo: filter.periodo,
@@ -134,8 +134,8 @@ const Dashboard = () => {
       timeframe === "diário"
         ? ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"]
         : timeframe === "semanal"
-        ? ["Semana 1", "Semana 2", "Semana 3", "Semana 4"]
-        : [
+          ? ["Semana 1", "Semana 2", "Semana 3", "Semana 4"]
+          : [
             "Jan",
             "Fev",
             "Mar",
@@ -169,8 +169,8 @@ const Dashboard = () => {
           timeframe === "diário"
             ? [300, 500, 200, 400, 600, 700, 100]
             : timeframe === "semanal"
-            ? [1500, 2000, 1750, 1800]
-            : [
+              ? [1500, 2000, 1750, 1800]
+              : [
                 12000, 15000, 14000, 16000, 17000, 13000, 18000, 15000, 14000,
                 16000, 15000, 17000,
               ],
@@ -485,7 +485,7 @@ const Dashboard = () => {
                 </div>
                 <select
                   onChange={(e) =>
-                    setFilter({ ...filter, periodo: e.target.value,  })
+                    setFilter({ ...filter, periodo: e.target.value, })
                   }
                   value={filter.timeframe}
                   className="form-select mt-2"
@@ -535,89 +535,84 @@ const Dashboard = () => {
               </select>
             </div>
             <div
-              className="card p-3 text-center"
-              style={{ height: "fit-content", width: "100%" }}
+              className="card p-3 text-center justify-content-between"
+              style={{ height: "100%", width: "100%"}}
             >
-              <div
-                className="d-flex flex-column justify-content-between"
-                style={{ height: "100%", maxHeight: "100%" }}
-              >
-                <h5 className="text-primary">Descritivo do Mês</h5>
-                <div className="d-flex justify-content-between align-items-center">
-                  <div
-                    className="d-flex flex-column"
-                    style={{ maxWidth: "45%", alignItems: "start" }}
-                  >
-                    <div className="d-flex align-items-end py-2">
-                      <h6 className="text-primary">
-                        Faturamento Total:{" "}
-                        <span className="text-dark">
-                          R${totalMonthlyRevenue.toLocaleString("pt-BR")}
-                        </span>
-                      </h6>
-                    </div>
-                    <div className="d-flex align-items-end py-2">
-                      <h6 className="text-primary">
-                        Faturam. Médio Por Consulta:{" "}
-                        <span className="text-dark">
-                          R${totalMonthlyRevenue.toLocaleString("pt-BR")}
-                        </span>
-                      </h6>
-                    </div>
-                    <div className="d-flex align-items-end py-2">
-                      <h6 className="text-primary">
-                        Maior Faturam. Por Consulta:{" "}
-                        <span className="text-dark">
-                          R${totalMonthlyRevenue.toLocaleString("pt-BR")}
-                        </span>
-                      </h6>
-                    </div>
-                    <div className="d-flex align-items-end py-2">
-                      <h6 className="text-primary">
-                        Menor Faturam. Por Consulta:{" "}
-                        <span className="text-dark">
-                          R${totalMonthlyRevenue.toLocaleString("pt-BR")}
-                        </span>
-                      </h6>
-                    </div>
+              <h5 className="text-primary">Descritivo do Mês</h5>
+              <div className="d-flex justify-content-between align-items-center">
+                <div
+                  className="d-flex flex-column"
+                  style={{ maxWidth: "45%", alignItems: "start" }}
+                >
+                  <div className="d-flex align-items-end py-2">
+                    <h6 className="text-primary">
+                      Faturamento Total:{" "}
+                      <span className="text-dark">
+                        R${totalMonthlyRevenue.toLocaleString("pt-BR")}
+                      </span>
+                    </h6>
                   </div>
-                  <div
-                    className="d-flex flex-column"
-                    style={{ maxWidth: "55%", alignItems: "start" }}
-                  >
-                    <div className="d-flex align-items-end py-2">
-                      <h6 className="text-primary">
-                        Serviço Mais Realizado:{" "}
-                        <span className="text-dark">
-                          Limpeza{" "}
-                          <span style={{ fontSize: "14px" }}>(60 proced.)</span>
-                        </span>
-                      </h6>
-                    </div>
-                    <div className="d-flex align-items-end py-2">
-                      <h6 className="text-primary">
-                        Serviço Menos Realizado:{" "}
-                        <span className="text-dark">
-                          Implante{" "}
-                          <span style={{ fontSize: "14px" }}>(20 proced.)</span>
-                        </span>
-                      </h6>
-                    </div>
-                    <div className="d-flex align-items-end py-2">
-                      <h6 className="text-primary">
-                        Dia Com Mais Consultas:{" "}
-                        <span className="text-dark">Segunda-Feira, Dia 06</span>
-                      </h6>
-                    </div>
-                    <div className="d-flex align-items-end py-2">
-                      <h6 className="text-primary">
-                        Dia Com Menos Consultas:{" "}
-                        <span className="text-dark">Segunda-Feira, Dia 06</span>
-                      </h6>
-                    </div>
+                  <div className="d-flex align-items-end py-2">
+                    <h6 className="text-primary">
+                      Faturam. Médio Por Consulta:{" "}
+                      <span className="text-dark">
+                        R${totalMonthlyRevenue.toLocaleString("pt-BR")}
+                      </span>
+                    </h6>
+                  </div>
+                  <div className="d-flex align-items-end py-2">
+                    <h6 className="text-primary">
+                      Maior Faturam. Por Consulta:{" "}
+                      <span className="text-dark">
+                        R${totalMonthlyRevenue.toLocaleString("pt-BR")}
+                      </span>
+                    </h6>
+                  </div>
+                  <div className="d-flex align-items-end py-2">
+                    <h6 className="text-primary">
+                      Menor Faturam. Por Consulta:{" "}
+                      <span className="text-dark">
+                        R${totalMonthlyRevenue.toLocaleString("pt-BR")}
+                      </span>
+                    </h6>
                   </div>
                 </div>
-              </div>
+                <div
+                  className="d-flex flex-column"
+                  style={{ maxWidth: "55%", alignItems: "start" }}
+                >
+                  <div className="d-flex align-items-end py-2">
+                    <h6 className="text-primary">
+                      Serviço Mais Realizado:{" "}
+                      <span className="text-dark">
+                        Limpeza{" "}
+                        <span style={{ fontSize: "14px" }}>(60 proced.)</span>
+                      </span>
+                    </h6>
+                  </div>
+                  <div className="d-flex align-items-end py-2">
+                    <h6 className="text-primary">
+                      Serviço Menos Realizado:{" "}
+                      <span className="text-dark">
+                        Implante{" "}
+                        <span style={{ fontSize: "14px" }}>(20 proced.)</span>
+                      </span>
+                    </h6>
+                  </div>
+                  <div className="d-flex align-items-end py-2">
+                    <h6 className="text-primary">
+                      Dia Com Mais Consultas:{" "}
+                      <span className="text-dark">Segunda-Feira, Dia 06</span>
+                    </h6>
+                  </div>
+                  <div className="d-flex align-items-end py-2">
+                    <h6 className="text-primary">
+                      Dia Com Menos Consultas:{" "}
+                      <span className="text-dark">Segunda-Feira, Dia 06</span>
+                    </h6>
+                  </div>
+                </div>
+              </div>  
             </div>
           </div>
         </div>

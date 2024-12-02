@@ -254,9 +254,8 @@ function Consultation() {
                     <Add Display={viewFormAdd} close={closeForm} listUsers={tableInformation.data} doctors={tableInformation.doctor} treatments={tableInformation.treatment} />
                 }
 
-                <div className={`${style['box']} container my-4 p-3 pb-0`}>
-
-                    <form className="row mb-4 container-sm" onSubmit={buscar}>
+                <div className={style["card"]}>
+                    <div className="row mb-2" style={{ display: "flex", alignItems: "center", gap: '0%', margin: '0' }}>
                         <div className="col-md-2 mx-auto">
                             <label htmlFor="searchPatient">Nome do Paciente</label>
                             <input
@@ -273,7 +272,7 @@ function Consultation() {
                             <select
                                 className="form-select"
                                 id="searchTreatment"
-                                aria-label="Tipo de tratamento"
+                                aria-label="Filtrar por tratamento"
                                 value={searchTreatment}
                                 onChange={(e) => setSearchTreatment(e.target.value)}
                             >
@@ -294,7 +293,7 @@ function Consultation() {
                                 value={searchDoctor}
                                 onChange={(e) => setSearchDoctor(e.target.value)}
                             >
-                                <option value={undefined}>Escolher médico</option>
+                                <option value={undefined}>Selecionar médico</option>
                                 {tableInformation.doctor &&
                                     tableInformation.doctor.map((item) => (
                                         <option key={item.name} value={item.name}>{item.name}</option>
@@ -303,7 +302,7 @@ function Consultation() {
                             </select>
                         </div>
                         <div className="col-md-2 mx-auto">
-                            <label htmlFor="startDate">Data inicial</label>
+                            <label htmlFor="startDate">Por Período(Data Inicial)</label>
                             <input
                                 className="form-control"
                                 id="startDate"
@@ -313,7 +312,7 @@ function Consultation() {
                             />
                         </div>
                         <div className="col-md-2 mx-auto">
-                            <label htmlFor="endDate">Data Final</label>
+                            <label htmlFor="endDate">Por Período(Data Final)</label>
                             <input
                                 className="form-control"
                                 id="endDate"
@@ -322,12 +321,9 @@ function Consultation() {
                                 onChange={(e) => setEndDate(e.target.value)}
                             />
                         </div>
-                        <div className={`col-md-2 mx-auto ml-1 ${style['lineButton']}`}>
-                            <button
-                                className="btn btn-primary"
-                                type="submit"
-                            >
-                                Filtra
+                        <div className={`col-md-2 mx-auto ${style["lineButton"]}`}>
+                            <button className="btn btn-primary" type="submit" onClick={buscar}>
+                                Filtrar
                             </button>
                             <button
                                 className={`${style["button-limpar"]} btn btn-secondary`}
@@ -337,7 +333,7 @@ function Consultation() {
                                 Limpar Filtro
                             </button>
                         </div>
-                    </form>
+                    </div>
                     <div className={style['table']}>
                         <Table tableInformation={tableInformation} />
                     </div>
@@ -370,9 +366,9 @@ function Consultation() {
                     }
                 />
             </Container>
-                <div className={`z-1 position-absolute p-5 rounded-3 ${style['boxButton']}`}>
-                    <button type="button" onClick={() => abrirModalAdd()} className={style['add']}>Nova Consulta</button>
-                </div>
+            <div className={`position-absolute p-5 rounded-3 ${style['boxButton']}`}>
+                <button type="button" onClick={() => abrirModalAdd()} className={`${style['add']} btn btn-primary`}>Marcar Nova Consulta</button>
+            </div>
         </>
     );
 

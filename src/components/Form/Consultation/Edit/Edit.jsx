@@ -91,7 +91,7 @@ function Edit({ consultationData, display, close, listUsers, doctors, treatments
 
     return (
         <>
-            <div className={`${style['modal']} modal`} id="viewCalendarModal" tabIndex="-1" aria-labelledby="viewCalendarModalLabel" style={{ display: display }}
+            <div className={`${style['bottom']} modal`} id="viewCalendarModal" tabIndex="-1" aria-labelledby="viewCalendarModalLabel" style={{ display: display }}
                 aria-hidden="true">
                 <div className={`${style['modal-dialog']} modal-dialog modal-md modal-dialog-scrollable`}>
                     <div className={`${style['modal-content']} modal-content`}
@@ -127,7 +127,7 @@ function Edit({ consultationData, display, close, listUsers, doctors, treatments
                                                 required
                                                 disabled={disabledInput}
                                             />
-                                            <div id="suggestions" className={style['suggestions']}>
+                                            <div id="suggestions" className={`${style['suggestions']} ${optionsUsers.length > 0 ? 'rounded-bottom border' : ''}`}>
                                                 {optionsUsers.length > 0 ? optionsUsers.map(patient => (
                                                     <div
                                                         key={patient.cpf}
@@ -158,7 +158,7 @@ function Edit({ consultationData, display, close, listUsers, doctors, treatments
                                     <div className="mb-3">
                                         <label for="patientName" className="form-label">Nome do Médico*</label>
                                         <input type="text" className="form-control" id="doctor" placeholder="Nome do Doutor" onChange={searchDoctor} value={inputValueDoctor} required disabled={disabledInput} />
-                                        <div className={style['suggestions']}>
+                                        <div className={`${style['suggestions']} ${optionsDoctor.length > 0 ? 'rounded-bottom border' : ''}`}>
                                             {optionsDoctor.length > 0 ? optionsDoctor.map(doctor => (
                                                 <div
                                                     key={doctor.id}
@@ -175,7 +175,7 @@ function Edit({ consultationData, display, close, listUsers, doctors, treatments
                                     <div className="mb-3">
                                         <label for="patientName" className="form-label">Tratamento*</label>
                                         <input type="text" className="form-control" id="treatment" placeholder="Nome do Tratamento" onChange={searchTreatment} value={inputValueTreatment} required disabled={disabledInput} />
-                                        <div className={style['suggestions']}>
+                                        <div className={`${style['suggestions']} ${optionsTreatment.length > 0 ? 'rounded-bottom border' : ''}`}>
                                             {optionsTreatment.length > 0 ? optionsTreatment.map(treatment => (
                                                 <div
                                                     key={treatment.id}
