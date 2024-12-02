@@ -98,7 +98,7 @@ const Dashboard = () => {
             periodo: filter.periodo,
           },
         });
-        const services = response.data;
+        const services = Array.isArray(response.data) ? response.data : [];
 
         // Atualizando o gráfico com os dados retornados
         const updatedData = {
@@ -108,8 +108,6 @@ const Dashboard = () => {
               label: "Serviços Mais Usados",
               data: services.map((service) => service.usos),
               backgroundColor: [
-                "#0D6EFD",
-                "#2563EB",
                 "#60A5FA",
                 "#BFDBFE",
                 "#E0F2FE",
