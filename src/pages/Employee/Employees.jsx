@@ -5,7 +5,8 @@ import Container from "../../components/Container/Container";
 import Table from "../../components/Table/Table";
 import Add from "../../components/Form/Functional/Add/Add";
 import api from "../../api";
-// import { width } from '@fortawesome/free-solid-svg-icons/fa0';
+import EmployeesModel from "./EmployeesModel";
+import GenericModalError from "../../components/GenericModal/GenericModalError/GenericModalError";
 
 function Employees() {
   const [tableInformation, setTableInformation] = useState({
@@ -39,283 +40,32 @@ function Employees() {
   const [searchCpf, setSearchCpf] = useState("");
   const [searchDepartment, setSearchDepartment] = useState("");
   const [viewFormAdd, setViewFormAdd] = useState("none");
+  const [genericModalError, setGenericModalError] = useState({
+    view: false
+  });
 
   async function getData() {
-    const responseMedicos = await api.get("/medicos");
-    const responseFuncionais = await api.get("/funcionais");
-
-    const data = [];
-
-    if (responseMedicos.data.length !== 0) {
-      responseMedicos.data.forEach((medico) => {
-        console.log(medico);
-        data.push({
-          id: medico.id,
-          fullName: `${medico.nome} ${medico.sobrenome ? medico.sobrenome : ''}`,
-          name: medico.nome,
-          surname: medico.sobrenome,
-          email: medico.loginInfo.email,
-          crm: medico.crm,
-          phone: medico.telefone,
-          department: "Médico",
-          specialization: medico.especializacao,
-          cpf: medico.cpf,
-          dateBirth: medico.dataNascimento,
-        });
-      });
+    debugger
+    try {
+      const data = await EmployeesModel.buscar();
+      setTableInformation((prevTableInformation) => ({
+        ...prevTableInformation,
+        data: data,
+      }));
+    } catch (e) {
+      setGenericModalError((prev) => ({
+        ...prev,
+        view: true,
+        title: 'Ops.... Tivemos um erro ao concluir a ação',
+        description: e.message,
+        icon: 'iconErro'
+      }));
     }
-
-    if (responseFuncionais.data.length !== 0) {
-      responseFuncionais.data.forEach((funcional) => {
-        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
-        data.push({
-          id: funcional.id,
-          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
-          name: funcional.nome,
-          email: funcional.email,
-          phone: funcional.telefone,
-          department: funcional.departamento,
-          specialization: "-",
-          cpf: funcional.cpf,
-          dateBirth: funcional.dataNascimento,
-        });
-      });
-      responseFuncionais.data.forEach((funcional) => {
-        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
-        data.push({
-          id: funcional.id,
-          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
-          name: funcional.nome,
-          email: funcional.loginInfo.email,
-          phone: funcional.telefone,
-          department: funcional.departamento,
-          specialization: "-",
-          cpf: funcional.cpf,
-          dateBirth: funcional.dataNascimento,
-        });
-      });
-      responseFuncionais.data.forEach((funcional) => {
-        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
-        data.push({
-          id: funcional.id,
-          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
-          name: funcional.nome,
-          email: funcional.loginInfo.email,
-          phone: funcional.telefone,
-          department: funcional.departamento,
-          specialization: "-",
-          cpf: funcional.cpf,
-          dateBirth: funcional.dataNascimento,
-        });
-      });
-      responseFuncionais.data.forEach((funcional) => {
-        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
-        data.push({
-          id: funcional.id,
-          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
-          name: funcional.nome,
-          email: funcional.loginInfo.email,
-          phone: funcional.telefone,
-          department: funcional.departamento,
-          specialization: "-",
-          cpf: funcional.cpf,
-          dateBirth: funcional.dataNascimento,
-        });
-      });
-      responseFuncionais.data.forEach((funcional) => {
-        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
-        data.push({
-          id: funcional.id,
-          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
-          name: funcional.nome,
-          email: funcional.loginInfo.email,
-          phone: funcional.telefone,
-          department: funcional.departamento,
-          specialization: "-",
-          cpf: funcional.cpf,
-          dateBirth: funcional.dataNascimento,
-        });
-      });
-      responseFuncionais.data.forEach((funcional) => {
-        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
-        data.push({
-          id: funcional.id,
-          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
-          name: funcional.nome,
-          email: funcional.loginInfo.email,
-          phone: funcional.telefone,
-          department: funcional.departamento,
-          specialization: "-",
-          cpf: funcional.cpf,
-          dateBirth: funcional.dataNascimento,
-        });
-      });
-      responseFuncionais.data.forEach((funcional) => {
-        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
-        data.push({
-          id: funcional.id,
-          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
-          name: funcional.nome,
-          email: funcional.loginInfo.email,
-          phone: funcional.telefone,
-          department: funcional.departamento,
-          specialization: "-",
-          cpf: funcional.cpf,
-          dateBirth: funcional.dataNascimento,
-        });
-      });
-      responseFuncionais.data.forEach((funcional) => {
-        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
-        data.push({
-          id: funcional.id,
-          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
-          name: funcional.nome,
-          email: funcional.loginInfo.email,
-          phone: funcional.telefone,
-          department: funcional.departamento,
-          specialization: "-",
-          cpf: funcional.cpf,
-          dateBirth: funcional.dataNascimento,
-        });
-      });
-      responseFuncionais.data.forEach((funcional) => {
-        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
-        data.push({
-          id: funcional.id,
-          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
-          name: funcional.nome,
-          email: funcional.loginInfo.email,
-          phone: funcional.telefone,
-          department: funcional.departamento,
-          specialization: "-",
-          cpf: funcional.cpf,
-          dateBirth: funcional.dataNascimento,
-        });
-      });
-      responseFuncionais.data.forEach((funcional) => {
-        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
-        data.push({
-          id: funcional.id,
-          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
-          name: funcional.nome,
-          email: funcional.loginInfo.email,
-          phone: funcional.telefone,
-          department: funcional.departamento,
-          specialization: "-",
-          cpf: funcional.cpf,
-          dateBirth: funcional.dataNascimento,
-        });
-      });
-      responseFuncionais.data.forEach((funcional) => {
-        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
-        data.push({
-          id: funcional.id,
-          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
-          name: funcional.nome,
-          email: funcional.loginInfo.email,
-          phone: funcional.telefone,
-          department: funcional.departamento,
-          specialization: "-",
-          cpf: funcional.cpf,
-          dateBirth: funcional.dataNascimento,
-        });
-      });
-      responseFuncionais.data.forEach((funcional) => {
-        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
-        data.push({
-          id: funcional.id,
-          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
-          name: funcional.nome,
-          email: funcional.loginInfo.email,
-          phone: funcional.telefone,
-          department: funcional.departamento,
-          specialization: "-",
-          cpf: funcional.cpf,
-          dateBirth: funcional.dataNascimento,
-        });
-      });
-      responseFuncionais.data.forEach((funcional) => {
-        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
-        data.push({
-          id: funcional.id,
-          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
-          name: funcional.nome,
-          email: funcional.loginInfo.email,
-          phone: funcional.telefone,
-          department: funcional.departamento,
-          specialization: "-",
-          cpf: funcional.cpf,
-          dateBirth: funcional.dataNascimento,
-        });
-      });
-      responseFuncionais.data.forEach((funcional) => {
-        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
-        data.push({
-          id: funcional.id,
-          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
-          name: funcional.nome,
-          email: funcional.loginInfo.email,
-          phone: funcional.telefone,
-          department: funcional.departamento,
-          specialization: "-",
-          cpf: funcional.cpf,
-          dateBirth: funcional.dataNascimento,
-        });
-      });
-      responseFuncionais.data.forEach((funcional) => {
-        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
-        data.push({
-          id: funcional.id,
-          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
-          name: funcional.nome,
-          email: funcional.loginInfo.email,
-          phone: funcional.telefone,
-          department: funcional.departamento,
-          specialization: "-",
-          cpf: funcional.cpf,
-          dateBirth: funcional.dataNascimento,
-        });
-      });
-      responseFuncionais.data.forEach((funcional) => {
-        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
-        data.push({
-          id: funcional.id,
-          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
-          name: funcional.nome,
-          email: funcional.loginInfo.email,
-          phone: funcional.telefone,
-          department: funcional.departamento,
-          specialization: "-",
-          cpf: funcional.cpf,
-          dateBirth: funcional.dataNascimento,
-        });
-      });
-      responseFuncionais.data.forEach((funcional) => {
-        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
-        data.push({
-          id: funcional.id,
-          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
-          name: funcional.nome,
-          email: funcional.loginInfo.email,
-          phone: funcional.telefone,
-          department: funcional.departamento,
-          specialization: "-",
-          cpf: funcional.cpf,
-          dateBirth: funcional.dataNascimento,
-        });
-      });
-    }
-
-    setTableInformation((prevTableInformation) => ({
-      ...prevTableInformation,
-      data: data,
-    }));
   }
 
   useEffect(() => {
-    tableInformation.dataNotFilter = tableInformation.data;
     getData();
-  });
+  }, []);
 
   return (
     <>
@@ -325,6 +75,11 @@ function Employees() {
         {viewFormAdd === "block" && (
           <Add Display={viewFormAdd} close={closeForm} listSpecialization={tableInformation.specialization} />
         )}
+        {genericModalError.view && <GenericModalError
+          close={() => setGenericModalError((prev) => ({ ...prev, view: false }))}
+          title={genericModalError.title}
+          description={genericModalError.description}
+          icon={genericModalError.icon} />}
         <div className={style["card"]}>
           <div
             className="row mb-2"
@@ -388,7 +143,7 @@ function Employees() {
             </div>
           </div>
           <div className={style['table']}>
-            <Table tableInformation={tableInformation} />
+            <Table tableInformation={tableInformation} getData={getData}/>
           </div>
         </div>
       </Container>
@@ -418,19 +173,19 @@ function Employees() {
 
     if (searchName) {
       const searchLower = searchName.toLowerCase();
-      listName = tableInformation.dataNotFilter.filter((item) =>
-        item.name.toLowerCase().includes(searchLower)
+      listName = tableInformation.data.filter((item) =>
+        item.fullName.toLowerCase().includes(searchLower)
       );
     }
     if (searchEmail) {
       const searchLower = searchEmail.toLowerCase();
-      listEmail = tableInformation.dataNotFilter.filter((item) =>
+      listEmail = tableInformation.data.filter((item) =>
         item.email.toLowerCase().includes(searchLower)
       );
     }
     if (searchCpf) {
       // Entregavel Pesquisa Binária
-      const listOrdenada = tableInformation.dataNotFilter.sort((a, b) =>
+      const listOrdenada = tableInformation.data.sort((a, b) =>
         a.cpf.localeCompare(b.cpf)
       );
       let start = 0;
@@ -451,9 +206,10 @@ function Employees() {
     }
     if (searchDepartment) {
       const searchLower = searchDepartment.toLowerCase();
-      listDepartment = tableInformation.dataNotFilter.filter((item) =>
-        item.department.includes(searchLower)
-      );
+      listDepartment = tableInformation.data.filter((item) => {
+        return item.department.toLowerCase().includes(searchLower);
+      });
+
     }
 
     if (searchName || searchEmail || searchDepartment || searchCpf) {
@@ -464,7 +220,7 @@ function Employees() {
         data: listAll,
       }));
     } else {
-      const listOrdenada = tableInformation.dataNotFilter.sort(
+      const listOrdenada = tableInformation.data.sort(
         (a, b) => a.id - b.id
       );
       setTableInformation((prevTableInformation) => ({
@@ -478,21 +234,9 @@ function Employees() {
     setViewFormAdd("block");
   }
 
-  function closeForm(newUser) {
+  function closeForm() {
     setViewFormAdd("none");
-    saveFields(newUser);
-  }
-
-  function saveFields(newUser) {
-    if (newUser?.name) {
-      newUser.id =
-        tableInformation.dataNotFilter[
-          tableInformation.dataNotFilter.length - 1
-        ].id + 1;
-      tableInformation.dataNotFilter.push(newUser);
-
-      alert("Usar essa função para salvar");
-    }
+    getData();
   }
 }
 

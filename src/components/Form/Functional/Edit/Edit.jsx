@@ -4,13 +4,17 @@ import Input from '../../../Input/Input';
 import InputMask from 'react-input-mask';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import SuccessAlert from '../../../AlertSuccess/AlertSuccess';
+import EmployeesModel from '../../../../pages/Employee/EmployeesModel';
+import GenericModalError from '../../../GenericModal/GenericModalError/GenericModalError';
 
-const Edit = ({ userData, display, close, listSpecialization }) => {
+function Edit({ userData, display, close, listSpecialization }) {
     const [error, setError] = useState('');
     const [disabled, setDisabled] = useState(true);
     const [AlertSuccess, setAlertSucess] = useState(false);
-    const [userEdit, setUserEdit] = useState(userData || {});
-    const [userUpdate, setUserUpdate] = useState({});
+    const [userEdit, setUserEdit] = useState({});
+    const [genericModalError, setGenericModalError] = useState({
+        view: false
+    })
 
     const validateDate = (inputDate) => {
         const [day, month, year] = inputDate.split('/').map(Number);
@@ -26,22 +30,45 @@ const Edit = ({ userData, display, close, listSpecialization }) => {
         }
     };
 
+    async function getData(id, crm) {
+        try {
+            let response = await EmployeesModel.buscarPorId(id, crm);
+            setUserEdit(response);
+            setTimeout(() => {
+                fetchAddress();
+            }, 1500);
+        } catch (e) {
+            setGenericModalError((prev) => ({
+                view: true,
+                title: 'Ops.... Tivemos um erro ao concluir a ação',
+                description: e.message,
+                icon: 'iconErro'
+            }));
+        }
+    }
 
     useEffect(() => {
-        setUserEdit(userData);
-    }, [userEdit, userData])
+        if (display === 'block' && !userEdit.id) {
+            getData(userData.id, userData?.crm);
+        }
+    }, [userEdit, display]);
 
 
     return (
         <div className={style['bottom']} style={{ display: display }}>
             {AlertSuccess && <SuccessAlert text={'Usuário alterado com sucesso!'} />}
+            {genericModalError.view && <GenericModalError
+                close={() => setGenericModalError((prev) => ({ ...prev, view: false }))}
+                title={genericModalError.title}
+                description={genericModalError.description}
+                icon={genericModalError.icon} />}
             <form className={`${style['form']} row g-3`} onSubmit={saveFields}>
                 <div className={style['lineTitle']}>
                     <div>
                         <h3>Editar Funcionário</h3>
                     </div>
                     <button type="button" className="btn-close"
-                        onClick={() => close(userUpdate)}></button>
+                        onClick={() => close()}></button>
                 </div>
                 <div className="col-md-3">
                     <Input name={'firstName'} type={'text'} label={'Nome'} placeholder={'Nome do Funcionário'} required={'true'} disabled={disabled} value={userEdit.name} />
@@ -94,23 +121,23 @@ const Edit = ({ userData, display, close, listSpecialization }) => {
 
                     {error && <div className="invalid-feedback">{error}</div>}
                 </div>
-                            <div className="col-md-3">
-                                <label htmlFor="cpf" className="form-label">CPF</label>
-                                <InputMask
-                                    mask="999.999.999-99"
-                                    className="form-control"
-                                    id="cpf"
-                                    placeholder="CPF do Funcionário"
-                                    disabled={disabled}
-                                    value={userEdit.cpf}
-                                    onChange={(e) => {
-                                        setUserEdit(prevData => ({
-                                            ...prevData,
-                                            cpf: e.target.value
-                                        }));
-                                    }}
-                                />
-                            </div>
+                <div className="col-md-3">
+                    <label htmlFor="cpf" className="form-label">CPF</label>
+                    <InputMask
+                        mask="999.999.999-99"
+                        className="form-control"
+                        id="cpf"
+                        placeholder="CPF do Funcionário"
+                        disabled={disabled}
+                        value={userEdit.cpf}
+                        onChange={(e) => {
+                            setUserEdit(prevData => ({
+                                ...prevData,
+                                cpf: e.target.value
+                            }));
+                        }}
+                    />
+                </div>
                 <div className="col-md-3">
                     <Input name={'phone'} type={'text'} label={'Telefone'} placeholder={'Telefone do Funcionário'} disabled={disabled} value={userEdit.phone} />
                 </div>
@@ -135,7 +162,7 @@ const Edit = ({ userData, display, close, listSpecialization }) => {
                             }));
                         }}
                     >
-                          <option value="-">Não se aplica</option>
+                        <option value="-">Não se aplica</option>
                         {listSpecialization &&
                             listSpecialization.map((item) => (
                                 <option value={item.key}>{item.label}</option>
@@ -143,10 +170,10 @@ const Edit = ({ userData, display, close, listSpecialization }) => {
                     </select>
                 </div>
                 <div className="col-md-3">
-                    <Input name={'department'} type={'text'} label={'Setor'} placeholder={'Setor do Funcionário'} required={'true'} disabled={disabled}/>
+                    <Input name={'department'} type={'text'} label={'Setor'} placeholder={'Setor do Funcionário'} value={userEdit.department} disabled={disabled} />
                 </div>
                 <div className="col-md-3">
-                    <Input name={'registry'} type={'text'} label={'Matrícula'} placeholder={'Matrícula do Funcionário'} required={'true'} disabled={disabled}/>
+                    <Input name={'registry'} type={'text'} label={'Matrícula'} placeholder={'Matrícula do Funcionário'} value={userEdit.registry} disabled={disabled} />
                 </div>
                 <div className="col-md-3">
                     <label htmlFor="patientCep" className="form-label">CEP*</label>
@@ -191,8 +218,7 @@ const Edit = ({ userData, display, close, listSpecialization }) => {
 
                 </div>
                 <div className="col-md-3">
-                    <label htmlFor="employeesComplement" className="form-label">Complemento</label>
-                    <input type="text" className="form-control" id="employeesComplement" placeholder="Complemento da Casa" disabled={disabled}/>
+                    <Input name={'complemento'} type={'text'} label={'Complemento'} placeholder={'Complemento da Casa'} value={userEdit.complemento} disabled={disabled} />
                 </div>
                 <div className="col-md-3">
                     <label htmlFor="patientNeighborhood" className="form-label">Bairro</label>
@@ -213,7 +239,7 @@ const Edit = ({ userData, display, close, listSpecialization }) => {
                             </>
                         ) : (
                             <>
-                                <button className={style['btnSecund']} onClick={() => editUser()}type='button'>Editar</button>
+                                <button className={style['btnSecund']} onClick={() => editUser()} type='button'>Editar</button>
                                 <button type="submit" className="btn btn-primary">Salvar</button>
                             </>
                         )
@@ -231,28 +257,16 @@ const Edit = ({ userData, display, close, listSpecialization }) => {
         }
     }
 
-    function saveFields(user) {
+    async function saveFields(user) {
         user.preventDefault();
-        let data = {
-            id: userEdit.id,
-            name: user.target.firstName.value,
-            surname: user.target.lastName.value,
-            dateBirth: user.target.date.value,
-            phone: user.target.phone.value,
-            email: user.target.email.value,
-            cpf: user.target.cpf.value,
-            gender: user.target.inputGender.value,
-            cep: user.target.patientCep.value,
-            street: user.target.patientStreet.value,
-            number: user.target.patientNumber.value,
-            neighborhood: user.target.patientNeighborhood.value,
-            city: user.target.patientCity.value,
-            crm: user.target.crm.value,
-            specialization: user.target.inputSpecialization.value
-        };
-        setUserUpdate(data);
-        setAlertSucess(true);
-        setTimeout(() => setAlertSucess(false), 1500);
+        try {
+            await EmployeesModel.editar(userData.id, user.target);
+            setAlertSucess(true);
+            setTimeout(() => setAlertSucess(false), 1500);
+            close();
+        } catch (e) {
+            console.error("Erro ao editar");
+        }
     }
 
     function fetchAddress() {

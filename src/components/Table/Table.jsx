@@ -6,12 +6,14 @@ import FormConsultation from '../Form/Consultation/Edit/Edit';
 import FormFunctional from '../Form/Functional/Edit/Edit';
 import FormService from '../Form/Service/EditService/EditService';
 import FormFinance from '../Form/Finance/EditFinance/EditFinance'; // Importando o formulário de finanças
-import api from '../../api';
 import { Pagination } from 'antd';
 import ModalFinalization from '../ModalFinalization/ModalFinalization';
 import ViewQuery from '../ViewQuery/ViewQuery';
+import EmployeesModel from '../../pages/Employee/EmployeesModel';
+import GenericModalConfirmation from '../GenericModal/GenericModalConfirmation/GenericModalConfirmation';
+import GenericModalError from '../GenericModal/GenericModalError/GenericModalError';
 
-const Table = ({ tableInformation }) => {
+function Table({ tableInformation, getData }) {
     const [count, setCount] = useState(0);
     const [formUser, setFormUser] = useState("none");
     const [userEdit, setUserEdit] = useState([]);
@@ -25,6 +27,12 @@ const Table = ({ tableInformation }) => {
     const [modalFinalization, setModalFinalization] = useState('none');
     const [modalViewQuery, setModalViewQuery] = useState(false);
     const [viewQuery, setViewQuery] = useState([]);
+    const [genericModalConfirmation, setGenericModalConfirmation] = useState({
+         view: false
+    });
+    const [genericModalError, setGenericModalError] = useState({
+        view: false
+    });
 
     // Estado para paginação
     const [currentPage, setCurrentPage] = useState(1);
@@ -57,7 +65,7 @@ const Table = ({ tableInformation }) => {
                 },
                 {
                     key: '2',
-                    label: <a href="#" className="text-decoration-none text-primary" onClick={() => deletar(item.id)}>Cancelar</a>,
+                    label: <a href="#" className="text-decoration-none text-primary" onClick={() => confirmar(item.id)}>Cancelar</a>,
                 },
                 {
                     key: '3',
@@ -76,7 +84,7 @@ const Table = ({ tableInformation }) => {
                 },
                 {
                     key: '2',
-                    label: <a href="#" className="text-decoration-none text-primary" onClick={() => deletar(item.id)}>Deletar</a>,
+                    label: <a href="#" className="text-decoration-none text-primary" onClick={() => confirmar(item)}>Deletar</a>,
                 },
             ];
         }
@@ -89,6 +97,23 @@ const Table = ({ tableInformation }) => {
                 <ModalFinalization display={modalFinalization} fecharModal={concluir} agendamento={userEdit} treatments={tableInformation.treatment} />
             )}
 
+            {genericModalConfirmation.view && (
+                <GenericModalConfirmation close={()=>setGenericModalConfirmation((prev)=>({
+                    ...prev,
+                    view: false
+                }))}
+                title={genericModalConfirmation.title}
+                description={genericModalConfirmation.description}
+                confirmar={() => deletar(genericModalConfirmation.item)}
+                />
+            )}
+
+            {genericModalError.view && (
+                <GenericModalError close={() => setGenericModalError((prev) => ({ ...prev, view: false }))}
+                title={genericModalError.title}
+                description={genericModalError.description}
+                icon={genericModalError.icon}  />
+            )}
 
             <div className={`${style['table']} table-responsive ${pageSize === 10 ? 'overflow-hidden' : ''}`}>
                 <table className="table table-hover mb-2" id={tableInformation.tableId}>
@@ -237,16 +262,9 @@ const Table = ({ tableInformation }) => {
             setCount(count + 1);
             setFormFinance("none");
         } else if (tableInformation.tableId === 'employeesTable') {
-            const position = tableInformation.data.findIndex((item) => item.id === information.id);
-            if (position >= 0) {
-                tableInformation.data[position] = {
-                    ...tableInformation.data[position],
-                    ...information
-                };
-            }
             setCount(count + 1);
             setFormFunctional("none");
-
+            getData();
         }
         else if (tableInformation.tableId === 'consultationTable') {
             if (information?.id) {
@@ -283,18 +301,38 @@ const Table = ({ tableInformation }) => {
         }
     }
 
-    function deletar(id) {
-        if (!window.confirm('Deseja realmente excluir este registro?')) {
-            return;
-        }
-        tableInformation.data = tableInformation.data.filter((item) => item.id !== id);
-        tableInformation.dataNotFilter = tableInformation.dataNotFilter.filter((item) => item.id !== id);
+    function confirmar(value){
+        setGenericModalConfirmation((prev)=>({
+            ...prev,
+            item: value,
+            view: true,
+            title: 'Tem Certeza?',
+            description: 'Deseja realmente excluir este registro?'
+        }))
+    }
+
+    async function deletar(value) {
         setCount(count + 1);
 
         console.log("Estamos na tela: ", tableInformation.tbodyId);
 
         if (tableInformation.tbodyId === 'employeesBody') {
-            api.delete(`/medicos/${id}`);
+           try{
+            await EmployeesModel.deletar(value);
+            setGenericModalConfirmation((prev)=>({
+                ...prev,
+                item:  null,
+                view: false,
+            }));
+            getData();
+           }catch (e){
+            setGenericModalError((prev) => ({
+                view: true,
+                title: 'Ops.... Tivemos um erro ao concluir a ação',
+                description: e.message,
+                icon: 'iconErro'
+            }));
+           }
         }
     }
 

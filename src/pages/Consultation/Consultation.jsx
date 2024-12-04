@@ -13,7 +13,7 @@ function Consultation() {
     
     const [pacientes, setPacientes] = useState([]);
 
-    const [showEvaluationModal] = useState(true);
+    const [showEvaluationModal] = useState(false);
     const [tableInformation, setTableInformation] = useState({
         'columns': [
             { 'name': '#', key: '' },
