@@ -6,8 +6,7 @@ import Button from "../../components/Botao/Botao";
 import Table from "../../components/Table/Table";
 import Add from "../../components/Form/User/Add/Add";
 import api from "../../api";
-import { filtrarClientes } from '../../api';
-import { criarCliente } from '../../api';
+import { filtrarClientes, criarCliente } from '../../api';
 
 function Patients() {
   const [tableInformation, setTableInformation] = useState({

@@ -20,12 +20,11 @@ api.interceptors.request.use(
 // Função para criar cliente
 export async function criarCliente(clienteData) {
     try {
-        const response = await fetch('http://localhost:8080/clientes', {
-            method: 'POST',
+        debugger
+        const response = await api.post('/clientes', clienteData, {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(clienteData),
         });
         if (response.ok) {
             return await response.json(); // Retorna o novo cliente
@@ -56,12 +55,10 @@ export async function buscarClientesComUltimosAgendamentos() {
 // Função para atualizar cliente
 export async function atualizarCliente(id, clienteData) {
     try {
-        const response = await fetch(`http://localhost:8080/clientes/${id}`, {
-            method: 'PUT',
+        const response = await api.put(`/clientes/${id}`, clienteData, {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(clienteData),
         });
         if (response.ok) {
             return await response.json(); // Retorna o cliente atualizado
@@ -103,6 +100,33 @@ export async function filtrarClientes(filtros) {
         throw error;
     }
 }
+
+export async function buscarClientePorCpf(cpf) {
+    try {
+        const response = await api.get(`/clientes/cpf?cpf=${cpf}`);
+
+        if (!response.ok) {
+            throw new Error(`Erro ao buscar cliente: ${response.statusText}`);
+        }
+
+        const cliente = await response.json();
+        return cliente.id; // Retorna o ID do cliente
+    } catch (error) {
+        console.error('Erro na busca por CPF:', error);
+        throw error;
+    }
+}
+
+
+export async function listarMedicos() {
+    try {
+        const response = await api.get(`/medicos`);
+        return response.data;
+    } catch (error) {
+        console.error("Erro ao listar médicos:", error);
+        throw error;
+    }
+};
 
 //Fim dos endpoints para Patientes
 

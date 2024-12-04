@@ -1,15 +1,30 @@
 import style from './Add.module.css';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import InputMask from 'react-input-mask';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import SuccessAlert from '../../../AlertSuccess/AlertSuccess';
+import { criarCliente, listarMedicos } from '../../../../api';
 
 const Add = ({ Display, close }) => {
     const [newUser, setNewUser] = useState([]);
     const [date, setDate] = useState(newUser.lastVisit);
     const [error, setError] = useState('');
     const [AlertSuccess, setAlertSucess] = useState(false);
+    const [medicos, setMedicos] = useState([]);
 
+     // Carrega os médicos assim que o componente é montado
+     useEffect(() => {
+        async function fetchMedicos() {
+            try {
+                const medicosData = await listarMedicos();
+                setMedicos(medicosData); // Atribui os médicos ao estado
+            } catch (error) {
+                console.error("Erro ao buscar médicos:", error);
+            }
+        }
+
+        fetchMedicos();
+    }, []); // Este useEffect roda apenas uma vez na montagem do componente
 
     //Trata a data de aniversário
     const validateDate = (inputDate) => {
@@ -177,36 +192,86 @@ const Add = ({ Display, close }) => {
         </>
     );
 
-    function saveFields(date) {
-        date.preventDefault();
-        const user = {
-            id: null,
-            name: date.target.patientName.value,
-            surname: date.target.patientSurname.value,
-            dateBirth: date.target.date.value,
-            phone: date.target.patientPhone.value,
-            email: date.target.patientEmail.value,
-            cpf: date.target.cpf.value,
-            gender: date.target.patientGender.value,
-            cep: date.target.patientCep.value,
-            street: date.target.patientStreet.value,
-            number: date.target.patientNumber.value,
-            neighborhood: date.target.patientNeighborhood.value,
-            city: date.target.patientCity.value,
-            state: date.target.patientState.value,
-            allergies: date.target.patientAllergies.value,
-            medications: date.target.patientMedications.value,
-            dentist: date.target.patientDentist.value,
-            lastVisit: date.target.patientLastVisit.value,
-            notes: date.target.patientNotes.value
+    function formatDateToISO(dateString) {
+        // Verifica se a data está no formato ISO e retorna sem modificar
+        if (/\d{4}-\d{2}-\d{2}/.test(dateString)) {
+            return dateString;
         }
-        setNewUser(user);
-        setAlertSucess(true);
-        setTimeout(() => setAlertSucess(false), 1500);
-        setTimeout(() => {
-            close(user);
-        }, 2500);
-    };
+    
+        // Verifica se a data está no formato dd/MM/yyyy
+        if (dateString && dateString.includes('/')) {
+            const [day, month, year] = dateString.split('/');
+    
+            if (day && month && year) {
+                return `${year}-${month}-${day}`;
+            }
+        }
+    
+        console.error("Formato de data inválido ou desconhecido:", dateString);
+        return null;
+    }    
+
+    // Função para salvar os campos
+    async function saveFields(event) {
+        event.preventDefault(); // Previne o comportamento padrão do formulário
+
+        const formattedBirthDate = formatDateToISO(event.target.date.value);
+        const formattedLastVisitDate = formatDateToISO(event.target.patientLastVisit.value);
+
+        // Verifica se as datas são válidas antes de prosseguir
+        if (!formattedBirthDate || !formattedLastVisitDate) {
+            alert("Erro: Formato de data inválido. Por favor, revise as datas.");
+            return; // Encerra a função se as datas forem inválidas
+        }
+
+        // Busca o médico correspondente pelo nome/sobrenome
+        const medicoNome = event.target.patientDentist.value.trim().toLowerCase();
+        const medicoEncontrado = medicos.find(
+            (medico) =>
+                medico.nome.toLowerCase() === medicoNome ||
+                medico.sobrenome.toLowerCase() === medicoNome
+        );
+
+        if (!medicoEncontrado) {
+            alert("Erro: Médico não encontrado. Por favor, revise o nome digitado.");
+            return; // Encerra a função se o médico não for encontrado
+        }
+
+        console.log(medicoEncontrado)
+
+        // Cria o objeto com os valores do formulário
+        const user = {
+            nome: event.target.patientName.value,
+            sobrenome: event.target.patientSurname.value,
+            dataNascimento: formattedBirthDate,
+            telefone: event.target.patientPhone.value,
+            email: event.target.patientEmail.value,
+            cpf: event.target.cpf.value,
+            genero: event.target.patientGender.value,
+            cep: event.target.patientCep.value,
+            numeroResidencia: event.target.patientNumber.value,
+            alergias: event.target.patientAllergies.value,
+            medicamentos: event.target.patientMedications.value,
+            medicoResponsavelId: medicoEncontrado.id, // ID do médico encontrado
+            ultimoAgendamento: formattedLastVisitDate,
+            observacoes: event.target.patientNotes.value,
+            hierarquia: "CLIENTE"
+        };
+
+        try {
+            const novoUsuario = await criarCliente(user);
+            console.log("Usuário criado com sucesso:", novoUsuario);
+            setNewUser(novoUsuario);
+            setAlertSucess(true);
+            setTimeout(() => setAlertSucess(false), 1500);
+            setTimeout(() => {
+                close(novoUsuario);
+            }, 2500);
+        } catch (erro) {
+            console.error("Erro ao criar cliente:", erro);
+            alert("Erro ao salvar cliente no banco de dados. Por favor, tente novamente.");
+        }
+    }
 
     // Função para buscar endereço pelo CEP (exemplo)
     function fetchAddress() {
