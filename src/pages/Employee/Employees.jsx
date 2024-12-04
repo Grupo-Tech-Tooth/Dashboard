@@ -45,7 +45,6 @@ function Employees() {
   });
 
   async function getData() {
-    debugger
     try {
       const data = await EmployeesModel.buscar();
       setTableInformation((prevTableInformation) => ({
