@@ -166,7 +166,7 @@ const Table = ({ tableInformation }) => {
                     <FormConsultation
                         display={formConsultation}
                         consultationData={consultationEdit}
-                        listUsers={tableInformation.data}
+                        listUsers={tableInformation.pacientes}
                         doctors={tableInformation.doctor}
                         treatments={tableInformation.treatment}
                         close={closeForm}

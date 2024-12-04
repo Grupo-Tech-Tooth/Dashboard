@@ -2,7 +2,6 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Modal from "./components/Modal/Modal";
 import zIndex from "@mui/material/styles/zIndex";
-import { Modal as BootstrapModal } from "bootstrap"; 
 
 const IdleContext = createContext();
 

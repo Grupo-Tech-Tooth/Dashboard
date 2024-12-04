@@ -182,6 +182,98 @@ function Consultation() {
                 id: '5',
                 name: 'Dra. Claudia Tavares'
             }
+        ],
+        'pacientes': [
+            {
+                id: '1',
+                name: 'Luiz Fernando',
+                time: '09:00'
+            },
+            {
+                id: '2',
+                name: 'Camila Silva',
+                time: '10:00'
+            },
+            {
+                id: '3',
+                name: 'Rafael Andrade',
+                time: '10:30'
+            },
+            {
+                id: '4',
+                name: 'Rafael Andrade',
+                time: '10:30'
+            },
+            {
+                id: '5',
+                name: 'Rafael Andrade',
+                time: '10:30'
+            },
+            {
+                id: '6',
+                name: 'Rafael Andrade',
+                time: '10:30'
+            },
+            {
+                id: '7',
+                name: 'Rafael Andrade',
+                time: '10:30'
+            },
+            {
+                id: '8',
+                name: 'Rafael Andrade',
+                time: '10:30'
+            },
+            {
+                id: '9',
+                name: 'Rafael Andrade',
+                time: '10:30'
+            },
+            {
+                id: '10',
+                name: 'Rafael Andrade',
+                time: '10:30'
+            },
+            {
+                id: '11',
+                name: 'Rafael Andrade',
+                time: '10:30'
+            },
+            {
+                id: '12',
+                name: 'Rafael Andrade',
+                time: '10:30'
+            },
+            {
+                id: '13',
+                name: 'Rafael Andrade',
+                time: '10:30'
+            },
+            {
+                id: '14',
+                name: 'Rafael Andrade',
+                time: '10:30'
+            },
+            {
+                id: '15',
+                name: 'Rafael Andrade',
+                time: '10:30'
+            },
+            {
+                id: '16',
+                name: 'Rafael Andrade',
+                time: '10:30'
+            },
+            {
+                id: '17',
+                name: 'Rafael Andrade',
+                time: '10:30'
+            },
+            {
+                id: '18',
+                name: 'Rafael Andrade',
+                time: '10:30'
+            },
         ]
     });
 
@@ -191,9 +283,26 @@ function Consultation() {
 
     async function getData() {
     try {
-        const response = await api.get(`/agendamentos`);
-        formatData(response.data);
-        console.log("Consultas obtidas com sucesso:", response.data);
+        const agendamentos = await api.get(`/agendamentos`);
+        formatData(agendamentos.data);
+
+        const medicos = await api.get(`/medicos`);
+        setTableInformation((prevTableInformation) => ({
+            ...prevTableInformation,
+            doctor: medicos.data,
+        }));
+
+        const servicos = await api.get(`/servicos`);
+        setTableInformation((prevTableInformation) => ({
+            ...prevTableInformation,
+            treatment: servicos.data,
+        }));
+
+        const clientes = await api.get(`/clientes`);
+        setTableInformation((prevTableInformation) => ({
+            ...prevTableInformation,
+            pacientes: clientes.data,
+        }));        
         
     } catch (error) {
         console.log("Erro ao obter consultas:", error);
@@ -219,11 +328,11 @@ function Consultation() {
 
           data.push({
             id: consulta.id,
-            nomePaciente: consulta.paciente.nome,
+            nomePaciente: consulta.cliente.nome,
             date: formattedDate,
             time: formattedTime,
             status: consulta.status,
-            treatment: consulta.tratamento,
+            treatment: consulta.servico.nome,
             doctor: consulta.medico.nome,
           })
     

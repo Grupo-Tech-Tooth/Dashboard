@@ -3,6 +3,7 @@ import style from './Edit.module.css';
 import SuccessAlert from '../../../AlertSuccess/AlertSuccess';
 import Calendario from '../../../Calendario/Calendario';
 import { Alert } from 'antd';
+import api from '../../../../api';
 
 function Edit({ consultationData, display, close, listUsers, doctors, treatments }) {
     const [newConsultation, setNewConsultation] = useState({});
@@ -39,6 +40,15 @@ function Edit({ consultationData, display, close, listUsers, doctors, treatments
     const ano = hoje.getFullYear();
     const dataFormatada = `${dia}-${mes}-${ano}`;
 
+    const dtoConsulta = {
+        consultaId: consultationData.id,
+        clienteId: consultationData.clienteId,
+        medicoId: consultationData.medicoId,
+        servicoId: consultationData.servicoId,
+        status: consultationData.status,
+        dataHora: `${inputValueDate} ${inputValueTime}`
+    };
+
     const availableHours = [
         { class: 'red', time: '00:00' },
         { class: 'green', time: '01:00' },
@@ -69,7 +79,7 @@ function Edit({ consultationData, display, close, listUsers, doctors, treatments
 
     function userSelect(user) {
         setInputValueCpf(user.cpf)
-        setInputValueName(user.name)
+        setInputValueName(user.nome)
         setOptionsUsers({})
     }
 
@@ -87,7 +97,7 @@ function Edit({ consultationData, display, close, listUsers, doctors, treatments
         if (consultationData && consultationData.status) {
             setInputValueStatus(consultationData.status);
         }
-    }, [consultationData]);
+    }, [consultationData, listUsers, doctors, treatments]);
 
     return (
         <>
@@ -134,7 +144,7 @@ function Edit({ consultationData, display, close, listUsers, doctors, treatments
                                                         className="suggestion-item"
                                                         onClick={() => userSelect(patient)}
                                                     >
-                                                        {`${patient.name} (${patient.cpf})`}
+                                                        {`${patient.nome} (${patient.cpf})`}
                                                     </div>
                                                 )) : (
                                                     <></>
@@ -163,9 +173,9 @@ function Edit({ consultationData, display, close, listUsers, doctors, treatments
                                                 <div
                                                     key={doctor.id}
                                                     className="suggestion-item"
-                                                    onClick={() => doctorSelect(doctor.name)}
+                                                    onClick={() => doctorSelect(doctor.nome)}
                                                 >
-                                                    {`${doctor.name}`}
+                                                    {`${doctor.nome}`}
                                                 </div>
                                             )) : (
                                                 <></>
@@ -180,9 +190,9 @@ function Edit({ consultationData, display, close, listUsers, doctors, treatments
                                                 <div
                                                     key={treatment.id}
                                                     className="suggestion-item"
-                                                    onClick={() => treatmentSelect(treatment.name)}
+                                                    onClick={() => treatmentSelect(treatment.nome)}
                                                 >
-                                                    {`${treatment.name}`}
+                                                    {`${treatment.nome}`}
                                                 </div>
                                             )) : (
                                                 <></>
@@ -284,7 +294,7 @@ function Edit({ consultationData, display, close, listUsers, doctors, treatments
             for (let patient of listUsers) {
                 if (patient.cpf && patient.cpf.includes(valor)) {
                     filteredPatients.push({
-                        name: patient.nomePaciente,
+                        nome: patient.nome,
                         cpf: patient.cpf
                     });
                 }
@@ -302,10 +312,10 @@ function Edit({ consultationData, display, close, listUsers, doctors, treatments
         if (valor.length > 2) {
             const filteredDoctors = [];
             for (let doctorDaVez of doctors) {
-                if (doctorDaVez.name && typeof doctorDaVez.name === 'string' && doctorDaVez.name.toLowerCase().includes(valor.toLowerCase())) {
+                if (doctorDaVez.nome && typeof doctorDaVez.nome === 'string' && doctorDaVez.nome.toLowerCase().includes(valor.toLowerCase())) {
                     filteredDoctors.push({
                         id: doctorDaVez.id,
-                        name: doctorDaVez.name
+                        nome: doctorDaVez.nome
                     });
                 }
             }
@@ -321,10 +331,10 @@ function Edit({ consultationData, display, close, listUsers, doctors, treatments
         if (valor.length > 2) {
             const filteredTreatments = [];
             for (let treatment of treatments) {
-                if (treatment.name && typeof treatment.name === 'string' && treatment.name.toLowerCase().includes(valor.toLowerCase())) {
+                if (treatment.nome && typeof treatment.nome === 'string' && treatment.nome.toLowerCase().includes(valor.toLowerCase())) {
                     filteredTreatments.push({
                         id: treatment.id,
-                        name: treatment.name
+                        nome: treatment.nome
                     });
                 }
             }
@@ -338,13 +348,29 @@ function Edit({ consultationData, display, close, listUsers, doctors, treatments
         disabledInput ? setDisabledInput(false) : setDisabledInput(true);
     }
 
-    function saveFields(value) {
+    function setDto(){
+
+        dtoConsulta.consultaId = consultationData.id;
+        dtoConsulta.clienteId = listUsers.find((user) => user.nome === newConsultation.nomePaciente).id;
+        dtoConsulta.medicoId = doctors.find((doctor) => doctor.nome === newConsultation.doctor).id;
+        dtoConsulta.status = newConsultation.status;
+        dtoConsulta.servicoId = treatments.find((treatment) => treatment.nome === newConsultation.treatment).id;
+
+        //Convertendo Hora em LocalDateTime para o formato do banco
+        const [hours, minutes] = newConsultation.time.split(':');
+        const [day, month, year] = newConsultation.date.split('/');
+        const dataHora = new Date(year, month - 1, day, hours, minutes);
+        const dataHoraFormatada = dataHora.toISOString();
+        dtoConsulta.dataHora = dataHoraFormatada;
+    }
+
+    async function saveFields(value) {
         value.preventDefault();
         const formElements = value.target.elements;
-        const newValues = {};
+        const newValues = {};        
 
         for (let i = 0; i < formElements.length; i++) {
-            let element = formElements[i];
+            let element = formElements[i];            
 
             if (element.id === 'date') {
                 const [year, month, day] = element.value.split('-');
@@ -363,9 +389,22 @@ function Edit({ consultationData, display, close, listUsers, doctors, treatments
                     id: consultationData.id
                 }));
             }
+
         }
+
+        setDto();
         editar();
-        setAlertSucess(true);
+
+        // Id vai como parametro, e o objeto com os dados da consulta vai no body
+        const response = await api.put(`/agendamentos/${dtoConsulta.consultaId}`, dtoConsulta);
+
+        if (response.status === 200) {
+            setAlertSucess(true);
+        }
+
+        console.log(" Consulta Atualizada ",response);
+        
+
         setTimeout(() => {
             setAlertSucess(false)
         }, 5000)
