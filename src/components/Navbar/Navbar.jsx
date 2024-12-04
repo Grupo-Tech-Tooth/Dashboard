@@ -8,6 +8,7 @@ const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const isLoginPage = location.pathname === '/';
+  const isAppointmentsPage = location.pathname === '/consultas';
 
   // Função para realizar o logout
   const handleLogout = () => {
@@ -24,6 +25,10 @@ const Navbar = () => {
         <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
           <span className="navbar-toggler-icon"></span>
         </button>
+
+        {/* {!isAppointmentsPage &&(
+
+        )} */}
 
         {!isLoginPage && (
           <div className="collapse navbar-collapse" id="navbarNav">
