@@ -296,6 +296,19 @@ const Table = ({ tableInformation }) => {
         if (tableInformation.tbodyId === 'employeesBody') {
             api.delete(`/medicos/${id}`);
         }
+        if (tableInformation.tbodyId === 'patientsBody') {
+            api.delete(`/pacientes/${id}`);
+        }
+        if (tableInformation.tbodyId === 'servicesBody') {
+            api.delete(`/servicos/${id}`);
+        }
+        if (tableInformation.tbodyId === 'financesBody') {
+            api.delete(`/financas/${id}`);
+        }
+        if (tableInformation.tbodyId === 'consultationBody') {
+            api.delete(`/agendamentos/${id}/cancelar`);
+            
+        }
     }
 
     function concluir(item) {
