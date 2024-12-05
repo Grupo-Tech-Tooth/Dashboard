@@ -166,8 +166,8 @@ const Carousel = ({ appointmentsData, rescheduleAppointment, onCardClick, onEval
                         estilos={{ height: '420px', maxWidth: '25%', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', justifyContent: 'space-between', textAlign: 'start', lineHeight: '3' }}
                         bodyEstilos={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
                     >
-                        <h4 className='text-primary mb-4' style={{ textAlign: 'center', opacity: isPast || consulta.status == "Cancelado" || consulta.status == "1" ? '0.5' : '1' }}>{parseDateBDtoSpace(consulta.dataHora)}</h4>
-                        <div className={`col-md-12 ${isPast || consulta.status == "Cancelado" || consulta.status == "1" ? 'border-bottom border-primary mb-2' : ''}`} style={{ opacity: isPast || consulta.status == "Cancelado" || consulta.status == "1" ? '0.5' : '1' }}>
+                        <h4 className='text-primary mb-4' style={{ textAlign: 'center', opacity: isPast || consulta.status === "Cancelado" || consulta.status === "1" ? '0.5' : '1' }}>{parseDateBDtoSpace(consulta.dataHora)}</h4>
+                        <div className={`col-md-12 ${isPast || consulta.status === "Cancelado" || consulta.status === "1" ? 'border-bottom border-primary mb-2' : ''}`} style={{ opacity: isPast || consulta.status === "Cancelado" || consulta.status === "1" ? '0.5' : '1' }}>
                             <h5 className='mb-3' style={{ fontWeight: 'normal' }}>Horário: <span>{parseDateBDtoDateTime(consulta.dataHora).time}</span></h5>
                             <h5 className='mb-3' style={{ fontWeight: 'normal' }}>Dentista: <span>Dr(a). {findDoctor(consulta.medicoId).nome}</span></h5>
                             <h5 className='mb-3' style={{ fontWeight: 'normal' }}>Tratamento: <span>{findTreatment(consulta.servicoId).nome}</span></h5>

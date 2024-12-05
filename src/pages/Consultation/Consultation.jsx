@@ -13,7 +13,7 @@ function Consultation() {
     
     const [pacientes, setPacientes] = useState([]);
 
-    const [showEvaluationModal] = useState(true);
+    const [showArrivalList, setShowArrivalList] = useState(false);
     const [tableInformation, setTableInformation] = useState({
         'columns': [
             { 'name': '#', key: '' },
@@ -30,7 +30,7 @@ function Consultation() {
                 "id": 1,
                 "nomePaciente": "Carlos Silva",
                 "cpf": "12345678900",
-                "date": "25/10/2024",
+                "date": "25/12/2024",
                 "time": "10:00",
                 "status": "Remarcado",
                 "treatment": "Limpeza",
@@ -246,7 +246,7 @@ function Consultation() {
     return (
 
         <>
-            <Navbar />
+            <Navbar toggleArrivalModal={toggleArrivalModal}/>
             <h2 className="text-primary text-center my-3">Gerenciar Consultas</h2>
             <Container>
                 {
@@ -339,10 +339,11 @@ function Consultation() {
                     </div>
                 </div>
                 <Modal
-                    show={showEvaluationModal}
+                    show={showArrivalList}
                     title={`Fila de chegada`}
+                    onClose={toggleArrivalModal}
                     content={
-                        <div style={{height: '600px', overflow: 'scroll'}}>
+                        <div style={{height: '600px', overflowY: 'scroll'}}>
                             {
                                 pacientes.length > 0 ? (
                                 pacientes.map((paciente, index) => (
@@ -371,6 +372,10 @@ function Consultation() {
             </div>
         </>
     );
+
+    function toggleArrivalModal() {
+        setShowArrivalList(!showArrivalList);
+    }
 
     function resetFields() {
         setSearchPatient('');
