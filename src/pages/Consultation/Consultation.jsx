@@ -8,12 +8,16 @@ import Modal from '../../components/Modal/Modal';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
+//import { handleDesfazer } from './utils/desfazerUtils';
 
 function Consultation() {
     
     const [pacientes, setPacientes] = useState([]);
+    const [pacientesAgendados, setPacientesAgendados] = useState([]);
 
-    const [showEvaluationModal] = useState(true);
+    const [showPilhaModal] = useState(true);
+
+    const [showEvaluationModal] = useState(false);
     const [tableInformation, setTableInformation] = useState({
         'columns': [
             { 'name': '#', key: '' },
@@ -227,20 +231,35 @@ function Consultation() {
             { horario: "10:30", nome: "Rafael Andrade" },
             { horario: "10:30", nome: "Rafael Andrade" },
             { horario: "10:30", nome: "Rafael Andrade" },
-            { horario: "10:30", nome: "Rafael Andrade" },
-            { horario: "10:30", nome: "Rafael Andrade" },
-            { horario: "10:30", nome: "Rafael Andrade" },
-            { horario: "10:30", nome: "Rafael Andrade" },
-            { horario: "10:30", nome: "Rafael Andrade" },
-            { horario: "10:30", nome: "Rafael Andrade" },
-            { horario: "10:30", nome: "Rafael Andrade" },
-            { horario: "10:30", nome: "Rafael Andrade" },
-            { horario: "10:30", nome: "Rafael Andrade" },
-            { horario: "10:30", nome: "Rafael Andrade" },
-            { horario: "10:30", nome: "Rafael Andrade" },
+        ]
 
-        ];
+        const pacientesPilha = [
+            { data: "2024-11-29", horario: "09:00", nome: "Luiz Fernando" },
+            { data: "2024-11-29", horario: "10:00", nome: "Camila Silva" },
+            { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
+            { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
+            { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
+            { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
+            { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
+            { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
+            { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
+            { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
+            { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
+            { data: "2024-11-29", horario: "09:00", nome: "Luiz Fernando" },
+            { data: "2024-11-29", horario: "10:00", nome: "Camila Silva" },
+            { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
+            { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
+            { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
+            { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
+            { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
+            { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
+            { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
+            { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
+            { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
+        ]; 
+
         setPacientes(mockPacientes);
+        setPacientesAgendados(pacientesPilha);
     }, []);
 
     return (
@@ -369,6 +388,32 @@ function Consultation() {
                         </div>
                     }
                 />
+                <Modal
+    show={showPilhaModal}
+    title="Desfazer consulta"
+    content={
+        <div className={style.modalContainer}>
+            <div className={style.modalBody}>
+                {pacientesAgendados.length > 0 ? (
+                    <>
+                        {pacientesAgendados.map((paciente, index) => (
+                            <div key={index} className={style.pacienteItem}>
+                                <span className={style.data}>{paciente.data}</span>
+                                <span className={style.horario}>{paciente.horario}</span>
+                                <span className={style.nome}>{paciente.nome}</span>
+                            </div>
+                        ))}
+                    </>
+                ) : (
+                    <p className="nome">Nenhum paciente para desfazer.</p>
+                )}
+            </div>
+            <div className={style.botao}>
+                <button className={style.desfazerButton}>Desfazer</button>
+            </div>
+        </div>
+    }
+/>
             </Container>
                 <div className={`z-1 position-absolute p-5 rounded-3 ${style['boxButton']}`}>
                     <button type="button" onClick={() => abrirModalAdd()} className={style['add']}>Nova Consulta</button>

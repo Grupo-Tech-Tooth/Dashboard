@@ -16,10 +16,10 @@ function RequireAuth({ children }) {
   const token = sessionStorage.getItem('token');
   const location = useLocation();
 
-  if (!token) {
-    // Redireciona para login caso não esteja autenticado
-    return <Navigate to="/" state={{ from: location }} replace />;
-  }
+  // if (!token) {
+  //   // Redireciona para login caso não esteja autenticado
+  //   return <Navigate to="/" state={{ from: location }} replace />;
+  // }
 
   return children;
 }
