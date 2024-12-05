@@ -14,8 +14,7 @@ function Consultation() {
     
     const [pacientes, setPacientes] = useState([]);
     const [pacientesAgendados, setPacientesAgendados] = useState([]);
-
-    const [showPilhaModal] = useState(true);
+    const [showPilhaModal] = useState(false);
 
     const [showEvaluationModal] = useState(false);
     const [tableInformation, setTableInformation] = useState({

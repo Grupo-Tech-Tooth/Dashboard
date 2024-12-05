@@ -54,7 +54,7 @@ function Employees() {
           fullName: `${medico.nome} ${medico.sobrenome ? medico.sobrenome : ''}`,
           name: medico.nome,
           surname: medico.sobrenome,
-          email: medico.loginInfo.email,
+          email: medico.email,
           crm: medico.crm,
           phone: medico.telefone,
           department: "Médico",
