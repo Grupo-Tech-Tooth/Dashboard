@@ -15,7 +15,7 @@ api.interceptors.request.use(
     (error) => Promise.reject(error)
 );
 
-//Início dos endpoints para Patientes
+//Início dos endpoints para Patients
 
 // Função para criar cliente
 export async function criarCliente(clienteData) {
@@ -26,8 +26,8 @@ export async function criarCliente(clienteData) {
                 'Content-Type': 'application/json',
             },
         });
-        if (response.ok) {
-            return await response.json(); // Retorna o novo cliente
+        if (response.status === 201) {
+            return await response.data; // Retorna o novo cliente
         } else {
             throw new Error('Erro ao criar cliente');
         }
@@ -60,8 +60,8 @@ export async function atualizarCliente(id, clienteData) {
                 'Content-Type': 'application/json',
             },
         });
-        if (response.ok) {
-            return await response.json(); // Retorna o cliente atualizado
+        if (response.status === 200) {
+            return await response.data; // Retorna o cliente atualizado
         } else {
             throw new Error('Erro ao atualizar cliente');
         }
@@ -74,9 +74,7 @@ export async function atualizarCliente(id, clienteData) {
 // Função para deletar cliente
 export async function deletarCliente(id) {
     try {
-        const response = await fetch(`/clientes/${id}`, {
-            method: 'DELETE',
-        });
+        const response = await api.delete(`/clientes/${id}`);
         if (response.ok) {
             return true; // Retorna true se deletado com sucesso
         } else {
@@ -101,23 +99,7 @@ export async function filtrarClientes(filtros) {
     }
 }
 
-export async function buscarClientePorCpf(cpf) {
-    try {
-        const response = await api.get(`/clientes/cpf?cpf=${cpf}`);
-
-        if (!response.ok) {
-            throw new Error(`Erro ao buscar cliente: ${response.statusText}`);
-        }
-
-        const cliente = await response.json();
-        return cliente.id; // Retorna o ID do cliente
-    } catch (error) {
-        console.error('Erro na busca por CPF:', error);
-        throw error;
-    }
-}
-
-
+//Inicio das Buscas extra de Medicos que envolve Patients
 export async function listarMedicos() {
     try {
         const response = await api.get(`/medicos`);
@@ -128,6 +110,17 @@ export async function listarMedicos() {
     }
 };
 
-//Fim dos endpoints para Patientes
+export async function buscarIdMedicoPorCpf(cpf) {
+    try {
+      const response = await api.get(`medicos/cpf/identification?cpf=${cpf}`);
+      return response.data; // Retorna o ID do médico
+    } catch (error) {
+      console.error('Erro ao buscar ID do médico pelo CPF:', error);
+      throw error;
+    }
+  };
+//Fim das Buscas extras de Medicos que envolve Patients
+
+//Fim dos endpoints para Patients
 
 export default api;

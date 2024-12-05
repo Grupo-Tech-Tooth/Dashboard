@@ -5,7 +5,7 @@ import InputMask from 'react-input-mask';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import logo from "../../../../assets/Tech-Tooth-Logo.png";
 import SuccessAlert from '../../../AlertSuccess/AlertSuccess';
-import { atualizarCliente, buscarClientePorCpf, listarMedicos } from '../../../../api';
+import { atualizarCliente, buscarIdMedicoPorCpf, listarMedicos } from '../../../../api';
 
 const Edit = ({ userData, display, close }) => {
     // const [date, setDate] = useState(userData.lastVisit);
@@ -183,10 +183,10 @@ const Edit = ({ userData, display, close }) => {
                                         <input type="text" className="form-control" id="patientDentist"
                                             placeholder="Dentista responsável pelo paciente" disabled={disabled} />
                                     </div>
-                                    <div className="col-md-4 mb-3">
+                                    {/* <div className="col-md-4 mb-3">
                                         <label htmlFor="patientLastVisit" className="form-label">Data da Última Consulta</label>
                                         <input type="date" className="form-control" id="patientLastVisit" disabled={disabled} />
-                                    </div>
+                                    </div> */}
                                     <div className="col-12 mb-3">
                                         <label htmlFor="patientNotes" className="form-label">Observações</label>
                                         <textarea className="form-control" id="patientNotes" rows="3"
@@ -244,10 +244,10 @@ const Edit = ({ userData, display, close }) => {
         event.preventDefault();
 
         const formattedBirthDate = formatDateToISO(event.target.date.value);
-        const formattedLastVisitDate = formatDateToISO(event.target.patientLastVisit.value);
+        // const formattedLastVisitDate = formatDateToISO(event.target.patientLastVisit.value);
 
         // Verifica se as datas são válidas antes de prosseguir
-        if (!formattedBirthDate || !formattedLastVisitDate) {
+        if (!formattedBirthDate) {
             alert("Erro: Formato de data inválido. Por favor, revise as datas.");
             return; // Encerra a função se as datas forem inválidas
         }
@@ -265,41 +265,39 @@ const Edit = ({ userData, display, close }) => {
             return; // Encerra a função se o médico não for encontrado
         }
 
-        const cpf = event.target.cpf.value;
-
-        // Busca o ID do cliente pelo CPF
-        const clienteId = await buscarClientePorCpf(cpf);
-        if (!clienteId) {
-            return; // Encerra se não encontrar o cliente
-        }
+        // Busca o ID do médico pelo CPF
+        const medicoId = await buscarIdMedicoPorCpf(medicoEncontrado.cpf);
 
         // Prepare os dados para envio
         const data = {
             nome: event.target.patientName.value,
-            sobrenome: event.target.patientSurname.value,
-            dataNascimento: formattedBirthDate, // Data formatada
-            telefone: event.target.patientPhone.value,
-            email: event.target.patientEmail.value,
-            cpf: cpf,
-            genero: event.target.patientGender.value,
-            cep: event.target.patientCep.value,
-            numeroResidencia: event.target.patientNumber.value,
-            alergias: event.target.patientAllergies.value,
-            medicamentos: event.target.patientMedications.value,
-            medicoResponsavelId: medicoEncontrado.id, // ID do médico encontrado
-            ultimoAgendamento: formattedLastVisitDate, // Data formatada
-            observacoes: event.target.patientNotes.value
+                sobrenome: event.target.patientSurname.value,
+                dataNascimento: formattedBirthDate,
+                telefone: event.target.patientPhone.value,
+                email: event.target.patientEmail.value,
+                cpf: event.target.cpf.value,
+                genero: event.target.patientGender.value,
+                cep: event.target.patientCep.value,
+                numeroResidencia: event.target.patientNumber.value,
+                alergias: event.target.patientAllergies.value,
+                medicamentos: event.target.patientMedications.value,
+                medicoId: medicoId,
+                medicoResponsavel: event.target.patientDentist.value,
+                medicoResponsavelId: medicoId, // ID do médico obtido pela busca
+                observacoes: event.target.patientNotes.value,
         };
 
         setUserUpdate(data);
 
         try {
             // Chamando a função atualizarCliente
-            const updatedClient = await atualizarCliente(clienteId, data);
+            const updatedClient = await atualizarCliente(userEdit.id, data);
 
             if (updatedClient) {
+                alert('Usuário atualizado com sucesso!');
                 setAlertSucess(true);
                 setTimeout(() => setAlertSucess(false), 1500);
+                close(userUpdate);
             } else {
                 console.error('Erro ao atualizar cliente');
             }

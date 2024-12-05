@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import InputMask from 'react-input-mask';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import SuccessAlert from '../../../AlertSuccess/AlertSuccess';
-import { criarCliente, listarMedicos } from '../../../../api';
+import { criarCliente, listarMedicos, buscarIdMedicoPorCpf  } from '../../../../api';
 
 const Add = ({ Display, close }) => {
     const [newUser, setNewUser] = useState([]);
@@ -172,10 +172,10 @@ const Add = ({ Display, close }) => {
                                         <input type="text" className="form-control" id="patientDentist"
                                             placeholder="Dentista responsável pelo paciente" />
                                     </div>
-                                    <div className="col-md-4 mb-3">
+                                    {/* <div className="col-md-4 mb-3">
                                         <label htmlFor="patientLastVisit" className="form-label">Data da Última Consulta</label>
                                         <input type="date" className="form-control" id="patientLastVisit" />
-                                    </div>
+                                    </div> */}
                                     <div className="col-12 mb-3">
                                         <label htmlFor="patientNotes" className="form-label">Observações</label>
                                         <textarea className="form-control" id="patientNotes" rows="3"
@@ -214,64 +214,74 @@ const Add = ({ Display, close }) => {
     // Função para salvar os campos
     async function saveFields(event) {
         event.preventDefault(); // Previne o comportamento padrão do formulário
-
-        const formattedBirthDate = formatDateToISO(event.target.date.value);
-        const formattedLastVisitDate = formatDateToISO(event.target.patientLastVisit.value);
-
-        // Verifica se as datas são válidas antes de prosseguir
-        if (!formattedBirthDate || !formattedLastVisitDate) {
-            alert("Erro: Formato de data inválido. Por favor, revise as datas.");
-            return; // Encerra a função se as datas forem inválidas
-        }
-
-        // Busca o médico correspondente pelo nome/sobrenome
-        const medicoNome = event.target.patientDentist.value.trim().toLowerCase();
-        const medicoEncontrado = medicos.find(
-            (medico) =>
-                medico.nome.toLowerCase() === medicoNome ||
-                medico.sobrenome.toLowerCase() === medicoNome
-        );
-
-        if (!medicoEncontrado) {
-            alert("Erro: Médico não encontrado. Por favor, revise o nome digitado.");
-            return; // Encerra a função se o médico não for encontrado
-        }
-
-        console.log(medicoEncontrado)
-
-        // Cria o objeto com os valores do formulário
-        const user = {
-            nome: event.target.patientName.value,
-            sobrenome: event.target.patientSurname.value,
-            dataNascimento: formattedBirthDate,
-            telefone: event.target.patientPhone.value,
-            email: event.target.patientEmail.value,
-            cpf: event.target.cpf.value,
-            genero: event.target.patientGender.value,
-            cep: event.target.patientCep.value,
-            numeroResidencia: event.target.patientNumber.value,
-            alergias: event.target.patientAllergies.value,
-            medicamentos: event.target.patientMedications.value,
-            medicoResponsavelId: medicoEncontrado.id, // ID do médico encontrado
-            ultimoAgendamento: formattedLastVisitDate,
-            observacoes: event.target.patientNotes.value,
-            hierarquia: "CLIENTE"
-        };
-
+    
         try {
+            const formattedBirthDate = formatDateToISO(event.target.date.value);
+            if (!formattedBirthDate) {
+                alert("Erro: Formato de data inválido. Por favor, revise as datas.");
+                return;
+            }
+    
+            const medicoNome = event.target.patientDentist.value.trim().toLowerCase();
+            const medicoEncontrado = medicos.find(
+                (medico) =>
+                    medico.nome.toLowerCase().includes(medicoNome) ||
+                    medico.sobrenome.toLowerCase().includes(medicoNome)
+            );
+    
+            if (!medicoEncontrado) {
+                alert("Erro: Médico não encontrado. Por favor, revise o nome digitado.");
+                return;
+            }
+    
+            // Busca o ID do médico
+            const medicoId = await buscarIdMedicoPorCpf(medicoEncontrado.cpf);
+    
+            const user = {
+                nome: event.target.patientName.value,
+                sobrenome: event.target.patientSurname.value,
+                dataNascimento: formattedBirthDate,
+                telefone: event.target.patientPhone.value,
+                email: event.target.patientEmail.value,
+                cpf: event.target.cpf.value,
+                genero: event.target.patientGender.value,
+                cep: event.target.patientCep.value,
+                numeroResidencia: event.target.patientNumber.value,
+                alergias: event.target.patientAllergies.value,
+                medicamentos: event.target.patientMedications.value,
+                medicoId: medicoId,
+                medicoResponsavel: event.target.patientDentist.value,
+                medicoResponsavelId: medicoId,
+                observacoes: event.target.patientNotes.value,
+                hierarquia: "CLIENTE"
+            };
+    
+            console.log("Dados enviados ao backend:", user);
+    
+            // Cria o cliente no backend
             const novoUsuario = await criarCliente(user);
+    
+            // Verifica se houve sucesso
+            if (!novoUsuario || !novoUsuario.id) {
+                throw new Error("Erro ao criar cliente: resposta inválida do servidor");
+            }
+    
             console.log("Usuário criado com sucesso:", novoUsuario);
             setNewUser(novoUsuario);
             setAlertSucess(true);
-            setTimeout(() => setAlertSucess(false), 1500);
+    
+            // Fecha o formulário após sucesso
             setTimeout(() => {
+                setAlertSucess(false);
                 close(novoUsuario);
-            }, 2500);
-        } catch (erro) {
-            console.error("Erro ao criar cliente:", erro);
-            alert("Erro ao salvar cliente no banco de dados. Por favor, tente novamente.");
+            }, 1500);
+        } catch (error) {
+            console.error("Erro ao processar solicitação:", error);
+    
+            // Exibe a mensagem detalhada para debugging
+            alert(`Erro ao processar a solicitação: ${error.message || "Erro desconhecido"}`);
         }
-    }
+    }        
 
     // Função para buscar endereço pelo CEP (exemplo)
     function fetchAddress() {
