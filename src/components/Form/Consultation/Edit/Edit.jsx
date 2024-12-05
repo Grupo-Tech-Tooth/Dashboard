@@ -6,7 +6,15 @@ import { Alert } from 'antd';
 import api from '../../../../api';
 
 function Edit({ consultationData, display, close, listUsers, doctors, treatments }) {
-    const [newConsultation, setNewConsultation] = useState({});
+
+    const [newConsultation, setNewConsultation] = useState({
+        nomePaciente: consultationData.nomePaciente,
+        treatment: consultationData.treatment,
+        doctor: consultationData.doctor,
+        date: consultationData.date,
+        time: consultationData.time,
+        status: consultationData.status
+    });
 
     const [inputValueCpf, setInputValueCpf] = useState(consultationData.cpf);
     const [inputValueName, setInputValueName] = useState(consultationData.nomePaciente);
@@ -348,20 +356,16 @@ function Edit({ consultationData, display, close, listUsers, doctors, treatments
         disabledInput ? setDisabledInput(false) : setDisabledInput(true);
     }
 
-    function setDto(){
+    function setDto(objeto){
 
         dtoConsulta.consultaId = consultationData.id;
-        dtoConsulta.clienteId = listUsers.find((user) => user.nome === newConsultation.nomePaciente).id;
-        dtoConsulta.medicoId = doctors.find((doctor) => doctor.nome === newConsultation.doctor).id;
-        dtoConsulta.status = newConsultation.status;
-        dtoConsulta.servicoId = treatments.find((treatment) => treatment.nome === newConsultation.treatment).id;
-
-        //Convertendo Hora em LocalDateTime para o formato do banco
-        const [hours, minutes] = newConsultation.time.split(':');
-        const [day, month, year] = newConsultation.date.split('/');
-        const dataHora = new Date(year, month - 1, day, hours, minutes);
-        const dataHoraFormatada = dataHora.toISOString();
-        dtoConsulta.dataHora = dataHoraFormatada;
+        dtoConsulta.clienteId = listUsers.find((user) => user.nome === objeto.nomePaciente).id;
+        dtoConsulta.medicoId = doctors.find((doctor) => doctor.nome === objeto.doctor).id;
+        dtoConsulta.status = objeto.status;
+        dtoConsulta.servicoId = treatments.find((treatment) => treatment.nome === objeto.treatment).id;
+   
+        // Data e Hora tem que ser LocalDateTime
+        dtoConsulta.dataHora = `${objeto.date}T${objeto.time}:00`;
     }
 
     async function saveFields(value) {
@@ -370,32 +374,34 @@ function Edit({ consultationData, display, close, listUsers, doctors, treatments
         const newValues = {};        
 
         for (let i = 0; i < formElements.length; i++) {
-            let element = formElements[i];            
-
-            if (element.id === 'date') {
-                const [year, month, day] = element.value.split('-');
-                const dataFormatada = `${day}/${month}/${year}`;
-                setNewConsultation((prevNewConsultation) => ({
-                    ...prevNewConsultation,
-                    ...newValues,
-                    date: dataFormatada
-                }));
-
-            } else if (element.id && element.type !== 'submit') {
-                newValues[element.id] = element.value;
-                setNewConsultation((prevNewConsultation) => ({
-                    ...prevNewConsultation,
-                    ...newValues,
-                    id: consultationData.id
-                }));
+            const input = formElements[i];
+            if (input.id) {
+                newValues[input.id] = input.value;
             }
-
         }
 
-        setDto();
-        editar();
+        let objeto = {
+            nomePaciente: newValues.nomePaciente,
+            treatment: newValues.treatment,
+            doctor: newValues.doctor,
+            date: newValues.date,
+            time: newValues.time,
+            status: newValues.status
+        }
 
-        // Id vai como parametro, e o objeto com os dados da consulta vai no body
+        setNewConsultation({
+            nomePaciente: inputValueName,
+            treatment: inputValueTreatment,
+            doctor: inputValueDoctor,
+            date: inputValueDate,
+            time: inputValueTime,
+            status: inputValueStatus
+        });
+
+
+        editar();
+        setDto(objeto);
+
         const response = await api.put(`/agendamentos/${dtoConsulta.consultaId}`, dtoConsulta);
 
         if (response.status === 200) {
