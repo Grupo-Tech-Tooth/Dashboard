@@ -50,7 +50,7 @@
 
 .add {
     position: fixed;
-    z-index: 2;
+    z-index: 1;
     top: 4.5rem;
     right: 5%;
 }
