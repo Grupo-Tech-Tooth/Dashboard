@@ -30,7 +30,7 @@ function Consultation() {
                 "id": 1,
                 "nomePaciente": "Carlos Silva",
                 "cpf": "12345678900",
-                "date": "25/10/2024",
+                "date": "25/12/2024",
                 "time": "10:00",
                 "status": "Remarcado",
                 "treatment": "Limpeza",
@@ -246,7 +246,7 @@ function Consultation() {
     return (
 
         <>
-            <Navbar />
+            <Navbar toggleArrivalModal={toggleArrivalModal}/>
             <h2 className="text-primary text-center my-3">Gerenciar Consultas</h2>
             <Container>
                 {
