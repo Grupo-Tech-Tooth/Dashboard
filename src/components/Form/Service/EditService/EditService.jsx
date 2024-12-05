@@ -1,14 +1,23 @@
 import style from './EditService.module.css';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Input from '../../../Input/Input';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import logo from "../../../../assets/Tech-Tooth-Logo.png";
 import SuccessAlert from '../../../AlertSuccess/AlertSuccess';
+import api from '../../../../api';
 
 const EditService = ({ serviceData, display, close }) => {
+    
     const [serviceEdit, setServiceEdit] = useState(serviceData || {});
     const [AlertSuccess, setAlertSucess] = useState(false);
     const [disabled, setDisabled] = useState(true);
+
+    const [dtoServico, setDtoServico] = useState({
+        nome: '',
+        descricao: '',
+        preco: 0,
+        duracaoMinutos: 0
+    });
 
     return (
         <div className={style['bottom']} style={{ display: display }}>
@@ -30,8 +39,8 @@ const EditService = ({ serviceData, display, close }) => {
                         placeholder={'Digite o nome do serviço'}
                         required={'true'}
                         disabled={disabled}
-                        value={serviceEdit.name}
-                        onChange={(e) => setServiceEdit({ ...serviceEdit, name: e.target.value })}
+                        value={serviceEdit.nome}
+                        onChange={(e) => setServiceEdit({ ...serviceEdit, nome: e.target.value })}
                     />
                 </div>
                 <div className="col-md-6">
@@ -41,8 +50,8 @@ const EditService = ({ serviceData, display, close }) => {
                         label={'Descrição'}
                         placeholder={'Digite a descrição do serviço'}
                         disabled={disabled}
-                        value={serviceEdit.description}
-                        onChange={(e) => setServiceEdit({ ...serviceEdit, description: e.target.value })}
+                        value={serviceEdit.descricao}
+                        onChange={(e) => setServiceEdit({ ...serviceEdit, descricao: e.target.value })}
                     />
                 </div>
                 <div className="col-md-6">
@@ -52,8 +61,8 @@ const EditService = ({ serviceData, display, close }) => {
                         label={'Preço'}
                         placeholder={'Digite o preço do serviço'}
                         disabled={disabled}
-                        value={serviceEdit.price}
-                        onChange={(e) => setServiceEdit({ ...serviceEdit, price: parseFloat(e.target.value) })}
+                        value={serviceEdit.preco}
+                        onChange={(e) => setServiceEdit({ ...serviceEdit, preco: parseFloat(e.target.value) })}
                     />
                 </div>
                 <div className="col-md-6">
@@ -63,8 +72,8 @@ const EditService = ({ serviceData, display, close }) => {
                         label={'Duração (min)'}
                         placeholder={'Digite a duração do serviço'}
                         disabled={disabled}
-                        value={serviceEdit.duration}
-                        onChange={(e) => setServiceEdit({ ...serviceEdit, duration: parseInt(e.target.value) })}
+                        value={serviceEdit.duracaoMinutos}
+                        onChange={(e) => setServiceEdit({ ...serviceEdit, duracaoMinutos: parseInt(e.target.value) })}
                     />
                 </div>
                 <div className={style['lineButton']}>
@@ -90,12 +99,37 @@ const EditService = ({ serviceData, display, close }) => {
         setDisabled(!disabled);
     }
 
-    function saveFields(e) {
+    async function saveFields(e) {
         e.preventDefault();
         setAlertSucess(true);
-        setTimeout(() => setAlertSucess(false), 1500);
-        // Aqui você pode adicionar a lógica para atualizar o serviço no estado global ou fazer a chamada API para salvar as alterações
+    
+        // Crie um objeto local com os valores atualizados
+        const dtoServicoAtualizado = {
+            nome: serviceEdit?.nome,
+            descricao: serviceEdit?.descricao,
+            preco: serviceEdit?.preco,
+            duracaoMinutos: serviceEdit?.duracaoMinutos,
+        };
+    
+        console.log("dtoServicoAtualizado", dtoServicoAtualizado);
+    
+        try {
+            const response = await api.put(`/servicos/${serviceEdit.id}`, dtoServicoAtualizado);
+            console.log(response);
+    
+            if (response.status === 200) {
+                setAlertSucess(true);
+                setTimeout(() => {
+                    setAlertSucess(false);
+                    close(serviceEdit);
+                }, 2000);
+            }
+        } catch (error) {
+            console.error("Erro ao salvar os campos:", error);
+            setAlertSucess(false);
+        }
     }
+    
 }
 
 export default EditService;
