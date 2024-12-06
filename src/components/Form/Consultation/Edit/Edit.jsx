@@ -16,6 +16,9 @@ function Edit({ consultationData, display, close, listUsers, doctors, treatments
         status: consultationData.status
     });
 
+
+    const [datasBloqueadas, setDatasBloqueadas] = useState([]);
+
   const [inputValueCpf, setInputValueCpf] = useState(consultationData.cpf);
   const [inputValueName, setInputValueName] = useState(
     consultationData.nomePaciente
@@ -27,9 +30,7 @@ function Edit({ consultationData, display, close, listUsers, doctors, treatments
     consultationData.doctor
   );
   const [inputValueDate, setInputValueDate] = useState(
-    consultationData.date
-      ? consultationData.date.split("/").reverse().join("-")
-      : ""
+       consultationData.date.split("/").reverse().join("-")
   );
   const [inputValueTime, setInputValueTime] = useState(consultationData.time);
   const [inputValueStatus, setInputValueStatus] = useState(
@@ -67,34 +68,15 @@ function Edit({ consultationData, display, close, listUsers, doctors, treatments
         dataHora: `${inputValueDate} ${inputValueTime}`
     };
 
-    const availableHours = [
-        { class: 'red', time: '00:00' },
-        { class: 'green', time: '01:00' },
-        { class: 'green', time: '02:00' },
-        { class: 'red', time: '03:00' },
-        { class: 'red', time: '04:00' },
-        { class: 'green', time: '05:00' },
-        { class: 'green', time: '06:00' },
-        { class: 'red', time: '07:00' },
-        { class: 'red', time: '08:00' },
-        { class: 'green', time: '09:00' },
-        { class: 'green', time: '10:00' },
-        { class: 'red', time: '11:00' },
-        { class: 'green', time: '12:00' },
-        { class: 'green', time: '13:00' },
-        { class: 'red', time: '14:00' },
-        { class: 'red', time: '15:00' },
-        { class: 'green', time: '16:00' },
-        { class: 'red', time: '17:00' },
-        { class: 'green', time: '18:00' },
-        { class: 'red', time: '19:00' },
-        { class: 'green', time: '20:00' },
-        { class: 'green', time: '21:00' },
-        { class: 'red', time: '22:00' },
-        { class: 'green', time: '23:40' },
-        { class: 'red', time: '23:30' }
-    ];
+    const availableHours = [];
 
+    for (let hour = 0; hour < 24; hour++) {
+        for (let minutes = 0; minutes < 60; minutes += 15) {
+            const time = `${String(hour).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+            availableHours.push({ class: 'green', time });
+        }
+    }
+    
     function userSelect(user) {
         setInputValueCpf(user.cpf)
         setInputValueName(user.nome)
@@ -115,7 +97,7 @@ function Edit({ consultationData, display, close, listUsers, doctors, treatments
         if (consultationData && consultationData.status) {
             setInputValueStatus(consultationData.status);
         }
-    }, [consultationData, listUsers, doctors, treatments]);
+    }, [listUsers, doctors, treatments, datasBloqueadas]);
 
   return (
 <>
@@ -228,9 +210,9 @@ function Edit({ consultationData, display, close, listUsers, doctors, treatments
                             <div
                               key={treatment.id}
                               className="suggestion-item"
-                              onClick={() => treatmentSelect(treatment.name)}
+                              onClick={() => treatmentSelect(treatment.nome)}
                             >
-                              {`${treatment.name}`}
+                              {`${treatment.nome}`}
                             </div>
                           ))
                         ) : (
@@ -266,9 +248,9 @@ function Edit({ consultationData, display, close, listUsers, doctors, treatments
                             <div
                               key={doctor.id}
                               className="suggestion-item"
-                              onClick={() => doctorSelect(doctor.name)}
+                              onClick={() => doctorSelect(doctor.nome)}
                             >
-                              {`${doctor.name}`}
+                              {`${doctor.nome}`}
                             </div>
                           ))
                         ) : (
@@ -278,7 +260,7 @@ function Edit({ consultationData, display, close, listUsers, doctors, treatments
                     </div>
                   </div>
                   <div className="d-grid">
-                    <button type="submit" className="btn btn-primary">
+                    <button type="submit" className="btn btn-primary" onClick={buscarDatasBloqueadasPorMedico}>
                       Ver Datas Disponiveis
                     </button>
                   </div>
@@ -292,6 +274,7 @@ function Edit({ consultationData, display, close, listUsers, doctors, treatments
                     className={style["calendario"]}
                     selectedDate={dateConsultation}
                     date={inputValueDate}
+                    datasBloqueadas={datasBloqueadas}
                   />
                 </>
               )}
@@ -556,6 +539,19 @@ function Edit({ consultationData, display, close, listUsers, doctors, treatments
         }
     }
 
+    async function buscarDatasBloqueadasPorMedico() {
+        let medicoId = doctors.find((doctor) => doctor.nome === inputValueDoctor).id;
+
+        try{
+            const response = await api.get(`/medicos/${medicoId}/agenda/dias-indisponiveis`);
+            setDatasBloqueadas(response.data);
+            console.log("Datas Bloqueadas", response.data);
+        }catch(error){
+            console.log("Erro ao buscar datas bloqueadas", error);
+        }
+        
+    }
+
     function searchDoctor(value) {
         const valor = value.target.value;
         setInputValueDoctor(valor);
@@ -582,13 +578,13 @@ function Edit({ consultationData, display, close, listUsers, doctors, treatments
       const filteredTreatments = [];
       for (let treatment of treatments) {
         if (
-          treatment.name &&
-          typeof treatment.name === "string" &&
-          treatment.name.toLowerCase().includes(valor.toLowerCase())
+          treatment.nome &&
+          typeof treatment.nome === "string" &&
+          treatment.nome.toLowerCase().includes(valor.toLowerCase())
         ) {
           filteredTreatments.push({
             id: treatment.id,
-            name: treatment.name,
+            nome: treatment.nome,
           });
         }
       }

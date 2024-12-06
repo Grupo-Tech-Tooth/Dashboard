@@ -277,10 +277,6 @@ function Consultation() {
         ]
     });
 
-    const handleLogout = () => {
-        setShowEvaluationModal(false);
-      };
-
     async function getData() {
     try {
         const agendamentos = await api.get(`/agendamentos`);
@@ -529,7 +525,6 @@ function Consultation() {
                             }
                         </div>
                     }
-                    onClose={handleLogout}
                 />
             </Container>
             <div className={`position-absolute p-5 rounded-3 ${style['boxButton']}`}>
