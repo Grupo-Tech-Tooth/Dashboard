@@ -220,6 +220,9 @@ const ModalFinalization = ({
   );
 
   function saveFields() {
+    if(!optionsTreatment){
+      setNewTreatment("");
+    }
     if (price && selectedPaymentMethod) {
       setAgendamentoFinal((prevAgendamento) => ({
         ...prevAgendamento,
