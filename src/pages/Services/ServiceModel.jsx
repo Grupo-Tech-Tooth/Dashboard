@@ -12,10 +12,13 @@ class ServiceModel{
     }
 
     static async adicionar(service){
+        
         try {
-            const response = await api.post("/servicos", service);
+            const response = await api.post("/servicos", service);  
             return response.data;
         } catch (e) {
+            console.log("error", e);
+            
             throw new Error(e);
         }
     }

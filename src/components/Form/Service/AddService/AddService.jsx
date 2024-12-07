@@ -1,5 +1,5 @@
 import style from './AddService.module.css';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import SuccessAlert from '../../../AlertSuccess/AlertSuccess';
 import ServiceControl from '../../../../pages/Services/ServiceControl';
@@ -9,23 +9,26 @@ const AddService = ({ Display, close }) => {
     const [error, setError] = useState('');
     const [AlertSuccess, setAlertSuccess] = useState(false);
     const [listaCategorias, setListaCategorias] = useState([
-        {
-            key: 'Consulta',
-            name: 'Consulta'
-        },
-        {
-            key: 'Limpeza',
-            name: 'Limpeza'
-        },
-        {
-            key: 'Cirurgia',
-            name: 'Cirurgia'
-        },
-        {
-            key: 'Manutencao',
-            name: 'Manutenção'
-        }
+        { key: 'CONSULTAS_GERAIS', name: 'Consultas Gerais' },
+        { key: 'PREVENCAO', name: 'Prevenção' },
+        { key: 'ODONTOPEDIATRIA', name: 'Odontopediatria' },
+        { key: 'ORTODONTIA', name: 'Ortodontia' },
+        { key: 'PERIODONTIA', name: 'Periodontia' },
+        { key: 'ENDODONTIA', name: 'Endodontia' },
+        { key: 'CIRURGIAS_ODONTOLOGICAS', name: 'Cirurgias Odontológicas' },
+        { key: 'IMPLANTODONTIA', name: 'Implantodontia' },
+        { key: 'PROTESE_DENTARIA', name: 'Prótese Dentária' },
+        { key: 'ESTETICA_DENTAL', name: 'Estética Dental' },
+        { key: 'ODONTOGERIATRIA', name: 'Odontogeriatria' },
+        { key: 'RADIOLOGIA_ODONTOLOGICA', name: 'Radiologia Odontológica' },
+        { key: 'ODONTOLOGIA_DE_URGENCIA', name: 'Odontologia de Urgência' },
+        { key: 'DISFUNCAO_TEMPOROMANDIBULAR', name: 'Disfunção Temporomandibular (DTM) e Dor Orofacial' },
+        { key: 'ODONTOLOGIA_DO_SONO', name: 'Odontologia do Sono' },
+        { key: 'ODONTOLOGIA_HOSPITALAR', name: 'Odontologia Hospitalar' },
+        { key: 'ODONTOLOGIA_LEGAL', name: 'Odontologia Legal' },
+        { key: 'LASERTERAPIA', name: 'Laserterapia' }
     ]);
+    
 
     return (
         <>
@@ -83,26 +86,25 @@ const AddService = ({ Display, close }) => {
 
     function saveFields(e) {
         e.preventDefault();
-        const service = {
-            id: null,
-            name: e.target.serviceName.value,
-            description: e.target.serviceDescription.value,
-            price: e.target.servicePrice.value,
-            duration: e.target.serviceDuration.value,
-            category: e.target.serviceCategory.value
-        };
-        setNewService(service);
 
-        ServiceControl.adicionar(service).then(() => {
+        const service = {
+            nome: e.target.serviceName.value,
+            descricao: e.target.serviceDescription.value,
+            preco: e.target.servicePrice.value,
+            duracaoMinutos: e.target.serviceDuration.value,
+            categoria: e.target.serviceCategory.value
+        };
+
+        let servicoCriado = ServiceControl.adicionar(service).then((response) => {
+            setNewService(response);
             setAlertSuccess(true);
-        }).catch((e) => {
-            setError(e.message);
+            setTimeout(() => {
+                close(newService);
+            }, 2000);
+        }).catch((error) => {
+            setError(error.message);
         });
 
-        setTimeout(() => setAlertSuccess(false), 1500);
-        setTimeout(() => {
-            close(service);
-        }, 2500);
     }
 }
 
