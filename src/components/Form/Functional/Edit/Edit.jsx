@@ -30,7 +30,7 @@ const Edit = ({ userData, display, close, listSpecialization }) => {
     useEffect(() => {
         setUserEdit(userData);
     }, [userEdit, userData])
-
+    
 
     return (
         <div className={style['bottom']} style={{ display: display }}>
@@ -44,10 +44,10 @@ const Edit = ({ userData, display, close, listSpecialization }) => {
                         onClick={() => close(userUpdate)}></button>
                 </div>
                 <div className="col-md-3">
-                    <Input name={'firstName'} type={'text'} label={'Nome'} placeholder={'Nome do Funcionário'} required={'true'} disabled={disabled} value={userEdit.name} />
+                    <Input name={'firstName'} type={'text'} label={'Nome'} placeholder={'Nome do Funcionário'} required={'true'} disabled={disabled} value={userEdit} />
                 </div>
                 <div className="col-md-3">
-                    <Input name={'lastName'} type={'text'} label={'Sobrenome'} placeholder={'Sobrenome do Funcionário'} disabled={disabled} value={userEdit.surname} />
+                    <Input name={'lastName'} type={'text'} label={'Sobrenome'} placeholder={'Sobrenome do Funcionário'} disabled={disabled} value={userEdit} />
                 </div>
                 <div className="col-md-3">
                     <label htmlFor="inputGender" className="form-label">Sexo</label>

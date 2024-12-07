@@ -1,19 +1,23 @@
-import React, { useState, useEffect } from "react";
-import style from "./Edit.module.css";
-import SuccessAlert from "../../../AlertSuccess/AlertSuccess";
-import Calendario from "../../../Calendario/Calendario";
-import { Alert } from "antd";
+import React, { useState, useEffect } from 'react';
+import style from './Edit.module.css';
+import SuccessAlert from '../../../AlertSuccess/AlertSuccess';
+import Calendario from '../../../Calendario/Calendario';
+import { Alert } from 'antd';
+import api from '../../../../api';
 
-function Edit({
-  display,
-  consultationData,
-  listUsers,
-  doctors,
-  treatments,
-  close,
-}) {
-    
-  const [newConsultation, setNewConsultation] = useState({});
+function Edit({ consultationData, display, close, listUsers, doctors, treatments }) {
+
+    const [newConsultation, setNewConsultation] = useState({
+        nomePaciente: consultationData.nomePaciente,
+        treatment: consultationData.treatment,
+        doctor: consultationData.doctor,
+        date: consultationData.date,
+        time: consultationData.time,
+        status: consultationData.status
+    });
+
+
+    const [datasBloqueadas, setDatasBloqueadas] = useState([]);
 
   const [inputValueCpf, setInputValueCpf] = useState(consultationData.cpf);
   const [inputValueName, setInputValueName] = useState(
@@ -26,9 +30,7 @@ function Edit({
     consultationData.doctor
   );
   const [inputValueDate, setInputValueDate] = useState(
-    consultationData.date
-      ? consultationData.date.split("/").reverse().join("-")
-      : ""
+       consultationData.date.split("/").reverse().join("-")
   );
   const [inputValueTime, setInputValueTime] = useState(consultationData.time);
   const [inputValueStatus, setInputValueStatus] = useState(
@@ -57,39 +59,29 @@ function Edit({
   const ano = hoje.getFullYear();
   const dataAtualFormatada = `${dia}-${mes}-${ano}`;
 
-  const availableHours = [
-    { class: "red", time: "00:00" },
-    { class: "green", time: "01:00" },
-    { class: "green", time: "02:00" },
-    { class: "red", time: "03:00" },
-    { class: "red", time: "04:00" },
-    { class: "green", time: "05:00" },
-    { class: "green", time: "06:00" },
-    { class: "red", time: "07:00" },
-    { class: "red", time: "08:00" },
-    { class: "green", time: "09:00" },
-    { class: "green", time: "10:00" },
-    { class: "red", time: "11:00" },
-    { class: "green", time: "12:00" },
-    { class: "green", time: "13:00" },
-    { class: "red", time: "14:00" },
-    { class: "red", time: "15:00" },
-    { class: "green", time: "16:00" },
-    { class: "red", time: "17:00" },
-    { class: "green", time: "18:00" },
-    { class: "red", time: "19:00" },
-    { class: "green", time: "20:00" },
-    { class: "green", time: "21:00" },
-    { class: "red", time: "22:00" },
-    { class: "green", time: "23:40" },
-    { class: "red", time: "23:30" },
-  ];
+    const dtoConsulta = {
+        consultaId: consultationData.id,
+        clienteId: consultationData.clienteId,
+        medicoId: consultationData.medicoId,
+        servicoId: consultationData.servicoId,
+        status: consultationData.status,
+        dataHora: `${inputValueDate} ${inputValueTime}`
+    };
 
-  function userSelect(user) {
-    setInputValueCpf(user.cpf);
-    setInputValueName(user.name);
-    setOptionsUsers({});
-  }
+    const availableHours = [];
+
+    for (let hour = 0; hour < 24; hour++) {
+        for (let minutes = 0; minutes < 60; minutes += 15) {
+            const time = `${String(hour).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+            availableHours.push({ class: 'green', time });
+        }
+    }
+    
+    function userSelect(user) {
+        setInputValueCpf(user.cpf)
+        setInputValueName(user.nome)
+        setOptionsUsers({})
+    }
 
   function doctorSelect(doctor) {
     setInputValueDoctor(doctor);
@@ -101,14 +93,14 @@ function Edit({
     setOptionsTreatment({});
   }
 
-  useEffect(() => {
-    if (consultationData && consultationData.status) {
-      setInputValueStatus(consultationData.status);
-    }
-  }, [consultationData]);
+    useEffect(() => {
+        if (consultationData && consultationData.status) {
+            setInputValueStatus(consultationData.status);
+        }
+    }, [listUsers, doctors, treatments, datasBloqueadas]);
 
   return (
-    <>
+<>
       <div
         className={`${style["bottom"]} modal`}
         id="viewCalendarModal"
@@ -218,9 +210,9 @@ function Edit({
                             <div
                               key={treatment.id}
                               className="suggestion-item"
-                              onClick={() => treatmentSelect(treatment.name)}
+                              onClick={() => treatmentSelect(treatment.nome)}
                             >
-                              {`${treatment.name}`}
+                              {`${treatment.nome}`}
                             </div>
                           ))
                         ) : (
@@ -256,9 +248,9 @@ function Edit({
                             <div
                               key={doctor.id}
                               className="suggestion-item"
-                              onClick={() => doctorSelect(doctor.name)}
+                              onClick={() => doctorSelect(doctor.nome)}
                             >
-                              {`${doctor.name}`}
+                              {`${doctor.nome}`}
                             </div>
                           ))
                         ) : (
@@ -268,7 +260,7 @@ function Edit({
                     </div>
                   </div>
                   <div className="d-grid">
-                    <button type="submit" className="btn btn-primary">
+                    <button type="submit" className="btn btn-primary" onClick={buscarDatasBloqueadasPorMedico}>
                       Ver Datas Disponiveis
                     </button>
                   </div>
@@ -282,6 +274,7 @@ function Edit({
                     className={style["calendario"]}
                     selectedDate={dateConsultation}
                     date={inputValueDate}
+                    datasBloqueadas={datasBloqueadas}
                   />
                 </>
               )}
@@ -525,49 +518,58 @@ function Edit({
     }
   }
 
-  function searchCpf(event) {
-    const valor = event.target.value;
-    setInputValueCpf(valor);
+    function searchCpf(event) {
+        const valor = event.target.value;
+        setInputValueCpf(valor);
 
-    if (valor.length > 2) {
-      const filteredPatients = [];
-      for (let patient of listUsers) {
-        if (patient.cpf && patient.cpf.includes(valor)) {
-          filteredPatients.push({
-            name: patient.nomePaciente,
-            cpf: patient.cpf,
-          });
+        if (valor.length > 2) {
+            const filteredPatients = [];
+            for (let patient of listUsers) {
+                if (patient.cpf && patient.cpf.includes(valor)) {
+                    filteredPatients.push({
+                        nome: patient.nome,
+                        cpf: patient.cpf
+                    });
+                }
+            }
+
+            setOptionsUsers(filteredPatients);
+        } else {
+            setOptionsUsers([]);
         }
-      }
-
-      setOptionsUsers(filteredPatients);
-    } else {
-      setOptionsUsers([]);
     }
-  }
 
-  function searchDoctor(value) {
-    const valor = value.target.value;
-    setInputValueDoctor(valor);
-    if (valor.length > 2) {
-      const filteredDoctors = [];
-      for (let doctorDaVez of doctors) {
-        if (
-          doctorDaVez.nome &&
-          typeof doctorDaVez.nome === "string" &&
-          doctorDaVez.nome.toLowerCase().includes(valor.toLowerCase())
-        ) {
-          filteredDoctors.push({
-            id: doctorDaVez.id,
-            name: doctorDaVez.nome,
-          });
+    async function buscarDatasBloqueadasPorMedico() {
+        let medicoId = doctors.find((doctor) => doctor.nome === inputValueDoctor).id;
+
+        try{
+            const response = await api.get(`/medicos/${medicoId}/agenda/dias-indisponiveis`);
+            setDatasBloqueadas(response.data);
+            console.log("Datas Bloqueadas", response.data);
+        }catch(error){
+            console.log("Erro ao buscar datas bloqueadas", error);
         }
-      }
-      setOptionsDoctor(filteredDoctors);
-    } else {
-      setOptionsDoctor({});
+        
     }
-  }
+
+    function searchDoctor(value) {
+        const valor = value.target.value;
+        setInputValueDoctor(valor);
+        if (valor.length > 2) {
+            const filteredDoctors = [];
+            for (let doctorDaVez of doctors) {
+                if (doctorDaVez.nome && typeof doctorDaVez.nome === 'string' && doctorDaVez.nome.toLowerCase().includes(valor.toLowerCase())) {
+                    filteredDoctors.push({
+                        id: doctorDaVez.id,
+                        nome: doctorDaVez.nome
+                    });
+                }
+            }
+            setOptionsDoctor(filteredDoctors)
+        } else {
+            setOptionsDoctor({})
+        }
+    }
 
   function searchTreatment(value) {
     
@@ -584,7 +586,7 @@ function Edit({
         ) {
           filteredTreatments.push({
             id: treatment.id,
-            name: treatment.nome,
+            nome: treatment.nome,
           });
         }
       }
@@ -594,43 +596,70 @@ function Edit({
     }
     
   }
-
+  
+  
   function editar() {
     disabledInput ? setDisabledInput(false) : setDisabledInput(true);
   }
 
-  function saveFields(value) {
-    value.preventDefault();
-    const formElements = value.target.elements;
-    const newValues = {};
+    function setDto(objeto){
 
-    for (let i = 0; i < formElements.length; i++) {
-      let element = formElements[i];
-
-      if (element.id === "date") {
-        const [year, month, day] = element.value.split("-");
-        const dataFormatada = `${day}/${month}/${year}`;
-        setNewConsultation((prevNewConsultation) => ({
-          ...prevNewConsultation,
-          ...newValues,
-          date: dataFormatada,
-        }));
-      } else if (element.id && element.type !== "submit") {
-        newValues[element.id] = element.value;
-        setNewConsultation((prevNewConsultation) => ({
-          ...prevNewConsultation,
-          ...newValues,
-          id: consultationData.id,
-        }));
-      }
+        dtoConsulta.consultaId = consultationData.id;
+        dtoConsulta.clienteId = listUsers.find((user) => user.nome === objeto.nomePaciente).id;
+        dtoConsulta.medicoId = doctors.find((doctor) => doctor.nome === objeto.doctor).id;
+        dtoConsulta.status = objeto.status;
+        dtoConsulta.servicoId = treatments.find((treatment) => treatment.nome === objeto.treatment).id;
+   
+        // Data e Hora tem que ser LocalDateTime
+        dtoConsulta.dataHora = `${objeto.date}T${objeto.time}:00`;
     }
-    editar();
-    setAlertSucess(true);
-    setTimeout(() => {
-      setAlertSucess(false);
-      close(newConsultation);
-    }, 2000);
+
+    async function saveFields(value) {
+        value.preventDefault();
+        const formElements = value.target.elements;
+        const newValues = {};        
+
+        for (let i = 0; i < formElements.length; i++) {
+            const input = formElements[i];
+            if (input.id) {
+                newValues[input.id] = input.value;
+            }
+        }
+
+        let objeto = {
+            nomePaciente: newValues.nomePaciente,
+            treatment: newValues.treatment,
+            doctor: newValues.doctor,
+            date: newValues.date,
+            time: newValues.time,
+            status: newValues.status
+        }
+
+        setNewConsultation({
+            nomePaciente: inputValueName,
+            treatment: inputValueTreatment,
+            doctor: inputValueDoctor,
+            date: inputValueDate,
+            time: inputValueTime,
+            status: inputValueStatus
+        });
+
+
+        editar();
+        setDto(objeto);
+
+        const response = await api.put(`/agendamentos/${dtoConsulta.consultaId}`, dtoConsulta);
+
+        if (response.status === 200) {
+            setAlertSucess(true);
+        }
+
+        console.log(" Consulta Atualizada ",response);
+      setTimeout(() => {
+        setAlertSucess(false);
+        close(newConsultation);
+      }, 2000);
+    }
   }
-}
 
 export default Edit;

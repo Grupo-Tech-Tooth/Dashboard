@@ -5,6 +5,7 @@ import Table from '../../components/Table/Table';
 import React, { useState, useEffect } from 'react';
 import Add from '../../components/Form/Consultation/Add/Add';
 import Modal from '../../components/Modal/Modal';
+import api from '../../api';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
@@ -181,8 +182,164 @@ function Consultation() {
                 id: '5',
                 name: 'Dra. Claudia Tavares'
             }
+        ],
+        'pacientes': [
+            {
+                id: '1',
+                name: 'Luiz Fernando',
+                time: '09:00'
+            },
+            {
+                id: '2',
+                name: 'Camila Silva',
+                time: '10:00'
+            },
+            {
+                id: '3',
+                name: 'Rafael Andrade',
+                time: '10:30'
+            },
+            {
+                id: '4',
+                name: 'Rafael Andrade',
+                time: '10:30'
+            },
+            {
+                id: '5',
+                name: 'Rafael Andrade',
+                time: '10:30'
+            },
+            {
+                id: '6',
+                name: 'Rafael Andrade',
+                time: '10:30'
+            },
+            {
+                id: '7',
+                name: 'Rafael Andrade',
+                time: '10:30'
+            },
+            {
+                id: '8',
+                name: 'Rafael Andrade',
+                time: '10:30'
+            },
+            {
+                id: '9',
+                name: 'Rafael Andrade',
+                time: '10:30'
+            },
+            {
+                id: '10',
+                name: 'Rafael Andrade',
+                time: '10:30'
+            },
+            {
+                id: '11',
+                name: 'Rafael Andrade',
+                time: '10:30'
+            },
+            {
+                id: '12',
+                name: 'Rafael Andrade',
+                time: '10:30'
+            },
+            {
+                id: '13',
+                name: 'Rafael Andrade',
+                time: '10:30'
+            },
+            {
+                id: '14',
+                name: 'Rafael Andrade',
+                time: '10:30'
+            },
+            {
+                id: '15',
+                name: 'Rafael Andrade',
+                time: '10:30'
+            },
+            {
+                id: '16',
+                name: 'Rafael Andrade',
+                time: '10:30'
+            },
+            {
+                id: '17',
+                name: 'Rafael Andrade',
+                time: '10:30'
+            },
+            {
+                id: '18',
+                name: 'Rafael Andrade',
+                time: '10:30'
+            },
         ]
     });
+
+    async function getData() {
+    try {
+        const agendamentos = await api.get(`/agendamentos`);
+        formatData(agendamentos.data);
+
+        const medicos = await api.get(`/medicos`);
+        setTableInformation((prevTableInformation) => ({
+            ...prevTableInformation,
+            doctor: medicos.data,
+        }));
+
+        const servicos = await api.get(`/servicos`);
+        setTableInformation((prevTableInformation) => ({
+            ...prevTableInformation,
+            treatment: servicos.data,
+        }));
+
+        const clientes = await api.get(`/clientes`);
+        setTableInformation((prevTableInformation) => ({
+            ...prevTableInformation,
+            pacientes: clientes.data,
+        }));        
+        
+    } catch (error) {
+        console.log("Erro ao obter consultas:", error);
+    }
+    setTimeout(() => {
+        getData();
+    }, 50000);
+    }
+
+    function formatData(consultas) {
+        const data = [];
+        //Pedir para alterarem o endPoint para trazer o telefone e a data da ultima visita
+        consultas.forEach((consulta) => {
+
+            let date = new Date(consulta.dataHora);
+            let day = date.getDate().toString().padStart(2, '0');
+            let month = (date.getMonth() + 1).toString().padStart(2, '0');
+            let year = date.getFullYear();
+            let hour = date.getHours().toString().padStart(2, '0');
+            let minutes = date.getMinutes().toString().padStart(2, '0');
+            let formattedDate = `${day}/${month}/${year}`;
+            let formattedTime = `${hour}:${minutes}`;
+
+          data.push({
+            id: consulta.id,
+            nomePaciente: consulta.cliente.nome,
+            date: formattedDate,
+            time: formattedTime,
+            status: consulta.status,
+            treatment: consulta.servico.nome,
+            doctor: consulta.medico.nome,
+          })
+    
+        });
+        setTableInformation((prevTableInformation) => ({
+          ...prevTableInformation,
+          data: data,
+          dataNotFilter: data,
+        }));
+      }
+
     const [viewFormAdd, setViewFormAdd] = useState("none");
 
     const [searchPatient, setSearchPatient] = useState('');
@@ -258,6 +415,7 @@ function Consultation() {
             ...prevTableInformation,
             dataNotFilter: prevTableInformation.data,
         }));
+        getData();
     }, []);
 
     // useEffect(() => {
@@ -266,6 +424,8 @@ function Consultation() {
     //         .then(response => setPacientes(response.data))
     //         .catch(error => console.error('Erro ao buscar pacientes:', error));
     // }, []);
+
+
 
     useEffect(() => {
         // Mock de dados para a fila de chegada

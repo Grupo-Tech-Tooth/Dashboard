@@ -166,7 +166,7 @@ const Table = ({ tableInformation }) => {
                     <FormConsultation
                         display={formConsultation}
                         consultationData={consultationEdit}
-                        listUsers={tableInformation.data}
+                        listUsers={tableInformation.pacientes}
                         doctors={tableInformation.doctor}
                         treatments={tableInformation.treatment}
                         close={closeForm}
@@ -288,6 +288,19 @@ const Table = ({ tableInformation }) => {
 
         if (tableInformation.tbodyId === 'employeesBody') {
             api.delete(`/medicos/${id}`);
+        }
+        if (tableInformation.tbodyId === 'patientsBody') {
+            api.delete(`/pacientes/${id}`);
+        }
+        if (tableInformation.tbodyId === 'servicesBody') {
+            api.delete(`/servicos/${id}`);
+        }
+        if (tableInformation.tbodyId === 'financesBody') {
+            api.delete(`/financas/${id}`);
+        }
+        if (tableInformation.tbodyId === 'consultationBody') {
+            api.delete(`/agendamentos/${id}/cancelar`);
+            
         }
     }
 

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import style from './ModalFinalization.module.css';
 import Alert from '../AlertSuccess/AlertSuccess';
+import api from '../../api';
 
 const ModalFinalization = ({ display, fecharModal, agendamento, treatments }) => {
 
@@ -121,6 +122,8 @@ const ModalFinalization = ({ display, fecharModal, agendamento, treatments }) =>
                 observacao: observation,
                 status: 'Finalizado'
             }))
+
+            api.patch(`/agendamentos/${agendamento.id}/concluir`);
 
             setRightValueSucess(5);
             setTimeout(() => {

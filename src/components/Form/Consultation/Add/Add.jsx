@@ -3,8 +3,10 @@ import style from "./Add.module.css";
 import Calendario from "../../../Calendario/Calendario";
 import { Alert } from "antd";
 import SuccessAlert from "../../../AlertSuccess/AlertSuccess";
+import api from "../../../../api";
 
 function Add({ Display, close, listUsers, doctors, treatments }) {
+
   const [newConsultation, setNewConsultation] = useState({
     date: null,
     time: null,
@@ -193,9 +195,9 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
                             <div
                               key={treatment.id}
                               className="suggestion-item"
-                              onClick={() => treatmentSelect(treatment.name)}
+                              onClick={() => treatmentSelect(treatment.nome)}
                             >
-                              {`${treatment.name}`}
+                              {`${treatment.nome}`}
                             </div>
                           ))
                         ) : (
@@ -231,9 +233,9 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
                             <div
                               key={doctor.id}
                               className="suggestion-item"
-                              onClick={() => doctorSelect(doctor.name)}
+                              onClick={() => doctorSelect(doctor.nome)}
                             >
-                              {`${doctor.name}`}
+                              {`${doctor.nome}`}
                             </div>
                           ))
                         ) : (
@@ -335,7 +337,7 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
                                   className="suggestion-item"
                                   onClick={() => userSelect(patient)}
                                 >
-                                  {`${patient.name} (${patient.cpf})`}
+                                  {`${patient.nome} (${patient.cpf})`}
                                 </div>
                               ))
                             ) : (
@@ -450,6 +452,40 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
     setStep(step + 1);
   }
 
+  function buscarHorariosIndisponives() {
+
+      let medicoId = 2;
+
+      try{
+        api.get(`/medicos/${medicoId}/agenda/horarios-indisponiveis`, {
+          params: {
+            "dia": newConsultation.data,
+          }
+        }).then((response) => {
+
+          let horariosIndisponiveis = response.data;
+          let horariosDisponiveis = [];
+
+          availableHours.map((item) => {
+            if(horariosIndisponiveis.includes(item.time)){
+              item.class = "red";
+            }
+            horariosDisponiveis.push(item);
+          });
+
+          setStep(step + 1);
+
+          console.log(horariosDisponiveis);
+          
+        });
+        
+        
+      }catch(err){
+        console.log(err);
+      }
+    }
+
+
   function dateConsultation(value) {
     if (value) {
       setNewConsultation({
@@ -462,6 +498,8 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
     } else {
       setStep(step - 1);
     }
+
+    buscarHorariosIndisponives();
   }
 
   function timeConsultation(tipo, time) {
@@ -490,7 +528,7 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
       for (let patient of listUsers) {
         if (patient.cpf && patient.cpf.includes(valor)) {
           filteredPatients.push({
-            name: patient.nomePaciente,
+            nome: patient.nome,
             cpf: patient.cpf,
           });
         }
@@ -509,13 +547,13 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
       const filteredDoctors = [];
       for (let doctorDaVez of doctors) {
         if (
-          doctorDaVez.name &&
-          typeof doctorDaVez.name === "string" &&
-          doctorDaVez.name.toLowerCase().includes(valor.toLowerCase())
+          doctorDaVez.nome &&
+          typeof doctorDaVez.nome === "string" &&
+          doctorDaVez.nome.toLowerCase().includes(valor.toLowerCase())
         ) {
           filteredDoctors.push({
             id: doctorDaVez.id,
-            name: doctorDaVez.name,
+            nome: doctorDaVez.nome,
           });
         }
       }
@@ -532,13 +570,13 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
       const filteredTreatments = [];
       for (let treatment of treatments) {
         if (
-          treatment.name &&
-          typeof treatment.name === "string" &&
-          treatment.name.toLowerCase().includes(valor.toLowerCase())
+          treatment.nome &&
+          typeof treatment.nome === "string" &&
+          treatment.nome.toLowerCase().includes(valor.toLowerCase())
         ) {
           filteredTreatments.push({
             id: treatment.id,
-            name: treatment.name,
+            nome: treatment.nome,
           });
         }
       }
