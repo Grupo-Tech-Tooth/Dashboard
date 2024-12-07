@@ -7,7 +7,7 @@ import Table from '../../components/Table/Table';
 import Add from '../../components/Form/Service/AddService/AddService';
 import axios from 'axios';
 import api from '../../api';
-import ServiceModel from './ServiceModel';
+import ServiceControl from './ServiceControl';
 
 function Services() {
   const [tableInformation, setTableInformation] = useState({
@@ -33,7 +33,7 @@ function Services() {
 
   async function getData() {
     try {
-      const response = await ServiceModel.buscar();
+      const response = await ServiceControl.buscar();
       setTableInformation((prevTableInformation) => ({
         ...prevTableInformation,
         data: response,

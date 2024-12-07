@@ -5,6 +5,7 @@ import Table from '../../components/Table/Table';
 import React, { useState, useEffect } from 'react';
 import Add from '../../components/Form/Consultation/Add/Add';
 import Modal from '../../components/Modal/Modal';
+import api from '../../api';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';

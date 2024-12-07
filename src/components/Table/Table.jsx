@@ -288,6 +288,8 @@ const Table = ({ tableInformation }) => {
 
         if (tableInformation.tbodyId === 'employeesBody') {
             api.delete(`/medicos/${id}`);
+        }else if(tableInformation.tbodyId === 'servicesBody'){
+            api.delete(`/servicos/${id}`);
         }
     }
 
