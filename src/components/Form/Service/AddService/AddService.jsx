@@ -2,6 +2,7 @@ import style from './AddService.module.css';
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import SuccessAlert from '../../../AlertSuccess/AlertSuccess';
+import ServiceControl from '../../../../pages/Services/ServiceControl';
 
 const AddService = ({ Display, close }) => {
     const [newService, setNewService] = useState({});
@@ -88,11 +89,16 @@ const AddService = ({ Display, close }) => {
             description: e.target.serviceDescription.value,
             price: e.target.servicePrice.value,
             duration: e.target.serviceDuration.value,
-            category: e.target.serviceCategory.value,
-            notes: e.target.serviceNotes.value
+            category: e.target.serviceCategory.value
         };
         setNewService(service);
-        setAlertSuccess(true);
+
+        ServiceControl.adicionar(service).then(() => {
+            setAlertSuccess(true);
+        }).catch((e) => {
+            setError(e.message);
+        });
+
         setTimeout(() => setAlertSuccess(false), 1500);
         setTimeout(() => {
             close(service);
