@@ -42,9 +42,9 @@ function Edit({ consultationData, display, close, listUsers, doctors, treatments
   const [messageAlert, setMessageAlert] = useState(false);
   const [AlertSuccess, setAlertSucess] = useState(false);
 
-  const [optionsUsers, setOptionsUsers] = useState({});
-  const [optionsDoctor, setOptionsDoctor] = useState({});
-  const [optionsTreatment, setOptionsTreatment] = useState({});
+  const [optionsUsers, setOptionsUsers] = useState({ listUsers });
+  const [optionsDoctor, setOptionsDoctor] = useState({ doctors });
+  const [optionsTreatment, setOptionsTreatment] = useState({ treatments });
 
   const [agora, setAgora] = useState(new Date());
   const [horas, setHoras] = useState(String(agora.getHours()).padStart(2, "0"));
@@ -88,7 +88,7 @@ function Edit({ consultationData, display, close, listUsers, doctors, treatments
     setOptionsDoctor({});
   }
 
-  function treatmentSelect(treatment) {
+  function treatmentSelect(treatment) {    
     setInputValueTreatment(treatment);
     setOptionsTreatment({});
   }
@@ -572,10 +572,12 @@ function Edit({ consultationData, display, close, listUsers, doctors, treatments
     }
 
   function searchTreatment(value) {
+    
     const valor = value.target.value;
     setInputValueTreatment(valor);
     if (valor.length > 2) {
       const filteredTreatments = [];
+      
       for (let treatment of treatments) {
         if (
           treatment.nome &&
@@ -592,6 +594,7 @@ function Edit({ consultationData, display, close, listUsers, doctors, treatments
     } else {
       setOptionsTreatment({});
     }
+    
   }
   
   

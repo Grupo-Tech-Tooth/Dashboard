@@ -217,13 +217,6 @@ const Table = ({ tableInformation }) => {
             setCount(count + 1);
             setFormUser("none");
         } else if (tableInformation.tableId === 'servicesTable') {
-            const position = tableInformation.data.findIndex((item) => item.id === information.id);
-            if (position >= 0) {
-                tableInformation.data[position] = {
-                    ...tableInformation.data[position],
-                    ...information
-                };
-            }
             setCount(count + 1);
             setFormService("none");
         } else if (tableInformation.tableId === 'financesTable') {
