@@ -1,3 +1,4 @@
+
 .card {
     width: 84%;
     margin: 0 8%;
@@ -46,7 +47,7 @@
             white-space: nowrap;
         }
     }
-}
+  }
 
 .add {
     position: fixed;
