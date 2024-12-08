@@ -12,6 +12,7 @@ function Edit({
   treatments,
   close,
 }) {
+    
   const [newConsultation, setNewConsultation] = useState({});
 
   const [inputValueCpf, setInputValueCpf] = useState(consultationData.cpf);
@@ -39,9 +40,9 @@ function Edit({
   const [messageAlert, setMessageAlert] = useState(false);
   const [AlertSuccess, setAlertSucess] = useState(false);
 
-  const [optionsUsers, setOptionsUsers] = useState({});
-  const [optionsDoctor, setOptionsDoctor] = useState({});
-  const [optionsTreatment, setOptionsTreatment] = useState({});
+  const [optionsUsers, setOptionsUsers] = useState({ listUsers });
+  const [optionsDoctor, setOptionsDoctor] = useState({ doctors });
+  const [optionsTreatment, setOptionsTreatment] = useState({ treatments });
 
   const [agora, setAgora] = useState(new Date());
   const [horas, setHoras] = useState(String(agora.getHours()).padStart(2, "0"));
@@ -95,7 +96,7 @@ function Edit({
     setOptionsDoctor({});
   }
 
-  function treatmentSelect(treatment) {
+  function treatmentSelect(treatment) {    
     setInputValueTreatment(treatment);
     setOptionsTreatment({});
   }
@@ -552,13 +553,13 @@ function Edit({
       const filteredDoctors = [];
       for (let doctorDaVez of doctors) {
         if (
-          doctorDaVez.name &&
-          typeof doctorDaVez.name === "string" &&
-          doctorDaVez.name.toLowerCase().includes(valor.toLowerCase())
+          doctorDaVez.nome &&
+          typeof doctorDaVez.nome === "string" &&
+          doctorDaVez.nome.toLowerCase().includes(valor.toLowerCase())
         ) {
           filteredDoctors.push({
             id: doctorDaVez.id,
-            name: doctorDaVez.name,
+            name: doctorDaVez.nome,
           });
         }
       }
@@ -569,19 +570,21 @@ function Edit({
   }
 
   function searchTreatment(value) {
+    
     const valor = value.target.value;
     setInputValueTreatment(valor);
     if (valor.length > 2) {
       const filteredTreatments = [];
+      
       for (let treatment of treatments) {
         if (
-          treatment.name &&
-          typeof treatment.name === "string" &&
-          treatment.name.toLowerCase().includes(valor.toLowerCase())
+          treatment.nome &&
+          typeof treatment.nome === "string" &&
+          treatment.nome.toLowerCase().includes(valor.toLowerCase())
         ) {
           filteredTreatments.push({
             id: treatment.id,
-            name: treatment.name,
+            name: treatment.nome,
           });
         }
       }
@@ -589,6 +592,7 @@ function Edit({
     } else {
       setOptionsTreatment({});
     }
+    
   }
 
   function editar() {

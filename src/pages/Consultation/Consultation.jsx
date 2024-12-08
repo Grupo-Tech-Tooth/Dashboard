@@ -191,6 +191,68 @@ function Consultation() {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
 
+    async function getData() {
+        try {
+          const agendamentos = await api.get(`/agendamentos`);
+          formatData(agendamentos.data);
+    
+          const medicos = await api.get(`/medicos`);
+          setTableInformation((prevTableInformation) => ({
+            ...prevTableInformation,
+            doctor: medicos.data,
+          }));
+    
+          const servicos = await api.get(`/servicos`);
+          setTableInformation((prevTableInformation) => ({
+            ...prevTableInformation,
+            treatment: servicos.data,
+          }));
+    
+          const clientes = await api.get(`/clientes`);
+          setTableInformation((prevTableInformation) => ({
+            ...prevTableInformation,
+            pacientes: clientes.data,
+          }));
+        } catch (error) {
+          console.log("Erro ao obter consultas:", error);
+        }
+        setTimeout(() => {
+          getData();
+        }, 50000);
+      }
+
+      function formatData(consultas) {
+        const data = [];
+        //Pedir para alterarem o endPoint para trazer o telefone e a data da ultima visita
+        consultas.forEach((consulta) => {
+
+            let date = new Date(consulta.dataHora);
+            let day = date.getDate().toString().padStart(2, '0');
+            let month = (date.getMonth() + 1).toString().padStart(2, '0');
+            let year = date.getFullYear();
+            let hour = date.getHours().toString().padStart(2, '0');
+            let minutes = date.getMinutes().toString().padStart(2, '0');
+            let formattedDate = `${day}/${month}/${year}`;
+            let formattedTime = `${hour}:${minutes}`;
+
+          data.push({
+            id: consulta.id,
+            nomePaciente: consulta.cliente.nome,
+            date: formattedDate,
+            time: formattedTime,
+            status: consulta.status,
+            treatment: consulta.servico.nome,
+            doctor: consulta.medico.nome,
+          })
+    
+        });
+        setTableInformation((prevTableInformation) => ({
+          ...prevTableInformation,
+          data: data,
+          dataNotFilter: data,
+        }));
+      }
+
     useEffect(() => {
         setTableInformation((prevTableInformation) => ({
             ...prevTableInformation,

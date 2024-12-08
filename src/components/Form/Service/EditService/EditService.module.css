@@ -8,93 +8,33 @@
 
 
     .form {
+        border: none !important;
+        border-top: 4px solid #0D6EFD !important;
         position: fixed;
         width: 50%;
-        max-height: 90vh;
-        background-color: #ffffff;
         top: 2rem;
-        left: 25%;
-        border: 1px solid gray;
-        border-radius: 5px;
-        padding: 1rem 2% 2rem 2%;
-        overflow-y: scroll;
+        left: 27%;
+        border-radius: 0.375rem !important;
+        background-color: #FFFFFF !important;
 
-
-        .lineTitle {
-            display: flex;
-            justify-content: space-between;
-
-            div {
-                display: flex;
-                gap: 3%;
-                align-items: center;
-                justify-content: center;
-
-
-                h3 {
-                    color: #339FBE;
-                }
-            }
-
-            div{
-                padding: 0%;
-                margin: 0%;
-                height: fit-content;
-            }
-
-            .button {
-                color: #339FBE;
-                background-color: #ffffff;
-                padding: 0% 2%;
-                border-radius: 5px;
-                font-size: 1.5rem;
-                font-weight: 600;
-                transition: 0.5s;
-                border: 2px solid transparent;
-            }
-
-            .button:hover {
-                border: 2px solid #339FBE;
-                transition: 0.5s;
-            }
-        }
-
-        .lineData {
-            display: flex;
-            align-items: baseline;
-            height: fit-content;
-            gap: 2%;
-
-            .data {
-                display: flex;
-                height: fit-content;
-                flex-direction: column;
-                justify-content: center;
-                gap: 0.4rem;
-            }
-        }
-
-        .lineButton {
-            width: 100%;
-            display: flex;
-            gap: 1%;
-            justify-content: end;
-
-            .btnSecund {
-                background-color: #ffffff;
-                border-radius: 5px;
-                border: 1px solid #007bff;
-                color: #007bff;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                padding: 0 2%;
-            }
-        }
 
         input:focus {
             outline: none;
             box-shadow: none;
+        }
+
+        .lineButton{
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: baseline;
+            gap: 2%;
+            padding: 0.6rem 3%;
+
+            button{
+                margin: 0;
+            }
         }
     }
 }
