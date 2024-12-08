@@ -1,12 +1,13 @@
 import style from './Edit.module.css';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Input from '../../../Input/Input';
 import InputMask from 'react-input-mask';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import logo from "../../../../assets/Tech-Tooth-Logo.png";
 import SuccessAlert from '../../../AlertSuccess/AlertSuccess';
+import { atualizarCliente, buscarIdMedicoPorCpf, listarMedicos } from '../../../../api';
 
-const Edit = ({ userData, display, close }) => {
+const Edit = ({ userData, display, close, listaClientes }) => {
     // const [date, setDate] = useState(userData.lastVisit);
     const [dateBirth, setDateBirth] = useState(userData.dateBirth);
     const [error, setError] = useState('');
@@ -14,6 +15,43 @@ const Edit = ({ userData, display, close }) => {
     const [AlertSuccess, setAlertSucess] = useState(false);
     const [userEdit, setUserEdit] = useState(userData || {});
     const [userUpdate, setUserUpdate] = useState({});
+    // const [clienteData, setClienteData] = useState(null);
+    const [medicos, setMedicos] = useState([]);
+
+    // Carrega os médicos assim que o componente é montado
+    useEffect(() => {
+        async function fetchMedicos() {
+            try {
+                const medicosData = await listarMedicos();
+                setMedicos(medicosData); // Atribui os médicos ao estado
+            } catch (error) {
+                console.error("Erro ao buscar médicos:", error);
+            }
+        }
+
+        fetchMedicos();
+
+        if (userEdit.id) {
+            const cliente = listaClientes.find(cliente => cliente.id === userEdit.id);
+            if (cliente) {
+                setUserEdit({
+                    ...userEdit,
+                    name: cliente.nome,
+                    surname: cliente.sobrenome,
+                    dateBirth: cliente.dataNascimento,
+                    cpf: cliente.cpf,
+                    patientPhone: cliente.telefone,
+                    email: cliente.email,
+                    gender: cliente.genero,
+                    cep: cliente.cep,
+                    number: cliente.numeroResidencia,
+                    alergias: cliente.alergias,
+                    medicamentos: cliente.medicamentos,
+                    observacoes: cliente.observacoes
+                });
+            }
+        }
+    }, [userEdit.id]); // Este useEffect roda apenas uma vez na montagem do componente
 
     const validateDate = (inputDate) => {
         const [day, month, year] = inputDate.split('/').map(Number);
@@ -62,17 +100,17 @@ const Edit = ({ userData, display, close }) => {
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={() => close(userUpdate)}></button>
                         </div>
                         <div className="modal-body">
-                            <form id="addPatientForm" onSubmit={saveFields}>
+                            <form id="addPatientForm" onSubmit={editPaciente}>
                                 <div className="row">
                                     <div className="col-md-4 mb-3">
                                         <label htmlFor="patientName" className="form-label">Nome*</label>
                                         <input type="text" className="form-control" id="patientName"
-                                            placeholder="Digite o nome do paciente" required disabled={disabled}/>
+                                            placeholder="Digite o nome do paciente" required disabled={disabled} value={userEdit.name}/>
                                     </div>
                                     <div className="col-md-4 mb-3">
                                         <label htmlFor="patientSurname" className="form-label">Sobrenome*</label>
                                         <input type="text" className="form-control" id="patientSurname"
-                                            placeholder="Digite o sobrenome do paciente" required disabled={disabled}/>
+                                            placeholder="Digite o sobrenome do paciente" required disabled={disabled} value={userEdit.surname}/>
                                     </div>
                                     <div className="col-md-4 mb-3">
                                         <label htmlFor="patientDob" className="form-label">Data de Nascimento*</label>
@@ -84,6 +122,7 @@ const Edit = ({ userData, display, close }) => {
                                             onChange={handleChangeDate}
                                             required
                                             disabled={disabled}
+                                            value={formatDate(userEdit.dateBirth)}
                                         />
                                         {error && <div className="invalid-feedback">{error}</div>}
                                     </div>
@@ -96,21 +135,22 @@ const Edit = ({ userData, display, close }) => {
                                             placeholder="Digite seu CPF"
                                             required
                                             disabled={disabled}
+                                            value={userEdit.cpf}
                                         />
                                     </div>
                                     <div className="col-md-4 mb-3">
                                         <label htmlFor="patientPhone" className="form-label">Telefone*</label>
                                         <input type="tel" className="form-control" id="patientPhone" placeholder="(00) 00000-0000"
-                                            required disabled={disabled}/>
+                                            required disabled={disabled} value={userEdit.patientPhone}/>
                                     </div>
                                     <div className="col-md-4 mb-3">
                                         <label htmlFor="patientEmail" className="form-label">Email*</label>
                                         <input type="email" className="form-control" id="patientEmail"
-                                            placeholder="Digite o email do paciente" required disabled={disabled}/>
+                                            placeholder="Digite o email do paciente" required disabled={disabled} value={userEdit.email}/>
                                     </div>
                                     <div className="col-md-4 mb-3">
                                         <label htmlFor="patientGender" className="form-label">Sexo*</label>
-                                        <select className="form-select" id="patientGender" required disabled={disabled}>
+                                        <select className="form-select" id="patientGender" required disabled={disabled} value={userEdit.gender}>
                                             <option defaultValue="" disabled>Selecione...</option>
                                             <option value="Masculino">Masculino</option>
                                             <option value="Feminino">Feminino</option>
@@ -122,54 +162,54 @@ const Edit = ({ userData, display, close }) => {
                                     <div className="col-md-4 mb-3">
                                         <label htmlFor="patientCep" className="form-label">CEP*</label>
                                         <input type="text" className="form-control" id="patientCep"
-                                            placeholder="Digite o CEP do paciente" onBlur={() => fetchAddress()} required disabled={disabled}/>
+                                            placeholder="Digite o CEP do paciente" onBlur={() => fetchAddress()} required disabled={disabled} value={userEdit.cep}/>
                                     </div>
                                     <div className="col-md-4 mb-3">
                                         <label htmlFor="patientStreet" className="form-label">Rua</label>
                                         <input type="text" className="form-control" id="patientStreet" placeholder="Rua do paciente"
-                                            disabled/>
+                                            disabled />
                                     </div>
                                     <div className="col-md-4 mb-3">
                                         <label htmlFor="patientNumber" className="form-label">Número</label>
                                         <input type="text" className="form-control" id="patientNumber"
-                                            placeholder="Número do endereço" required disabled={disabled}/>
+                                            placeholder="Número do endereço" required disabled={disabled} value={userEdit.number}/>
                                     </div>
                                     <div className="col-md-4 mb-3">
                                         <label htmlFor="patientNeighborhood" className="form-label">Bairro</label>
                                         <input type="text" className="form-control" id="patientNeighborhood"
-                                            placeholder="Bairro do paciente" disabled/>
+                                            placeholder="Bairro do paciente" disabled />
                                     </div>
                                     <div className="col-md-4 mb-3">
                                         <label htmlFor="patientCity" className="form-label">Cidade</label>
                                         <input type="text" className="form-control" id="patientCity"
-                                            placeholder="Cidade do paciente" disabled/>
+                                            placeholder="Cidade do paciente" disabled />
                                     </div>
                                     <div className="col-md-4 mb-3">
                                         <label htmlFor="patientState" className="form-label">Estado</label>
                                         <input type="text" className="form-control" id="patientState"
-                                            placeholder="Estado do paciente" disabled/>
+                                            placeholder="Estado do paciente" disabled />
                                     </div>
                                 </div>
                                 <div className="row">
                                     <div className="col-md-4 mb-3">
                                         <label htmlFor="patientAllergies" className="form-label">Alergias</label>
                                         <input type="text" className="form-control" id="patientAllergies"
-                                            placeholder="Alergias do paciente" disabled={disabled}/>
+                                            placeholder="Alergias do paciente" disabled={disabled} value={userEdit.alergias}/>
                                     </div>
                                     <div className="col-md-4 mb-3">
                                         <label htmlFor="patientMedications" className="form-label">Medicamentos em Uso</label>
                                         <input type="text" className="form-control" id="patientMedications"
-                                            placeholder="Medicamentos que o paciente usa" disabled={disabled}/>
+                                            placeholder="Medicamentos que o paciente usa" disabled={disabled} value={userEdit.medicamentos}/>
                                     </div>
                                     <div className="col-md-4 mb-3">
                                         <label htmlFor="patientDentist" className="form-label">Dentista Responsável</label>
                                         <input type="text" className="form-control" id="patientDentist"
-                                            placeholder="Dentista responsável pelo paciente" disabled={disabled}/>
+                                            placeholder="Dentista responsável pelo paciente" disabled={disabled} />
                                     </div>
-                                    <div className="col-md-4 mb-3">
+                                    {/* <div className="col-md-4 mb-3">
                                         <label htmlFor="patientLastVisit" className="form-label">Data da Última Consulta</label>
-                                        <input type="date" className="form-control" id="patientLastVisit" disabled={disabled}/>
-                                    </div>
+                                        <input type="date" className="form-control" id="patientLastVisit" disabled={disabled} />
+                                    </div> */}
                                     <div className="col-12 mb-3">
                                         <label htmlFor="patientNotes" className="form-label">Observações</label>
                                         <textarea className="form-control" id="patientNotes" rows="3"
@@ -201,34 +241,103 @@ const Edit = ({ userData, display, close }) => {
     );
 
     function editUser() {
-            setDisabled(!disabled);
+        setDisabled(!disabled);
     }
 
-    function saveFields(user) {
-        user.preventDefault();
-        let data = {
-            id: userEdit.id,
-            name: user.target.firstName.value,
-            surname: user.target.lastName.value,
-            dateBirth: user.target.date.value,
-            phone: user.target.phone.value,
-            email: user.target.email.value,
-            cpf: user.target.cpf.value,
-            gender: user.target.patientState.value,
-            cep: user.target.patientCep.value,
-            street: user.target.patientStreet.value,
-            number: user.target.patientNumber.value,
-            neighborhood: user.target.patientNeighborhood.value,
-            city: user.target.patientCity.value,
-            allergies: user.target.patientAllergies.value,
-            medications: user.target.patientMedications.value,
-            dentist: user.target.patientDentist.value,
-            lastVisit: user.target.patientLastVisit.value,
-            notes: user.target.patientNotes.value
+    function formatDate(dateString) {
+        // Verifica se a string da data está no formato esperado (YYYY-MM-DD)
+        if (!dateString || !dateString.includes('-')) {
+            return 'Data inválida';
+        }
+    
+        // Divide a string pelo delimitador "-"
+        const [year, month, day] = dateString.split('-');
+    
+        // Retorna no formato DD/MM/YYYY
+        return `${day}/${month}/${year}`;
+    }
+
+    function formatDateToISO(dateString) {
+        // Verifica se a data está no formato ISO e retorna sem modificar
+        if (/\d{4}-\d{2}-\d{2}/.test(dateString)) {
+            return dateString;
+        }
+
+        // Verifica se a data está no formato dd/MM/yyyy
+        if (dateString && dateString.includes('/')) {
+            const [day, month, year] = dateString.split('/');
+
+            if (day && month && year) {
+                return `${year}-${month}-${day}`;
+            }
+        }
+
+        console.error("Formato de data inválido ou desconhecido:", dateString);
+        return null;
+    }
+
+    async function editPaciente(event) {
+        event.preventDefault();
+
+        const formattedBirthDate = formatDateToISO(event.target.date.value);
+        // const formattedLastVisitDate = formatDateToISO(event.target.patientLastVisit.value);
+
+        // Verifica se as datas são válidas antes de prosseguir
+        if (!formattedBirthDate) {
+            alert("Erro: Formato de data inválido. Por favor, revise as datas.");
+            return; // Encerra a função se as datas forem inválidas
+        }
+
+        // Busca o médico correspondente pelo nome/sobrenome
+        const medicoNome = event.target.patientDentist.value.trim().toLowerCase();
+        const medicoEncontrado = medicos.find(
+            (medico) =>
+                medico.nome.toLowerCase() === medicoNome ||
+                medico.sobrenome.toLowerCase() === medicoNome
+        );
+
+        if (!medicoEncontrado) {
+            alert("Erro: Médico não encontrado. Por favor, revise o nome digitado.");
+            return; // Encerra a função se o médico não for encontrado
+        }
+
+        // Busca o ID do médico pelo CPF
+        const medicoId = await buscarIdMedicoPorCpf(medicoEncontrado.cpf);
+
+        // Prepare os dados para envio
+        const data = {
+            nome: event.target.patientName.value,
+                sobrenome: event.target.patientSurname.value,
+                dataNascimento: formattedBirthDate,
+                telefone: event.target.patientPhone.value,
+                email: event.target.patientEmail.value,
+                cpf: event.target.cpf.value,
+                genero: event.target.patientGender.value,
+                cep: event.target.patientCep.value,
+                numeroResidencia: event.target.patientNumber.value,
+                alergias: event.target.patientAllergies.value,
+                medicamentos: event.target.patientMedications.value,
+                medicoId: medicoId,
+                observacoes: event.target.patientNotes.value,
         };
+
         setUserUpdate(data);
-        setAlertSucess(true);
-        setTimeout(() => setAlertSucess(false), 1500);
+
+        try {
+            // Chamando a função atualizarCliente
+            const updatedClient = await atualizarCliente(userEdit.id, data);
+
+            if (updatedClient) {
+                alert('Usuário atualizado com sucesso!');
+                setAlertSucess(true);
+                setTimeout(() => setAlertSucess(false), 1500);
+                close(userUpdate);
+            } else {
+                console.error('Erro ao atualizar cliente');
+            }
+        } catch (error) {
+            console.error('Erro ao atualizar cliente:', error);
+        }
     }
 
     function fetchAddress() {
