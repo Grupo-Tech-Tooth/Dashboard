@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Modal from "./components/Modal/Modal";
 import zIndex from "@mui/material/styles/zIndex";
-import { Modal as BootstrapModal } from "bootstrap"; 
+import api from "./api"; // Importa a API com o interceptor configurado
 
 const IdleContext = createContext();
 
@@ -53,7 +53,29 @@ export const IdleProvider = ({ children }) => {
       events.forEach((event) => window.removeEventListener(event, resetTimer));
       if (idleTimer) clearTimeout(idleTimer);
     };
-  }, [location.pathname]); // Monitora mudanças na rota
+  }, [location.pathname]);
+
+  // Adiciona tratamento de erros de autenticação
+  useEffect(() => {
+    const handleApiError = (error) => {
+      if (error.response?.status === 401) {
+        handleLogout(); // Faz logout em caso de erro 401
+      }
+    };
+
+    const interceptor = api.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        handleApiError(error);
+        return Promise.reject(error);
+      }
+    );
+
+    return () => {
+      // Remove o interceptor ao desmontar o componente
+      api.interceptors.response.eject(interceptor);
+    };
+  }, []);
 
   return (
     <IdleContext.Provider
