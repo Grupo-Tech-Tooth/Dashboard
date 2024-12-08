@@ -7,7 +7,7 @@ import logo from "../../../../assets/Tech-Tooth-Logo.png";
 import SuccessAlert from '../../../AlertSuccess/AlertSuccess';
 import { atualizarCliente, buscarIdMedicoPorCpf, listarMedicos } from '../../../../api';
 
-const Edit = ({ userData, display, close }) => {
+const Edit = ({ userData, display, close, listaClientes }) => {
     // const [date, setDate] = useState(userData.lastVisit);
     const [dateBirth, setDateBirth] = useState(userData.dateBirth);
     const [error, setError] = useState('');
@@ -30,7 +30,28 @@ const Edit = ({ userData, display, close }) => {
         }
 
         fetchMedicos();
-    }, []); // Este useEffect roda apenas uma vez na montagem do componente
+
+        if (userEdit.id) {
+            const cliente = listaClientes.find(cliente => cliente.id === userEdit.id);
+            if (cliente) {
+                setUserEdit({
+                    ...userEdit,
+                    name: cliente.nome,
+                    surname: cliente.sobrenome,
+                    dateBirth: cliente.dataNascimento,
+                    cpf: cliente.cpf,
+                    patientPhone: cliente.telefone,
+                    email: cliente.email,
+                    gender: cliente.genero,
+                    cep: cliente.cep,
+                    number: cliente.numeroResidencia,
+                    alergias: cliente.alergias,
+                    medicamentos: cliente.medicamentos,
+                    observacoes: cliente.observacoes
+                });
+            }
+        }
+    }, [userEdit.id]); // Este useEffect roda apenas uma vez na montagem do componente
 
     const validateDate = (inputDate) => {
         const [day, month, year] = inputDate.split('/').map(Number);
@@ -84,12 +105,12 @@ const Edit = ({ userData, display, close }) => {
                                     <div className="col-md-4 mb-3">
                                         <label htmlFor="patientName" className="form-label">Nome*</label>
                                         <input type="text" className="form-control" id="patientName"
-                                            placeholder="Digite o nome do paciente" required disabled={disabled} />
+                                            placeholder="Digite o nome do paciente" required disabled={disabled} value={userEdit.name}/>
                                     </div>
                                     <div className="col-md-4 mb-3">
                                         <label htmlFor="patientSurname" className="form-label">Sobrenome*</label>
                                         <input type="text" className="form-control" id="patientSurname"
-                                            placeholder="Digite o sobrenome do paciente" required disabled={disabled} />
+                                            placeholder="Digite o sobrenome do paciente" required disabled={disabled} value={userEdit.surname}/>
                                     </div>
                                     <div className="col-md-4 mb-3">
                                         <label htmlFor="patientDob" className="form-label">Data de Nascimento*</label>
@@ -101,6 +122,7 @@ const Edit = ({ userData, display, close }) => {
                                             onChange={handleChangeDate}
                                             required
                                             disabled={disabled}
+                                            value={formatDate(userEdit.dateBirth)}
                                         />
                                         {error && <div className="invalid-feedback">{error}</div>}
                                     </div>
@@ -113,21 +135,22 @@ const Edit = ({ userData, display, close }) => {
                                             placeholder="Digite seu CPF"
                                             required
                                             disabled={disabled}
+                                            value={userEdit.cpf}
                                         />
                                     </div>
                                     <div className="col-md-4 mb-3">
                                         <label htmlFor="patientPhone" className="form-label">Telefone*</label>
                                         <input type="tel" className="form-control" id="patientPhone" placeholder="(00) 00000-0000"
-                                            required disabled={disabled} />
+                                            required disabled={disabled} value={userEdit.patientPhone}/>
                                     </div>
                                     <div className="col-md-4 mb-3">
                                         <label htmlFor="patientEmail" className="form-label">Email*</label>
                                         <input type="email" className="form-control" id="patientEmail"
-                                            placeholder="Digite o email do paciente" required disabled={disabled} />
+                                            placeholder="Digite o email do paciente" required disabled={disabled} value={userEdit.email}/>
                                     </div>
                                     <div className="col-md-4 mb-3">
                                         <label htmlFor="patientGender" className="form-label">Sexo*</label>
-                                        <select className="form-select" id="patientGender" required disabled={disabled}>
+                                        <select className="form-select" id="patientGender" required disabled={disabled} value={userEdit.gender}>
                                             <option defaultValue="" disabled>Selecione...</option>
                                             <option value="Masculino">Masculino</option>
                                             <option value="Feminino">Feminino</option>
@@ -139,7 +162,7 @@ const Edit = ({ userData, display, close }) => {
                                     <div className="col-md-4 mb-3">
                                         <label htmlFor="patientCep" className="form-label">CEP*</label>
                                         <input type="text" className="form-control" id="patientCep"
-                                            placeholder="Digite o CEP do paciente" onBlur={() => fetchAddress()} required disabled={disabled} />
+                                            placeholder="Digite o CEP do paciente" onBlur={() => fetchAddress()} required disabled={disabled} value={userEdit.cep}/>
                                     </div>
                                     <div className="col-md-4 mb-3">
                                         <label htmlFor="patientStreet" className="form-label">Rua</label>
@@ -149,7 +172,7 @@ const Edit = ({ userData, display, close }) => {
                                     <div className="col-md-4 mb-3">
                                         <label htmlFor="patientNumber" className="form-label">Número</label>
                                         <input type="text" className="form-control" id="patientNumber"
-                                            placeholder="Número do endereço" required disabled={disabled} />
+                                            placeholder="Número do endereço" required disabled={disabled} value={userEdit.number}/>
                                     </div>
                                     <div className="col-md-4 mb-3">
                                         <label htmlFor="patientNeighborhood" className="form-label">Bairro</label>
@@ -171,12 +194,12 @@ const Edit = ({ userData, display, close }) => {
                                     <div className="col-md-4 mb-3">
                                         <label htmlFor="patientAllergies" className="form-label">Alergias</label>
                                         <input type="text" className="form-control" id="patientAllergies"
-                                            placeholder="Alergias do paciente" disabled={disabled} />
+                                            placeholder="Alergias do paciente" disabled={disabled} value={userEdit.alergias}/>
                                     </div>
                                     <div className="col-md-4 mb-3">
                                         <label htmlFor="patientMedications" className="form-label">Medicamentos em Uso</label>
                                         <input type="text" className="form-control" id="patientMedications"
-                                            placeholder="Medicamentos que o paciente usa" disabled={disabled} />
+                                            placeholder="Medicamentos que o paciente usa" disabled={disabled} value={userEdit.medicamentos}/>
                                     </div>
                                     <div className="col-md-4 mb-3">
                                         <label htmlFor="patientDentist" className="form-label">Dentista Responsável</label>
@@ -219,6 +242,19 @@ const Edit = ({ userData, display, close }) => {
 
     function editUser() {
         setDisabled(!disabled);
+    }
+
+    function formatDate(dateString) {
+        // Verifica se a string da data está no formato esperado (YYYY-MM-DD)
+        if (!dateString || !dateString.includes('-')) {
+            return 'Data inválida';
+        }
+    
+        // Divide a string pelo delimitador "-"
+        const [year, month, day] = dateString.split('-');
+    
+        // Retorna no formato DD/MM/YYYY
+        return `${day}/${month}/${year}`;
     }
 
     function formatDateToISO(dateString) {
@@ -282,8 +318,6 @@ const Edit = ({ userData, display, close }) => {
                 alergias: event.target.patientAllergies.value,
                 medicamentos: event.target.patientMedications.value,
                 medicoId: medicoId,
-                medicoResponsavel: event.target.patientDentist.value,
-                medicoResponsavelId: medicoId, // ID do médico obtido pela busca
                 observacoes: event.target.patientNotes.value,
         };
 

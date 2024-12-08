@@ -11,7 +11,7 @@ import { Pagination } from 'antd';
 import ModalFinalization from '../ModalFinalization/ModalFinalization';
 import ViewQuery from '../ViewQuery/ViewQuery';
 
-const Table = ({ tableInformation, setTableInformation }) => {
+const Table = ({ tableInformation, setTableInformation, pacientesDados }) => {
     const [count, setCount] = useState(0);
     const [formUser, setFormUser] = useState("none");
     const [userEdit, setUserEdit] = useState([]);
@@ -160,6 +160,7 @@ const Table = ({ tableInformation, setTableInformation }) => {
                     <FormUser
                         display={formUser}
                         userData={userEdit}
+                        listaClientes={pacientesDados}
                         close={closeForm} />
                 )}
                 {formConsultation !== "none" && (

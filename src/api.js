@@ -20,7 +20,6 @@ api.interceptors.request.use(
 // Função para criar cliente
 export async function criarCliente(clienteData) {
     try {
-        debugger
         const response = await api.post('/clientes', clienteData, {
             headers: {
                 'Content-Type': 'application/json',

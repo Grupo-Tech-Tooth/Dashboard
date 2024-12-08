@@ -28,6 +28,7 @@ function Patients() {
   const [searchName, setSearchName] = useState("");
   const [searchCpf, setSearchCpf] = useState("");
   const [searchPhone, setSearchPhone] = useState("");
+  const [pacientesData, setPacientesData] = useState("");
 
   const [viewFormAdd, setViewFormAdd] = useState("none");
 
@@ -37,6 +38,7 @@ function Patients() {
       const response = await api.get(`/clientes/agendamentos`);
       console.log(response.data);
       resetFields();
+      setPacientesData(response.data);
       formatData(response.data); // Passa os dados diretamente
     } catch (error) {
       console.log("Erro ao obter consultas:", error);
@@ -220,7 +222,7 @@ function Patients() {
             </div>
           </div>
           <div className={style['table']}>
-            <Table tableInformation={tableInformation} />
+            <Table tableInformation={tableInformation} pacientesDados={pacientesData}/>
           </div>
         </div>
       </Container>

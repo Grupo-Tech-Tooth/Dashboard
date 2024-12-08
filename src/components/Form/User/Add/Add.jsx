@@ -250,8 +250,6 @@ const Add = ({ Display, close }) => {
                 alergias: event.target.patientAllergies.value,
                 medicamentos: event.target.patientMedications.value,
                 medicoId: medicoId,
-                medicoResponsavel: event.target.patientDentist.value,
-                medicoResponsavelId: medicoId,
                 observacoes: event.target.patientNotes.value,
                 hierarquia: "CLIENTE"
             };
@@ -278,7 +276,7 @@ const Add = ({ Display, close }) => {
         } catch (error) {
             console.error("Erro ao processar solicitação:", error);
     
-            // Exibe a mensagem detalhada para debugging
+            // Exibe a mensagem detalhada
             alert(`Erro ao processar a solicitação: ${error.message || "Erro desconhecido"}`);
         }
     }        
