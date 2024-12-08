@@ -10,12 +10,12 @@ import api from "../../api";
 function Patients() {
   const [tableInformation, setTableInformation] = useState({
     columns: [
-      { name: "#", key: '' },
-      { name: "Nome", key: 'fullName' },
-      { name: "Email", key: 'email' },
-      { name: "Telefone", key: 'phone' },
-      { name: "Última Consulta", key: 'lastVisit' },
-      { name: "Ações", key: 'acoes' },
+      { name: "#", key: '', tamanho: '1' },
+      { name: "Nome", key: 'fullName', tamanho: '3' },
+      { name: "Email", key: 'email', tamanho: '3' },
+      { name: "Telefone", key: 'phone', tamanho: '2' },
+      { name: "Última Consulta", key: 'lastVisit', tamanho: '2' },
+      { name: "Ações", key: 'acoes', tamanho: '1' },
     ],
     data: [
       {
@@ -215,7 +215,7 @@ function Patients() {
   useEffect(() => {
     tableInformation.dataNotFilter = tableInformation.data;
     getData();
-  });
+  }, []);
 
   return (
     <>
@@ -227,7 +227,7 @@ function Patients() {
         )}
         <div className={style["card"]}>
           <div
-            className="row mb-4"
+            className="row mb-2"
             style={{ display: "flex", alignItems: "center", gap: '0%', margin: '0' }}
           >
             <div className="col-md-2 mx-auto">
@@ -258,7 +258,7 @@ function Patients() {
                 id="searchCpf"
                 className="form-control"
                 type="text"
-                placeholder="CPF completo"
+                placeholder="Filtrar por CPF"
                 value={searchCpf}
                 onChange={(e) => setSearchCpf(e.target.value)}
               />
@@ -297,7 +297,7 @@ function Patients() {
         </div>
       </Container>
       <div className={`z-3 position-absolute p-5 rounded-3 ${style['boxButton']}`}>
-        <button type="button" onClick={() => abrirModalAdd()} className={style['add']}>Novo Paciente</button>
+        <button type="button" onClick={() => abrirModalAdd()} className={`${style['add']} btn btn-primary`}>Cadastrar Paciente</button>
       </div>
     </>
   );

@@ -1,19 +1,25 @@
 // routes.js
-import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import Index from './pages/Index/Index';
-import Appointments from './pages/Appointments/Appointments';
-import Patients from './pages/Patients/Patients';
-import Login from './pages/Login/Login';
-import Consultation from './pages/Consultation/Consultation';
-import Employees from './pages/Employee/Employees';
-import Services from './pages/Services/Services';
-import Financeiro from './pages/Financeiro/Financeiro';
-import Dashboard from './pages/Dashboard/Dashboard';
-import NotFound from './pages/NotFound/NotFound';
+import React, { useEffect } from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+} from "react-router-dom";
+import Index from "./pages/Index/Index";
+import Appointments from "./pages/Appointments/Appointments";
+import Patients from "./pages/Patients/Patients";
+import Login from "./pages/Login/Login";
+import Consultation from "./pages/Consultation/Consultation";
+import Employees from "./pages/Employee/Employees";
+import Services from "./pages/Services/Services";
+import Financeiro from "./pages/Financeiro/Financeiro";
+import Dashboard from "./pages/Dashboard/Dashboard";
+import NotFound from "./pages/NotFound/NotFound";
 
 function RequireAuth({ children }) {
-  const token = sessionStorage.getItem('token');
+  const token = sessionStorage.getItem("token");
   const location = useLocation();
 
   // if (!token) {
@@ -26,57 +32,58 @@ function RequireAuth({ children }) {
 
 const AppRoutes = () => {
   return (
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path='/gestao-consultas' element={<Consultation />} />
-        <Route path='/gestao-financeira' element={<Financeiro />} />
-        <Route
-          path="/funcionarios"
-          element={
-            <RequireAuth>
-              <Employees />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="/pacientes"
-          element={
-            <RequireAuth>
-              <Patients />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="/servicos"
-          element={
-            <RequireAuth>
-              <Services />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="/consultas"
-          element={
-            <RequireAuth>
-              <Consultation />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="*"
-          element={
-              <NotFound />
-          }
-        />
-        <Route
-          path="/dashboard"
-          element={
-            <RequireAuth>
-              <Dashboard />
-            </RequireAuth>
-          }
-        />
-      </Routes>
+    <Routes>
+      <Route path="/" element={<Login />} />
+      <Route
+        path="/financeiro"
+        element={
+          <RequireAuth>
+            <Financeiro />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/funcionarios"
+        element={
+          <RequireAuth>
+            <Employees />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/pacientes"
+        element={
+          <RequireAuth>
+            <Patients />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/servicos"
+        element={
+          <RequireAuth>
+            <Services />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/consultas"
+        element={
+          <RequireAuth>
+            <Consultation />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/dashboard"
+        element={
+          <RequireAuth>
+            <Dashboard />
+          </RequireAuth>
+        }
+      />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
   );
 };
 

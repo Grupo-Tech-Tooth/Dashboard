@@ -14,10 +14,8 @@ function Consultation() {
     
     const [pacientes, setPacientes] = useState([]);
     const [pacientesAgendados, setPacientesAgendados] = useState([]);
-
     const [showPilhaModal] = useState(true);
-
-    const [showEvaluationModal] = useState(false);
+    const [showArrivalList, setShowArrivalList] = useState(false);
     const [tableInformation, setTableInformation] = useState({
         'columns': [
             { 'name': '#', key: '' },
@@ -34,7 +32,7 @@ function Consultation() {
                 "id": 1,
                 "nomePaciente": "Carlos Silva",
                 "cpf": "12345678900",
-                "date": "25/10/2024",
+                "date": "25/12/2024",
                 "time": "10:00",
                 "status": "Remarcado",
                 "treatment": "Limpeza",
@@ -195,6 +193,68 @@ function Consultation() {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
 
+    async function getData() {
+        try {
+          const agendamentos = await api.get(`/agendamentos`);
+          formatData(agendamentos.data);
+    
+          const medicos = await api.get(`/medicos`);
+          setTableInformation((prevTableInformation) => ({
+            ...prevTableInformation,
+            doctor: medicos.data,
+          }));
+    
+          const servicos = await api.get(`/servicos`);
+          setTableInformation((prevTableInformation) => ({
+            ...prevTableInformation,
+            treatment: servicos.data,
+          }));
+    
+          const clientes = await api.get(`/clientes`);
+          setTableInformation((prevTableInformation) => ({
+            ...prevTableInformation,
+            pacientes: clientes.data,
+          }));
+        } catch (error) {
+          console.log("Erro ao obter consultas:", error);
+        }
+        setTimeout(() => {
+          getData();
+        }, 50000);
+      }
+
+      function formatData(consultas) {
+        const data = [];
+        //Pedir para alterarem o endPoint para trazer o telefone e a data da ultima visita
+        consultas.forEach((consulta) => {
+
+            let date = new Date(consulta.dataHora);
+            let day = date.getDate().toString().padStart(2, '0');
+            let month = (date.getMonth() + 1).toString().padStart(2, '0');
+            let year = date.getFullYear();
+            let hour = date.getHours().toString().padStart(2, '0');
+            let minutes = date.getMinutes().toString().padStart(2, '0');
+            let formattedDate = `${day}/${month}/${year}`;
+            let formattedTime = `${hour}:${minutes}`;
+
+          data.push({
+            id: consulta.id,
+            nomePaciente: consulta.cliente.nome,
+            date: formattedDate,
+            time: formattedTime,
+            status: consulta.status,
+            treatment: consulta.servico.nome,
+            doctor: consulta.medico.nome,
+          })
+    
+        });
+        setTableInformation((prevTableInformation) => ({
+          ...prevTableInformation,
+          data: data,
+          dataNotFilter: data,
+        }));
+      }
+
     useEffect(() => {
         setTableInformation((prevTableInformation) => ({
             ...prevTableInformation,
@@ -265,7 +325,7 @@ function Consultation() {
     return (
 
         <>
-            <Navbar />
+            <Navbar toggleArrivalModal={toggleArrivalModal}/>
             <h2 className="text-primary text-center my-3">Gerenciar Consultas</h2>
             <Container>
                 {
@@ -273,9 +333,8 @@ function Consultation() {
                     <Add Display={viewFormAdd} close={closeForm} listUsers={tableInformation.data} doctors={tableInformation.doctor} treatments={tableInformation.treatment} />
                 }
 
-                <div className={`${style['box']} container my-4 p-3 pb-0`}>
-
-                    <form className="row mb-4 container-sm" onSubmit={buscar}>
+                <div className={style["card"]}>
+                    <div className="row mb-2" style={{ display: "flex", alignItems: "center", gap: '0%', margin: '0' }}>
                         <div className="col-md-2 mx-auto">
                             <label htmlFor="searchPatient">Nome do Paciente</label>
                             <input
@@ -292,7 +351,7 @@ function Consultation() {
                             <select
                                 className="form-select"
                                 id="searchTreatment"
-                                aria-label="Tipo de tratamento"
+                                aria-label="Filtrar por tratamento"
                                 value={searchTreatment}
                                 onChange={(e) => setSearchTreatment(e.target.value)}
                             >
@@ -313,7 +372,7 @@ function Consultation() {
                                 value={searchDoctor}
                                 onChange={(e) => setSearchDoctor(e.target.value)}
                             >
-                                <option value={undefined}>Escolher médico</option>
+                                <option value={undefined}>Selecionar médico</option>
                                 {tableInformation.doctor &&
                                     tableInformation.doctor.map((item) => (
                                         <option key={item.name} value={item.name}>{item.name}</option>
@@ -322,7 +381,7 @@ function Consultation() {
                             </select>
                         </div>
                         <div className="col-md-2 mx-auto">
-                            <label htmlFor="startDate">Data inicial</label>
+                            <label htmlFor="startDate">Por Período(Data Inicial)</label>
                             <input
                                 className="form-control"
                                 id="startDate"
@@ -332,7 +391,7 @@ function Consultation() {
                             />
                         </div>
                         <div className="col-md-2 mx-auto">
-                            <label htmlFor="endDate">Data Final</label>
+                            <label htmlFor="endDate">Por Período(Data Final)</label>
                             <input
                                 className="form-control"
                                 id="endDate"
@@ -341,12 +400,9 @@ function Consultation() {
                                 onChange={(e) => setEndDate(e.target.value)}
                             />
                         </div>
-                        <div className={`col-md-2 mx-auto ml-1 ${style['lineButton']}`}>
-                            <button
-                                className="btn btn-primary"
-                                type="submit"
-                            >
-                                Filtra
+                        <div className={`col-md-2 mx-auto ${style["lineButton"]}`}>
+                            <button className="btn btn-primary" type="submit" onClick={buscar}>
+                                Filtrar
                             </button>
                             <button
                                 className={`${style["button-limpar"]} btn btn-secondary`}
@@ -356,16 +412,17 @@ function Consultation() {
                                 Limpar Filtro
                             </button>
                         </div>
-                    </form>
+                    </div>
                     <div className={style['table']}>
                         <Table tableInformation={tableInformation} />
                     </div>
                 </div>
                 <Modal
-                    show={showEvaluationModal}
+                    show={showArrivalList}
                     title={`Fila de chegada`}
+                    onClose={toggleArrivalModal}
                     content={
-                        <div style={{height: '600px', overflow: 'scroll'}}>
+                        <div style={{height: '600px', overflowY: 'scroll'}}>
                             {
                                 pacientes.length > 0 ? (
                                 pacientes.map((paciente, index) => (
@@ -415,11 +472,15 @@ function Consultation() {
     }
 />
             </Container>
-                <div className={`z-1 position-absolute p-5 rounded-3 ${style['boxButton']}`}>
-                    <button type="button" onClick={() => abrirModalAdd()} className={style['add']}>Nova Consulta</button>
-                </div>
+            <div className={`position-absolute p-5 rounded-3 ${style['boxButton']}`}>
+                <button type="button" onClick={() => abrirModalAdd()} className={`${style['add']} btn btn-primary`}>Marcar Nova Consulta</button>
+            </div>
         </>
     );
+
+    function toggleArrivalModal() {
+        setShowArrivalList(!showArrivalList);
+    }
 
     function resetFields() {
         setSearchPatient('');

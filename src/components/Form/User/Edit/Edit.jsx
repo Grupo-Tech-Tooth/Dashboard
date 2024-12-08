@@ -29,6 +29,19 @@ const Edit = ({ userData, display, close }) => {
         }
     };
 
+    //Trata a data de aniversário
+    const handleChangeDate = (e) => {
+        const inputValue = e.target.value;
+        setDateBirth(inputValue);
+
+        if (inputValue.length === 10) {
+            const validationError = validateDate(inputValue);
+            setError(validationError);
+        } else {
+            setError('');
+        }
+    };
+
 
     // useEffect(() => {
     //     setUserUpdate(userData);
@@ -36,212 +49,159 @@ const Edit = ({ userData, display, close }) => {
 
 
     return (
-        <div className={style['bottom']} style={{ display: display }}>
-            {AlertSuccess && <SuccessAlert text={'Usuário alterado com sucesso!'} />}
-            <form className={`${style['form']} row g-3`} onSubmit={saveFields}>
-                <div className={style['lineTitle']}>
-                    <div>
-                        <img className="logo" src={logo} width={'40px'} />
-                        <h3>Editar</h3>
+        <>
+            <div className={`${style['bottom']} modal `} id="addPatientModal" tabIndex="-1" aria-labelledby="addPatientModalLabel"
+                aria-hidden="true" style={{ display: display, padding: '0', borderRadius: '5px' }}>
+
+                {AlertSuccess && <SuccessAlert text={'Usuário Salvo com sucesso!'} />}
+
+                <div className={`${style['form']} modal-dialog modal-lg modal-dialog-scrollable`}>
+                    <div className={`modal-content`}>
+                        <div className="modal-header">
+                            <h5 className="modal-title text-primary" id="addPatientModalLabel">Editar Paciente</h5>
+                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={() => close(userUpdate)}></button>
+                        </div>
+                        <div className="modal-body">
+                            <form id="addPatientForm" onSubmit={saveFields}>
+                                <div className="row">
+                                    <div className="col-md-4 mb-3">
+                                        <label htmlFor="patientName" className="form-label">Nome*</label>
+                                        <input type="text" className="form-control" id="patientName"
+                                            placeholder="Digite o nome do paciente" required disabled={disabled}/>
+                                    </div>
+                                    <div className="col-md-4 mb-3">
+                                        <label htmlFor="patientSurname" className="form-label">Sobrenome*</label>
+                                        <input type="text" className="form-control" id="patientSurname"
+                                            placeholder="Digite o sobrenome do paciente" required disabled={disabled}/>
+                                    </div>
+                                    <div className="col-md-4 mb-3">
+                                        <label htmlFor="patientDob" className="form-label">Data de Nascimento*</label>
+                                        <InputMask
+                                            mask="99/99/9999"
+                                            className={`form-control ${error ? 'is-invalid' : ''}`}
+                                            id="date"
+                                            placeholder="dd/mm/yyyy"
+                                            onChange={handleChangeDate}
+                                            required
+                                            disabled={disabled}
+                                        />
+                                        {error && <div className="invalid-feedback">{error}</div>}
+                                    </div>
+                                    <div className="col-md-4 mb-3">
+                                        <label htmlFor="patientCpf" className="form-label">CPF*</label>
+                                        <InputMask
+                                            mask="999.999.999-99"
+                                            className="form-control"
+                                            id="cpf"
+                                            placeholder="Digite seu CPF"
+                                            required
+                                            disabled={disabled}
+                                        />
+                                    </div>
+                                    <div className="col-md-4 mb-3">
+                                        <label htmlFor="patientPhone" className="form-label">Telefone*</label>
+                                        <input type="tel" className="form-control" id="patientPhone" placeholder="(00) 00000-0000"
+                                            required disabled={disabled}/>
+                                    </div>
+                                    <div className="col-md-4 mb-3">
+                                        <label htmlFor="patientEmail" className="form-label">Email*</label>
+                                        <input type="email" className="form-control" id="patientEmail"
+                                            placeholder="Digite o email do paciente" required disabled={disabled}/>
+                                    </div>
+                                    <div className="col-md-4 mb-3">
+                                        <label htmlFor="patientGender" className="form-label">Sexo*</label>
+                                        <select className="form-select" id="patientGender" required disabled={disabled}>
+                                            <option defaultValue="" disabled>Selecione...</option>
+                                            <option value="Masculino">Masculino</option>
+                                            <option value="Feminino">Feminino</option>
+                                            <option value="Outro">Outro</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="col-md-4 mb-3">
+                                        <label htmlFor="patientCep" className="form-label">CEP*</label>
+                                        <input type="text" className="form-control" id="patientCep"
+                                            placeholder="Digite o CEP do paciente" onBlur={() => fetchAddress()} required disabled={disabled}/>
+                                    </div>
+                                    <div className="col-md-4 mb-3">
+                                        <label htmlFor="patientStreet" className="form-label">Rua</label>
+                                        <input type="text" className="form-control" id="patientStreet" placeholder="Rua do paciente"
+                                            disabled/>
+                                    </div>
+                                    <div className="col-md-4 mb-3">
+                                        <label htmlFor="patientNumber" className="form-label">Número</label>
+                                        <input type="text" className="form-control" id="patientNumber"
+                                            placeholder="Número do endereço" required disabled={disabled}/>
+                                    </div>
+                                    <div className="col-md-4 mb-3">
+                                        <label htmlFor="patientNeighborhood" className="form-label">Bairro</label>
+                                        <input type="text" className="form-control" id="patientNeighborhood"
+                                            placeholder="Bairro do paciente" disabled/>
+                                    </div>
+                                    <div className="col-md-4 mb-3">
+                                        <label htmlFor="patientCity" className="form-label">Cidade</label>
+                                        <input type="text" className="form-control" id="patientCity"
+                                            placeholder="Cidade do paciente" disabled/>
+                                    </div>
+                                    <div className="col-md-4 mb-3">
+                                        <label htmlFor="patientState" className="form-label">Estado</label>
+                                        <input type="text" className="form-control" id="patientState"
+                                            placeholder="Estado do paciente" disabled/>
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="col-md-4 mb-3">
+                                        <label htmlFor="patientAllergies" className="form-label">Alergias</label>
+                                        <input type="text" className="form-control" id="patientAllergies"
+                                            placeholder="Alergias do paciente" disabled={disabled}/>
+                                    </div>
+                                    <div className="col-md-4 mb-3">
+                                        <label htmlFor="patientMedications" className="form-label">Medicamentos em Uso</label>
+                                        <input type="text" className="form-control" id="patientMedications"
+                                            placeholder="Medicamentos que o paciente usa" disabled={disabled}/>
+                                    </div>
+                                    <div className="col-md-4 mb-3">
+                                        <label htmlFor="patientDentist" className="form-label">Dentista Responsável</label>
+                                        <input type="text" className="form-control" id="patientDentist"
+                                            placeholder="Dentista responsável pelo paciente" disabled={disabled}/>
+                                    </div>
+                                    <div className="col-md-4 mb-3">
+                                        <label htmlFor="patientLastVisit" className="form-label">Data da Última Consulta</label>
+                                        <input type="date" className="form-control" id="patientLastVisit" disabled={disabled}/>
+                                    </div>
+                                    <div className="col-12 mb-3">
+                                        <label htmlFor="patientNotes" className="form-label">Observações</label>
+                                        <textarea className="form-control" id="patientNotes" rows="3"
+                                            placeholder="Observações sobre o paciente" disabled={disabled}></textarea>
+                                    </div>
+                                </div>
+
+                                <div className={`${style['lineButton']} float-end`}>
+                                    {
+                                        disabled ? (
+                                            <>
+                                                <button type="button" className="btn btn-primary me-2" onClick={() => editUser()}>Editar</button>
+                                                <button type="submit" className="btn" disabled>Salvar</button>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <button type="button" className="btn btn-secondary me-2" onClick={() => editUser()}>Cancelar</button>
+                                                <button type="submit" className="btn btn-primary">Salvar</button>
+                                            </>
+                                        )
+                                    }
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                    <label className={style['button']} onClick={() => close(userUpdate)}>X</label>
                 </div>
-                <div className="col-md-6">
-                    <Input name={'firstName'} type={'text'} label={'Nome'} placeholder={'Digite seu nome'} required={'true'} disabled={disabled} value={userEdit.name} />
-                </div>
-                <div className="col-md-6">
-                    <Input name={'lastName'} type={'text'} label={'Sobrenome'} placeholder={'Digite seu sobrenome'} disabled={disabled} value={userEdit.surname} />
-                </div>
-                <div className={style['lineData']}>
-                    <div className={`${style['data']} col-md-6`} style={{ display: 'flex', justifyContent: 'end', flexDirection: 'column' }}>
-                        <label htmlFor="date">Data De Nascimento</label>
-                        <InputMask
-                            mask="99/99/9999"
-                            className={`form-control ${error ? 'is-invalid' : ''}`}
-                            id="date"
-                            placeholder="dd/mm/yyyy"
-                            value={dateBirth}
-                            onChange={(e) => {
-                                const inputValue = e.target.value;
-                                setDateBirth(inputValue);
-                                setUserEdit((prevData) => ({
-                                    ...prevData,
-                                    dateBirth: inputValue
-                                }));
-                                if (inputValue.length === 10) {
-                                    const validationError = validateDate(inputValue);
-                                    setError(validationError);
-                                } else {
-                                    setError('');
-                                }
-                            }}
-                            disabled={disabled}
-                        />
-
-                        {error && <div className="invalid-feedback">{error}</div>}
-                    </div>
-                    <div className="col-md-6">
-                        <Input name={'phone'} type={'text'} label={'Telefone'} placeholder={'Digite seu telefone'} disabled={disabled} value={userEdit.phone} />
-                    </div>
-                </div>
-                <div className="col-md-6">
-                    <Input name={'email'} type={'email'} label={'E-mail'} placeholder={'Digite seu e-mail'} disabled={disabled} value={userEdit.email} />
-                </div>
-                <div className="col-md-6">
-                    <label htmlFor="cpf" className="form-label">CPF</label>
-                    <InputMask
-                        mask="999.999.999-99"
-                        className="form-control"
-                        id="cpf"
-                        placeholder="Digite seu CPF"
-                        disabled={disabled}
-                        value={userEdit.cpf}
-                        onChange={(e) => {
-                            setUserEdit(prevData => ({
-                                ...prevData,
-                                cpf: e.target.value
-                            }));
-                        }}
-                    />
-                </div>
-                <div className="col-md-6">
-                    <label htmlFor="inputState" className="form-label">Sexo</label>
-                    <select
-                        id="inputState"
-                        className="form-select"
-                        disabled={disabled}
-                        value={userEdit.gender || ''}
-                        onChange={(e) => {
-                            setUserEdit((prevData) => ({
-                                ...prevData,
-                                gender: e.target.value
-                            }));
-                        }}
-                    >
-                        <option value="Masculino">Masculino</option>
-                        <option value="Feminino">Feminino</option>
-                        <option value="Binario">Não binário</option>
-                        <option value="Outros">Outros</option>
-                    </select>
-
-
-                </div>
-                <div className="col-md-6 mb-3">
-                    <label htmlFor="patientCep" className="form-label">CEP*</label>
-                    <input
-                        type="text"
-                        className="form-control"
-                        id="patientCep"
-                        value={userEdit.cep}
-                        disabled={disabled}
-                        placeholder="Digite o CEP do paciente"
-                        onBlur={() => fetchAddress()}
-                        required
-                        onChange={(e) => {
-                            setUserEdit((prevData) => ({
-                                ...prevData,
-                                cep: e.target.value
-                            }));
-                        }}
-                    />
-                </div>
-                <div className="col-md-6 mb-3">
-                    <label htmlFor="patientStreet" className="form-label">Rua</label>
-                    <input type="text" className="form-control" id="patientStreet" value={userEdit.street} placeholder="Rua do paciente"
-                        disabled />
-                </div>
-                <div className="col-md-6 mb-3">
-                    <Input
-                        type="text"
-                        value={userEdit.number}
-                        className="form-control"
-                        name="patientNumber"
-                        disabled={disabled}
-                        label={"Número"}
-                        placeholder="Número do endereço"
-                        onChange={(e) => {
-                            setUserEdit((prevData) => ({
-                                ...prevData,
-                                number: e.target.value
-                            }));
-                        }}
-                    />
-
-                </div>
-                <div className="col-md-6 mb-3">
-                    <label htmlFor="patientNeighborhood" className="form-label">Bairro</label>
-                    <input type="text" className="form-control" id="patientNeighborhood" value={userEdit.neighborhood}
-                        placeholder="Bairro do paciente" disabled />
-                </div>
-                <div className="col-md-6 mb-3">
-                    <label htmlFor="patientCity" className="form-label">Cidade</label>
-                    <input type="text" className="form-control" id="patientCity" value={userEdit.city}
-                        placeholder="Cidade do paciente" disabled />
-                </div>
-                <div className="col-md-6 mb-3">
-                    <label htmlFor="patientState" className="form-label">Estado</label>
-                    <input type="text" className="form-control" id="patientState"
-                        value={userEdit.state}
-                        placeholder="Estado do paciente" disabled />
-                </div>
-                <div className="col-md-6 mb-3">
-                    <Input type="text" className="form-control" name="patientAllergies" value={userEdit.allergies} label={"Alergias"} disabled={disabled} placeholder="Alergias do paciente" />
-                </div>
-                <div className="col-md-6 mb-3">
-                    <Input type="text" className="form-control" name="patientMedications" value={userEdit.medications} label={"Medicamentos em Uso"}
-                        disabled={disabled}
-                        placeholder="Medicamentos que o paciente usa" />
-                </div>
-                <div className="col-md-6 mb-3">
-                    <Input type="text" className="form-control" name="patientDentist" label={"Dentista Responsável"} value={userEdit.dentist}
-                        disabled={disabled} placeholder="Dentista responsável pelo paciente" />
-                </div>
-                <div className="col-md-6 mb-3">
-                    <Input type="date" className="form-control" value={userEdit.lastVisit} label={"Data da Última Consulta"} name="patientLastVisit" disabled={disabled} />
-                </div>
-                <div className="col-12 mb-3">
-                    <label htmlFor="patientNotes" className="form-label">Observações</label>
-                    <textarea
-                        className="form-control"
-                        id="patientNotes"
-                        rows="3"
-                        value={userEdit.notes}
-                        disabled={disabled}
-                        placeholder="Observações sobre o paciente"
-                        onChange={(e) => {
-                            setUserEdit((prevData) => ({
-                                ...prevData,
-                                notes: e.target.value
-                            }));
-                        }}
-                    ></textarea>
-
-                </div>
-                <div className={style['lineButton']}>
-                    {
-                        disabled ? (
-                            <>
-                                <label className="btn btn-primary" onClick={() => editUser()}>Editar</label>
-                                <button type="submit" className="btn" disabled>Salvar</button>
-                            </>
-                        ) : (
-                            <>
-                                <label className={style['btnSecund']} onClick={() => editUser()}>Editar</label>
-                                <button type="submit" className="btn btn-primary">Salvar</button>
-                            </>
-                        )
-                    }
-                </div>
-            </form>
-        </div>
+            </div>
+        </>
     );
 
     function editUser() {
-        if (disabled) {
-            setDisabled(false);
-        } else {
-            setDisabled(true);
-        }
+            setDisabled(!disabled);
     }
 
     function saveFields(user) {

@@ -28,7 +28,7 @@ const Table = ({ tableInformation }) => {
 
     // Estado para paginação
     const [currentPage, setCurrentPage] = useState(1);
-    const [pageSize, setPageSize] = useState(6);
+    const [pageSize, setPageSize] = useState(10);
 
     useEffect(() => {
         if (tableInformation && tableInformation.data) {
@@ -53,30 +53,30 @@ const Table = ({ tableInformation }) => {
             return [
                 {
                     key: '1',
-                    label: <a href="#" className="text-decoration-none" onClick={() => editar(item)}>Editar</a>,
+                    label: <a href="#" className="text-decoration-none text-primary" onClick={() => editar(item)}>Editar</a>,
                 },
                 {
                     key: '2',
-                    label: <a href="#" className="text-decoration-none" onClick={() => deletar(item.id)}>Cancelar</a>,
+                    label: <a href="#" className="text-decoration-none text-primary" onClick={() => deletar(item.id)}>Cancelar</a>,
                 },
                 {
                     key: '3',
-                    label: <a href="#" className="text-decoration-none" onClick={() => concluir(item)}>Finalizar</a>,
+                    label: <a href="#" className="text-decoration-none text-primary" onClick={() => concluir(item)}>Finalizar</a>,
                 },
                 {
                     key: '4',
-                    label: <a href="#" className="text-decoration-none" onClick={() => visualizarConsulta(item)}>Visualizar</a>,
+                    label: <a href="#" className="text-decoration-none   text-primary" onClick={() => visualizarConsulta(item)}>Visualizar</a>,
                 },
             ];
         } else {
             return [
                 {
                     key: '1',
-                    label: <a href="#" className="text-decoration-none" onClick={() => editar(item)}>Editar</a>,
+                    label: <a href="#" className="text-decoration-none text-primary" onClick={() => editar(item)}>Editar</a>,
                 },
                 {
                     key: '2',
-                    label: <a href="#" className="text-decoration-none" onClick={() => deletar(item.id)}>Deletar</a>,
+                    label: <a href="#" className="text-decoration-none text-primary" onClick={() => deletar(item.id)}>Deletar</a>,
                 },
             ];
         }
@@ -90,8 +90,8 @@ const Table = ({ tableInformation }) => {
             )}
 
 
-            <div className={`${style['table']} table-responsive`}>
-                <table className="table table-hover" id={tableInformation.tableId}>
+            <div className={`${style['table']} table-responsive ${pageSize === 10 ? 'overflow-hidden' : ''}`}>
+                <table className="table table-hover mb-2" id={tableInformation.tableId}>
                     <thead>
                         <tr>
                             {tableInformation.columns &&
@@ -112,30 +112,30 @@ const Table = ({ tableInformation }) => {
                                                     : item[col.key]}
                                             </td>
                                         ) : (
-                                            <td style={{ display: 'flex', gap: '5px' }}>
+                                            <td style={{ gap: '5px' }}>
+                                                <Dropdown
+                                                    menu={{
+                                                        items: getMenuItems(item, tableInformation.tbodyId),
+                                                    }}
+                                                    placement="bottomLeft"
+                                                    trigger={['click']}
+                                                >
                                                 <Space
                                                     wrap
                                                     className={`btn btn-outline-primary ${style['buttonActions']}`}
                                                 >
-                                                    <Dropdown
-                                                        menu={{
-                                                            items: getMenuItems(item, tableInformation.tbodyId),
-                                                        }}
-                                                        placement="bottomLeft"
-                                                        arrow
-                                                    >
                                                         <svg
                                                             xmlns="http://www.w3.org/2000/svg"
-                                                            width="16"
-                                                            height="16"
+                                                            width="20"
+                                                            height="20"
                                                             fill="currentColor"
                                                             className="bi bi-three-dots-vertical"
                                                             viewBox="0 0 16 16"
                                                         >
                                                             <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0" />
                                                         </svg>
-                                                    </Dropdown>
                                                 </Space>
+                                                    </Dropdown>
                                             </td>
                                         )
                                     ))}
@@ -217,13 +217,6 @@ const Table = ({ tableInformation }) => {
             setCount(count + 1);
             setFormUser("none");
         } else if (tableInformation.tableId === 'servicesTable') {
-            const position = tableInformation.data.findIndex((item) => item.id === information.id);
-            if (position >= 0) {
-                tableInformation.data[position] = {
-                    ...tableInformation.data[position],
-                    ...information
-                };
-            }
             setCount(count + 1);
             setFormService("none");
         } else if (tableInformation.tableId === 'financesTable') {
