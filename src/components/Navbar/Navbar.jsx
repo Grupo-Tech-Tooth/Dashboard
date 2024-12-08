@@ -4,7 +4,7 @@ import styles from "./Navbar.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTooth } from "@fortawesome/free-solid-svg-icons";
 
-const Navbar = ({toggleArrivalModal}) => {
+const Navbar = ({ toggleArrivalModal }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const isLoginPage = location.pathname === "/";
@@ -42,14 +42,15 @@ const Navbar = ({toggleArrivalModal}) => {
         {isAppointmentsPage && (
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav ms-auto">
-            <li className="nav-item">
+              <li className="nav-item">
                 <Link
                   className={`${styles.nav_link} nav-link text-primary`}
-                  style={{borderRight: '2px solid #0D6EFD'}}
+                  style={{ borderRight: "2px solid #0D6EFD" }}
                 >
                   Ver Últimas Consultas Marcadas
                 </Link>
-              </li><li className="nav-item">
+              </li>
+              <li className="nav-item">
                 <Link
                   className={`${styles.nav_link} nav-link text-primary`}
                   onClick={() => toggleArrivalModal()}
@@ -64,17 +65,17 @@ const Navbar = ({toggleArrivalModal}) => {
         {!isLoginPage && (
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav ms-auto">
+              {/* <li className="nav-item">
+                <Link className={`${styles.nav_link} nav-link text-primary`} to="/meu-perfil">Meu Perfil</Link>
+                </li> */}
               <li className="nav-item">
                 <Link
                   className={`${styles.nav_link} nav-link text-primary`}
-                  to="/dashboard"
+                  to="/consultas"
                 >
-                  Início
+                  Consultas
                 </Link>
               </li>
-              {/* <li className="nav-item">
-                <Link className={`${styles.nav_link} nav-link text-primary`} to="/meu-perfil">Meu Perfil</Link>
-              </li> */}
               <li className="nav-item">
                 <Link
                   className={`${styles.nav_link} nav-link text-primary`}
@@ -94,28 +95,27 @@ const Navbar = ({toggleArrivalModal}) => {
               <li className="nav-item">
                 <Link
                   className={`${styles.nav_link} nav-link text-primary`}
-                  to="/consultas"
-                >
-                  Consultas
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link
-                  className={`${styles.nav_link} nav-link text-primary`}
                   to="/servicos"
                 >
                   Serviços
                 </Link>
               </li>
-              {/* <li className="nav-item">
-                <Link className={`${styles.nav_link} nav-link text-primary`} to="/historico">Histórico</Link>
-              </li> */}
-              {/* <li className="nav-item">
-                <Link className={`${styles.nav_link} nav-link text-primary`} to="/financeiro">Financeiro</Link>
-              </li> */}
-              {/* <li className="nav-item">
-                <Link className={`${styles.nav_link} nav-link text-primary`} to="/suporte">Suporte</Link>
-              </li> */}
+              <li className="nav-item">
+                <Link
+                  className={`${styles.nav_link} nav-link text-primary`}
+                  to="/financeiro"
+                >
+                  Finanças
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link
+                  className={`${styles.nav_link} nav-link text-primary`}
+                  to="/dashboard"
+                >
+                  Relatórios
+                </Link>
+              </li>
             </ul>
 
             <button className="btn btn-outline-primary" onClick={handleLogout}>
