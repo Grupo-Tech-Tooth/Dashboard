@@ -98,7 +98,7 @@ const Dashboard = () => {
             periodo: filter.periodo,
           },
         });
-        const services = response.data;
+        const services = Array.isArray(response.data) ? response.data : [];
 
         // Atualizando o gráfico com os dados retornados
         const updatedData = {
@@ -108,8 +108,6 @@ const Dashboard = () => {
               label: "Serviços Mais Usados",
               data: services.map((service) => service.usos),
               backgroundColor: [
-                "#0D6EFD",
-                "#2563EB",
                 "#60A5FA",
                 "#BFDBFE",
                 "#E0F2FE",
@@ -386,7 +384,7 @@ const Dashboard = () => {
         }}
       >
         <h2 className="text-primary text-center pb-3 m-0">
-          Dashboard Financeira - Tech Tooth
+          Relatório de Desempenho
         </h2>
 
         <div className="row" style={{ width: "100%", height: "90vh" }}>

@@ -7,6 +7,7 @@ import Table from '../../components/Table/Table';
 import Add from '../../components/Form/Service/AddService/AddService';
 import axios from 'axios';
 import api from '../../api';
+import ServiceModel from './ServiceModel';
 
 function Services() {
   const [tableInformation, setTableInformation] = useState({
@@ -32,14 +33,11 @@ function Services() {
 
   async function getData() {
     try {
-      const response = await api.get(`/servicos`);
-
-      console.log('Serviços:', response.data);
-
+      const response = await ServiceModel.buscar();
       setTableInformation((prevTableInformation) => ({
         ...prevTableInformation,
-        data: response.data,
-        dataNotFilter: response.data
+        data: response,
+        dataNotFilter: response
       }));
     } catch (error) {
       console.log('Erro ao obter serviços:', error);
@@ -57,7 +55,7 @@ function Services() {
   return (
     <>
       <Navbar />
-      <h2 className="text-primary text-center my-3">Gerenciar Serviços</h2>
+      <h2 className="text-primary text-center my-3">Serviços</h2>
       <Container>
         {viewFormAdd === 'block' && <Add Display={viewFormAdd} close={closeForm} />}
         <div className={style['card']}>

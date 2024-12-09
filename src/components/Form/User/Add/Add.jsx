@@ -60,7 +60,7 @@ const Add = ({ Display, close }) => {
             <div className={`${style['bottom']} modal `} id="addPatientModal" tabIndex="-1" aria-labelledby="addPatientModalLabel"
                 aria-hidden="true" style={{ display: Display, padding: '0', borderRadius: '5px' }}>
 
-                {AlertSuccess && <SuccessAlert text={'Usuário Salvo com sucesso!'} />}
+                {AlertSuccess && <SuccessAlert text={'Paciente salvo com sucesso!'} />}
 
                 <div className={`${style['form']} modal-dialog modal-lg modal-dialog-scrollable`}>
                     <div className={`modal-content`}>

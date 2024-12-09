@@ -3,7 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { Alert, Calendar, theme } from 'antd';
 import dayjs from 'dayjs';
 
-const Calendario = ({ selectedDate }) => {
+const Calendario = ({ selectedDate, date }) => {
+  const [appointmentDate, setAppointmentDate] = useState(dayjs(date));
   const hoje = new Date();
   const dia = hoje.getDate();
   const mes = hoje.getMonth() + 1;
@@ -13,16 +14,16 @@ const Calendario = ({ selectedDate }) => {
   const { token } = theme.useToken();
   const [blockedDate, setBlockedDate] = useState({
     'data': [
-      "2024-11-10",
-      "2024-11-09",
-      "2024-11-03",
-      "2024-11-15",
-      "2024-11-04",
-      "2024-11-08",
-      "2024-11-31",
-      "2024-10-29",
+      "2024-12-10",
+      "2024-12-09",
+      "2024-12-03",
+      "2024-12-15",
+      "2024-12-04",
+      "2024-12-08",
+      "2024-12-31",
+      "2024-12-29",
       "2024-11-29",
-      "2024-10-28"
+      "2024-12-28"
     ]
   });
 
@@ -68,7 +69,8 @@ const Calendario = ({ selectedDate }) => {
           onPanelChange={onPanelChange} 
           onSelect={onSelect} 
           className={style['calendario']} 
-          disabledDate={disabledDate} 
+          disabledDate={disabledDate}
+          value={appointmentDate}
         />
       </div>
     </div>
