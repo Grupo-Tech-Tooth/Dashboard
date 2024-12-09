@@ -9,6 +9,7 @@ import api from "../../api";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
+import ConsultationControl from "./ConsultationControl";
 //import { handleDesfazer } from './utils/desfazerUtils';
 
 function Consultation() {
@@ -27,163 +28,12 @@ function Consultation() {
       { name: "Status", key: "status" },
       { name: "Ações", key: "acoes" },
     ],
-    data: [
-      {
-        id: 1,
-        nomePaciente: "Carlos Silva",
-        cpf: "12345678900",
-        date: "25/12/2024",
-        time: "10:00",
-        status: "Remarcado",
-        treatment: "Limpeza",
-        doctor: "Dra. Yeda Uyema",
-      },
-      {
-        id: 2,
-        nomePaciente: "Ana Souza",
-        cpf: "23456789011",
-        date: "26/09/2024",
-        time: "14:30",
-        status: "Pendente",
-        treatment: "Clinico Geral",
-        doctor: "Dr. Lucas Santos",
-      },
-      {
-        id: 3,
-        nomePaciente: "Marcos Pereira",
-        cpf: "34567890122",
-        date: "27/09/2024",
-        time: "09:00",
-        status: "Cancelado",
-        treatment: "Tratamento de Canal",
-        doctor: "Dra. Mariana Ferraz",
-      },
-      {
-        id: 4,
-        nomePaciente: "Beatriz Costa",
-        cpf: "45678901233",
-        date: "28/09/2024",
-        time: "13:00",
-        status: "Confirmado",
-        treatment: "Clareamento Dental",
-        doctor: "Dr. Ricardo Oliveira",
-      },
-      {
-        id: 5,
-        nomePaciente: "José Oliveira",
-        cpf: "56789012344",
-        date: "29/09/2024",
-        time: "15:45",
-        status: "Remarcado",
-        treatment: "Implante Dental",
-        doctor: "Dra. Claudia Tavares",
-      },
-      {
-        id: 6,
-        nomePaciente: "Juliana Mendes",
-        cpf: "67890123455",
-        date: "30/09/2024",
-        time: "11:15",
-        status: "Pendente",
-        treatment: "Restauração",
-        doctor: "Dra. Yeda Uyema",
-      },
-      {
-        id: 7,
-        nomePaciente: "Rafael Almeida",
-        cpf: "78901234566",
-        date: "01/10/2024",
-        time: "16:00",
-        status: "Confirmado",
-        treatment: "Tratamento de sensibilidade",
-        doctor: "Dr. Lucas Santos",
-      },
-      {
-        id: 8,
-        nomePaciente: "Fernanda Rodrigues",
-        cpf: "89012345677",
-        date: "02/10/2024",
-        time: "10:30",
-        status: "Cancelado",
-        treatment: "Limpeza",
-        doctor: "Dra. Mariana Ferraz",
-      },
-      {
-        id: 9,
-        nomePaciente: "Pedro Martins",
-        cpf: "90123456788",
-        date: "03/10/2024",
-        time: "12:00",
-        status: "Confirmado",
-        treatment: "Clinico Geral",
-        doctor: "Dr. Ricardo Oliveira",
-      },
-      {
-        id: 10,
-        nomePaciente: "Larissa Barbosa",
-        cpf: "01234567899",
-        date: "04/10/2024",
-        time: "08:45",
-        status: "Pendente",
-        treatment: "Tratamento de Canal",
-        doctor: "Dra. Claudia Tavares",
-      },
-    ],
+    data: [],
     dataNotFilter: [],
     tableId: "consultationTable",
     tbodyId: "consultationBody",
-    treatment: [
-      {
-        id: "1",
-        name: "Limpeza",
-      },
-      {
-        id: "2",
-        name: "Clinico Geral",
-      },
-      {
-        id: "3",
-        name: "Tratamento de Canal",
-      },
-      {
-        id: "4",
-        name: "Clareamento Dental",
-      },
-      {
-        id: "5",
-        name: "Implante Dental",
-      },
-      {
-        id: "6",
-        name: "Restauração",
-      },
-      {
-        id: "7",
-        name: "Tratamento de sensibilidade",
-      },
-    ],
-    doctor: [
-      {
-        id: "1",
-        name: "Dra. Yeda Uyema",
-      },
-      {
-        id: "2",
-        name: "Dr. Lucas Santos",
-      },
-      {
-        id: "3",
-        name: "Dra. Mariana Ferraz",
-      },
-      {
-        id: "4",
-        name: "Dr. Ricardo Oliveira",
-      },
-      {
-        id: "5",
-        name: "Dra. Claudia Tavares",
-      },
-    ],
+    treatment: [],
+    doctor: [],
   });
   const [viewFormAdd, setViewFormAdd] = useState("none");
 
@@ -195,8 +45,13 @@ function Consultation() {
 
   async function getData() {
     try {
-      const agendamentos = await api.get(`/agendamentos`);
-      formatData(agendamentos.data);
+      const agendamentos = await ConsultationControl.buscar();
+
+      setTableInformation((prevTableInformation) => ({
+        ...prevTableInformation,
+        data: agendamentos,
+        dataNotFilter: agendamentos,
+      }));
 
       const medicos = await api.get(`/medicos`);
       setTableInformation((prevTableInformation) => ({
@@ -223,51 +78,12 @@ function Consultation() {
     }, 50000);
   }
 
-  function formatData(consultas) {
-    const data = [];
-    //Pedir para alterarem o endPoint para trazer o telefone e a data da ultima visita
-    consultas.forEach((consulta) => {
-      let date = new Date(consulta.dataHora);
-      let day = date.getDate().toString().padStart(2, "0");
-      let month = (date.getMonth() + 1).toString().padStart(2, "0");
-      let year = date.getFullYear();
-      let hour = date.getHours().toString().padStart(2, "0");
-      let minutes = date.getMinutes().toString().padStart(2, "0");
-      let formattedDate = `${day}/${month}/${year}`;
-      let formattedTime = `${hour}:${minutes}`;
-
-      data.push({
-        id: consulta.id,
-        nomePaciente: consulta.cliente.nome,
-        date: formattedDate,
-        time: formattedTime,
-        status: consulta.status,
-        treatment: consulta.servico.nome,
-        doctor: consulta.medico.nome,
-      });
-    });
-    setTableInformation((prevTableInformation) => ({
-      ...prevTableInformation,
-      data: data,
-      dataNotFilter: data,
-    }));
-  }
-
   useEffect(() => {
-    setTableInformation((prevTableInformation) => ({
-      ...prevTableInformation,
-      dataNotFilter: prevTableInformation.data,
-    }));
-  }, []);
-
-  // useEffect(() => {
   //     // Busca a fila de chegada do backend
   //     axios.get('/api/fila-chegada')  // Troque para o endpoint correto do seu backend
   //         .then(response => setPacientes(response.data))
   //         .catch(error => console.error('Erro ao buscar pacientes:', error));
-  // }, []);
 
-  useEffect(() => {
     // Mock de dados para a fila de chegada
     const mockPacientes = [
       { horario: "09:00", nome: "Luiz Fernando" },
@@ -318,6 +134,7 @@ function Consultation() {
 
     setPacientes(mockPacientes);
     setPacientesAgendados(pacientesPilha);
+    getData();
   }, []);
 
   return (

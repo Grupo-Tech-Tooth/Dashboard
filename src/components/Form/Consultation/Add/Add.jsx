@@ -193,9 +193,9 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
                             <div
                               key={treatment.id}
                               className="suggestion-item"
-                              onClick={() => treatmentSelect(treatment.name)}
+                              onClick={() => treatmentSelect(treatment.nome)}
                             >
-                              {`${treatment.name}`}
+                              {`${treatment.nome}`}
                             </div>
                           ))
                         ) : (
