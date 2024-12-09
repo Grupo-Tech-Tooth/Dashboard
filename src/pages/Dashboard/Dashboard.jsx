@@ -57,7 +57,7 @@ const Dashboard = () => {
       .get("/clientes/fluxo-mensal")
       .then((response) => {
         const fluxoMensal = response.data;
-        console.log("Dados de fluxo mensal:", fluxoMensal);
+        
         setDailyFlowData((prevData) => ({
           ...prevData,
           datasets: [
@@ -93,7 +93,6 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchServicesData = async () => {
       try {
-        console.log("Buscando dados dos serviços mais usados...");
 
         const response = await api.get("/servicos/usados", {
           params: {
@@ -131,33 +130,12 @@ const Dashboard = () => {
     filter.periodo,
   ]);
 
-  const revenueData = {
-    labels:
-      timeframe === "diário"
-        ? ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"]
-        : timeframe === "semanal"
-          ? ["Semana 1", "Semana 2", "Semana 3", "Semana 4"]
-          : [
-            "Jan",
-            "Fev",
-            "Mar",
-            "Abr",
-            "Mai",
-            "Jun",
-            "Jul",
-            "Ago",
-            "Set",
-            "Out",
-            "Nov",
-            "Dez",
-          ],
+  const [revenueData, setRevenueData] = useState({
+    labels: [],
     datasets: [
       {
         label: "Taxa de Crescimento (%)",
-        data: calculateGrowthRate([
-          12000, 15000, 14000, 16000, 17000, 13000, 18000, 15000, 14000, 16000,
-          15000, 17000,
-        ]),
+        data: [],
         borderColor: "#0D6EFD",
         backgroundColor: "#0D6EFD",
         borderWidth: 2,
@@ -166,77 +144,231 @@ const Dashboard = () => {
         fill: false,
       },
       {
-        label: `Faturamento (${timeframe})`,
-        data:
-          timeframe === "diário"
-            ? [300, 500, 200, 400, 600, 700, 100]
-            : timeframe === "semanal"
-              ? [1500, 2000, 1750, 1800]
-              : [
-                12000, 15000, 14000, 16000, 17000, 13000, 18000, 15000, 14000,
-                16000, 15000, 17000,
-              ],
+        label: "Faturamento",
+        data: [],
         backgroundColor: "#93C5FD",
         type: "bar",
       },
     ],
-  };
-
-  const annualRevenueData = {
-    // labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+  });
+  
+  
+  const [filterPeriodoFaturamento, setFilterPeriodoFaturamento] = useState("Mensal");
+  
+  useEffect(() => {
+    const fetchFaturamentoData = async () => {
+      try {
+        const response = await api.get("/financeiro/soma-transacoes", {
+          params: {
+            periodo: filterPeriodoFaturamento,
+          },
+        });
+  
+        const fetchedData = response.data;
+  
+        const periodoLower = filterPeriodoFaturamento.toLowerCase();
+  
+        const labels = periodoLower === "diasemana"
+          ? ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"]
+          : periodoLower === "semanal"
+            ? Object.keys(fetchedData)
+            : periodoLower === "mensal"
+              ? ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"]
+              : [];
+  
+        const valoresBrutos = Object.values(fetchedData);
+  
+        const updatedData = {
+          labels,
+          datasets: [
+            {
+              label: "Taxa de Crescimento (%)",
+              data: calculateGrowthRate(valoresBrutos),
+              borderColor: "#0D6EFD",
+              backgroundColor: "#0D6EFD",
+              borderWidth: 2,
+              type: "line",
+              yAxisID: "growth",
+              fill: false,
+            },
+            {
+              label: "Faturamento",
+              data: valoresBrutos,
+              backgroundColor: "#93C5FD",
+              type: "bar",
+            },
+          ],
+        };
+        setRevenueData(updatedData);
+      } catch (error) {
+        console.error("Erro ao buscar dados de faturamento:", error);
+      }
+    };
+  
+    fetchFaturamentoData();
+  }, [filterPeriodoFaturamento]);
+  
+  
+  
+  const [annualRevenueData, setAnnualRevenueData] = useState({
     labels: ["Jul", "Ago", "Set", "Out", "Nov", "Dez"],
     datasets: [
       {
         label: `Faturamento Total (${filter.specialty})`,
-        // data: [12000, 15000, 14000, 16000, 17000, 13000, 18000, 15000, 14000, 16000, 15000, 17000],
-        data: [18000, 15000, 14000, 16000, 15000, 17000],
+        data: [],
         borderColor: "#0D6EFD",
         backgroundColor: "#0D6EFD",
         borderWidth: 2,
-        type: "line", // Define o tipo como linha
-        yAxisID: "growth", // Usa o eixo `growth`
+        type: "line",
+        yAxisID: "growth",
         fill: false,
       },
       {
-        type: "bar", // Tipo barra para Cartão de Crédito
+        type: "bar",
         label: "Cartão de Crédito",
-        // data: [6000, 7500, 7000, 8000, 8500, 6500, 9000, 7500, 7000, 8000, 7500, 8500],
-        data: [9000, 7500, 7000, 8000, 7500, 8500],
+        data: [],
         backgroundColor: "#1D4ED8",
-        yAxisID: "y", // Usa o eixo padrão
+        yAxisID: "y",
       },
       {
-        type: "bar", // Tipo barra para Cartão de Débito
+        type: "bar",
         label: "Cartão de Débito",
-        // data: [3000, 3750, 3500, 4000, 4250, 3250, 4500, 3750, 3500, 4000, 3750, 4250],
-        data: [4500, 3750, 3500, 4000, 3750, 4250],
+        data: [],
         backgroundColor: "#3B82F6",
         yAxisID: "y",
       },
       {
-        type: "bar", // Tipo barra para Dinheiro
+        type: "bar",
         label: "Dinheiro",
-        // data: [2000, 2500, 2300, 2600, 2700, 2100, 2800, 2500, 2400, 2600, 2500, 2700],
-        data: [2800, 2500, 2400, 2600, 2500, 2700],
+        data: [],
         backgroundColor: "#60A5FA",
         yAxisID: "y",
       },
       {
-        type: "bar", // Tipo barra para Pix
+        type: "bar",
         label: "Pix",
-        // data: [1000, 1250, 1200, 1300, 1350, 1050, 1400, 1250, 1200, 1300, 1250, 1350],
-        data: [1400, 1250, 1200, 1300, 1250, 1350],
+        data: [],
         backgroundColor: "#93C5FD",
         yAxisID: "y",
       },
     ],
-  };
+  });
+
+  useEffect(() => {
+    const fetchFaturamentoSemestral = async () => {
+      try {
+  
+        const response = await api.get(`/financeiro/semestral/${filter.specialty}`);
+        const data = response.data || []; // Garante que data seja um array
+  
+        // Inicializa os arrays para cada mês e tipo de pagamento
+        const total = Array(6).fill(0);
+        const creditCard = Array(6).fill(0);
+        const debitCard = Array(6).fill(0);
+        const cash = Array(6).fill(0);
+        const pix = Array(6).fill(0);
+  
+        // Mapeia os meses para índices
+        const monthMap = {
+          6: 0, // Julho
+          7: 1, // Agosto
+          8: 2, // Setembro
+          9: 3, // Outubro
+          10: 4, // Novembro
+          11: 5, // Dezembro
+        };
+  
+        // Itera sobre os dados e popula os arrays
+        data.forEach(item => {
+          const month = new Date(item.dataPagamento).getMonth();
+          const index = monthMap[month];
+  
+          if (index !== undefined) {
+            total[index] += item.valorCorrigido;
+            switch (item.formaPagamento) {
+              case 'CARTAO_CREDITO':
+                creditCard[index] += item.valorCorrigido;
+                break;
+              case 'CARTAO_DEBITO':
+                debitCard[index] += item.valorCorrigido;
+                break;
+              case 'DINHEIRO':
+                cash[index] += item.valorCorrigido;
+                break;
+              case 'PIX':
+                pix[index] += item.valorCorrigido;
+                break;
+              default:
+                break;
+            }
+          }
+        });
+  
+        // Filtra os valores zero
+        const filterZeroValues = (arr) => arr.map((value, index) => value === 0 ? null : value);
+  
+        const updatedData = {
+          labels: ["Jul", "Ago", "Set", "Out", "Nov", "Dez"],
+          datasets: [
+            {
+              label: `Faturamento Total (${filter.specialty})`,
+              data: filterZeroValues(total),
+              borderColor: "#0D6EFD",
+              backgroundColor: "#0D6EFD",
+              borderWidth: 2,
+              type: "line",
+              yAxisID: "growth",
+              fill: false,
+            },
+            {
+              type: "bar",
+              label: "Cartão de Crédito",
+              data: filterZeroValues(creditCard),
+              backgroundColor: "#1D4ED8",
+              yAxisID: "y",
+            },
+            {
+              type: "bar",
+              label: "Cartão de Débito",
+              data: filterZeroValues(debitCard),
+              backgroundColor: "#3B82F6",
+              yAxisID: "y",
+            },
+            {
+              type: "bar",
+              label: "Dinheiro",
+              data: filterZeroValues(cash),
+              backgroundColor: "#60A5FA",
+              yAxisID: "y",
+            },
+            {
+              type: "bar",
+              label: "Pix",
+              data: filterZeroValues(pix),
+              backgroundColor: "#93C5FD",
+              yAxisID: "y",
+            },
+          ],
+        };
+  
+        setAnnualRevenueData(updatedData);
+      } catch (error) {
+        console.error("Erro ao buscar dados de faturamento semestral:", error);
+      }
+    };
+  
+    fetchFaturamentoSemestral();
+  }, [filter.specialty]);
 
   function calculateGrowthRate(data) {
     const growthRates = [0]; // Primeiro mês não tem crescimento, então começamos com 0
     for (let i = 1; i < data.length; i++) {
-      const growth = ((data[i] - data[i - 1]) / data[i - 1]) * 100;
-      growthRates.push(growth.toFixed(2)); // Arredondamento para 2 casas decimais
+      if (data[i - 1] === 0) {
+        growthRates.push(0); // Evita divisão por zero
+      } else {
+        const growth = ((data[i] - data[i - 1]) / data[i - 1]) * 100;
+        growthRates.push(Number(growth.toFixed(2))); // Arredondamento para 2 casas decimais e conversão para número
+      }
     }
     return growthRates;
   }
@@ -247,7 +379,7 @@ const Dashboard = () => {
       tooltip: {
         callbacks: {
           label: (context) => {
-            const label = context.dataset.label || "";
+            const label = context.dataset.label || ""; 
             const value = context.dataset.data[context.dataIndex];
             return context.dataset.type === "line"
               ? `${label}: ${value}%`
@@ -436,14 +568,13 @@ const Dashboard = () => {
 
 
               <select
-                onChange={(e) => setTimeframe(e.target.value)}
-                value={timeframe}
+                onChange={(e) => setFilterPeriodoFaturamento(e.target.value)}
+                value={filterPeriodoFaturamento}
                 className="form-select mt-2"
               >
-                <option value="Diário">Diário</option>
-                <option value="Semanal">Semanal</option>
-                <option value="Mensal">Mensal</option>
-                <option value="Anual">Anual</option>
+                <option value="mensal">Mensal</option>
+                <option value="diasemana">Por dia da semana</option>    
+                <option value="semanal">Semanal</option>
               </select>
             </div>
 
@@ -566,7 +697,7 @@ const Dashboard = () => {
               >
                 <option value="Todos">Todos</option>
                 <option value="Ortodontia">Ortodontia</option>
-                <option value="Implantes">Implantes</option>
+                <option value="Implantodontia">Implantodontia</option>
               </select>
             </div>
             <div
