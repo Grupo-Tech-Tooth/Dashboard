@@ -4,7 +4,7 @@ import styles from "./Navbar.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTooth } from "@fortawesome/free-solid-svg-icons";
 
-const Navbar = ({ toggleArrivalModal }) => {
+const Navbar = ({ toggleArrivalModal, toggleStackModal }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const isLoginPage = location.pathname === "/";
@@ -46,6 +46,7 @@ const Navbar = ({ toggleArrivalModal }) => {
                 <Link
                   className={`${styles.nav_link} nav-link text-primary`}
                   style={{ borderRight: "2px solid #0D6EFD" }}
+                  onClick={() => toggleStackModal()}
                 >
                   Ver Últimas Consultas Marcadas
                 </Link>
