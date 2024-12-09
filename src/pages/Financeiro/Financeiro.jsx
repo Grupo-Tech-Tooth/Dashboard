@@ -15,7 +15,7 @@ function Financeiro() {
       { name: "Médico", key: "doctor" },
       { name: "Data da consulta", key: "consultationDate" },
       { name: "Forma de pagamento", key: "paymentMethod" },
-      { name: "Valor", key: "amount" },
+      { name: "Valor Bruto", key: "amount" },
       { name: "Ações", key: "acoes" },
     ],
     data: [
@@ -61,10 +61,11 @@ function Financeiro() {
     tbodyId: "financesBody",
   });
 
-  const [searchDate, setSearchDate] = useState("");
-  const [searchName, setSearchName] = useState("");
-  const [searchCpf, setSearchCpf] = useState("");
-  const [searchPayment, setSearchPayment] = useState("");
+  const [searchDoctor, setSearchDoctor] = useState("");
+  const [searchClientName, setSearchClientName] = useState("");
+  const [searchPaymentMethod, setSearchPaymentMethod] = useState("");
+  const [searchStartDate, setSearchStartDate] = useState("");
+  const [searchEndDate, setSearchEndDate] = useState("");
 
   const [viewFormAdd, setViewFormAdd] = useState("none");
 
@@ -99,44 +100,54 @@ function Financeiro() {
             <div className="col-md-2 mx-auto">
               <label htmlFor="searchNome">Nome do Paciente</label>
               <input
-                id="searchName"
+                id="searchClientName"
                 className="form-control"
                 type="text"
                 placeholder="Filtrar por nome"
-                value={searchName}
-                onChange={(e) => setSearchName(e.target.value)}
+                value={searchClientName}
+                onChange={(e) => setSearchClientName(e.target.value)}
               />
             </div>
             <div className="col-md-2 mx-auto">
-              <label htmlFor="searchDate">Data de pagamento</label>
+              <label htmlFor="searchDoctor">Nome do Médico</label>
               <input
                 className="form-control"
-                id="searchDate"
-                type="date"
-                value={searchDate}
-                onChange={(e) => setSearchDate(e.target.value)}
-              />
-            </div>
-            <div className="col-md-2 mx-auto">
-              <label htmlFor="searchCpf">CPF do Paciente</label>
-              <input
-                id="searchCpf"
-                className="form-control"
+                id="searchDoctor"
                 type="text"
-                placeholder="CPF completo"
-                value={searchCpf}
-                onChange={(e) => setSearchCpf(e.target.value)}
+                placeholder="Filtrar por médico"
+                value={searchDoctor}
+                onChange={(e) => setSearchDoctor(e.target.value)}
               />
             </div>
             <div className="col-md-2 mx-auto">
-              <label htmlFor="searchPayment">Método de pagamento</label>
+              <label htmlFor="searchPaymentMethod">Método de pagamento</label>
               <input
-                id="searchPayment"
+                id="searchPaymentMethod"
                 className="form-control"
                 type="text"
                 placeholder="Tipo de pagamento"
-                value={searchPayment}
-                onChange={(e) => setSearchPayment(e.target.value)}
+                value={searchPaymentMethod}
+                onChange={(e) => setSearchPaymentMethod(e.target.value)}
+              />
+            </div>
+            <div className="col-md-2 mx-auto">
+              <label htmlFor="searchStartDate">Por Período(Data Inicial)</label>
+              <input
+                className="form-control"
+                id="searchStartDate"
+                type="date"
+                value={searchStartDate}
+                onChange={(e) => setSearchStartDate(e.target.value)}
+              />
+            </div>
+            <div className="col-md-2 mx-auto">
+              <label htmlFor="searchEndDate">Por Período(Data Final)</label>
+              <input
+                className="form-control"
+                id="searchEndDate"
+                type="date"
+                value={searchEndDate}
+                onChange={(e) => setSearchEndDate(e.target.value)}
               />
             </div>
             <div className={`col-md-2 mx-auto ${style["lineButton"]}`}>
@@ -172,10 +183,11 @@ function Financeiro() {
   );
 
   function resetFields() {
-    setSearchName("");
-    setSearchDate("");
-    setSearchCpf("");
-    setSearchPayment("");
+    setSearchClientName("");
+    setSearchDoctor("");
+    setSearchPaymentMethod("");
+    setSearchStartDate("");
+    setSearchEndDate("");
     setTableInformation((prevTableInformation) => ({
       ...prevTableInformation,
       data: tableInformation.dataNotFilter,
@@ -183,52 +195,45 @@ function Financeiro() {
   }
 
   function buscar() {
-    let listName = [];
-    let listDate = [];
-    let listCpf = [];
-    let listPayment = [];
+    let listClientName = [];
+    let listDoctor = [];
+    let listPaymentMethod = [];
+    let listStartDate = [];
+    let listEndDate = [];
 
-    if (searchName) {
-      const searchLower = searchName.toLowerCase();
-      listName = tableInformation.dataNotFilter.filter((item) =>
+    if (searchClientName) {
+      const searchLower = searchClientName.toLowerCase();
+      listClientName = tableInformation.dataNotFilter.filter((item) =>
         item.name.toLowerCase().includes(searchLower)
       );
     }
-    if (searchDate) {
-      const searchLower = searchDate.toLowerCase();
-      listDate = tableInformation.dataNotFilter.filter((item) =>
+    if (searchDoctor) {
+      const searchLower = searchDoctor.toLowerCase();
+      listDoctor = tableInformation.dataNotFilter.filter((item) =>
         item.date.toLowerCase().includes(searchLower)
       );
     }
-    if (searchCpf) {
-      const listOrdenada = tableInformation.dataNotFilter.sort((a, b) =>
-        a.cpf.localeCompare(b.cpf)
-      );
-      let start = 0;
-      let end = listOrdenada.length - 1;
-
-      while (start <= end) {
-        let meio = Math.floor((start + end) / 2);
-
-        if (listOrdenada[meio].cpf.includes(searchCpf)) {
-          listCpf.push(listOrdenada[meio]);
-          break;
-        } else if (searchCpf < listOrdenada[meio].cpf) {
-          end = meio - 1;
-        } else {
-          start = meio + 1;
-        }
-      }
-    }
-    if (searchPayment) {
-      const searchLower = searchPayment.toLowerCase();
-      listPayment = tableInformation.dataNotFilter.filter((item) =>
+    if (searchPaymentMethod) {
+      const searchLower = searchPaymentMethod.toLowerCase();
+      listPaymentMethod = tableInformation.dataNotFilter.filter((item) =>
         item.payment.includes(searchLower)
       );
     }
+    if (searchStartDate) {
+      const searchLower = searchStartDate.toLowerCase();
+      listStartDate = tableInformation.dataNotFilter.filter((item) =>
+        item.date.toLowerCase().includes(searchLower)
+      );
+    }
+    if (searchEndDate) {
+      const searchLower = searchEndDate.toLowerCase();
+      listEndDate = tableInformation.dataNotFilter.filter((item) =>
+        item.date.toLowerCase().includes(searchLower)
+      );
+    }
 
-    if (searchName || searchDate || searchPayment || searchCpf) {
-      let listAll = [...listName, ...listDate, ...listCpf, ...listPayment];
+    if (searchClientName || searchDoctor || searchPaymentMethod || searchStartDate || searchEndDate) {
+      let listAll = [...listClientName, ...listDoctor, ...listPaymentMethod, ...listStartDate, ...listEndDate];
 
       setTableInformation((prevTableInformation) => ({
         ...prevTableInformation,
