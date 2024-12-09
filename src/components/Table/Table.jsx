@@ -371,17 +371,9 @@ const Table = ({ tableInformation, setTableInformation, pacientesDados }) => {
         }
         try {
           const response = await api.delete(`/clientes/${id}`); // Deleta o paciente via API
-          if (response.status === 200) {
-            // Remove o paciente da tabela localmente
-            setTableInformation((prevTableInformation) => ({
-              ...prevTableInformation,
-              data: prevTableInformation.data.filter((patient) => patient.id !== id),
-              dataNotFilter: prevTableInformation.dataNotFilter.filter(
-                (patient) => patient.id !== id
-              ),
-            }));
-      
+          if (response.status === 204) {
             alert("Paciente deletado com sucesso!");
+            window.location.reload();
           }
         } catch (error) {
           alert("Erro ao deletar paciente.");

@@ -122,6 +122,7 @@ function Patients() {
   function closeForm(newUser) {
     setViewFormAdd("none");
     saveFields(newUser);
+    setTimeout(() => getData(), 1500);
   }
 
   // Função assíncrona para salvar o paciente

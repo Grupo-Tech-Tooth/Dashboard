@@ -74,7 +74,7 @@ export async function atualizarCliente(id, clienteData) {
 export async function deletarCliente(id) {
     try {
         const response = await api.delete(`/clientes/${id}`);
-        if (response.ok) {
+        if (response.status === 204) {
             return true; // Retorna true se deletado com sucesso
         } else {
             throw new Error('Erro ao deletar cliente');
@@ -98,7 +98,7 @@ export async function filtrarClientes(filtros) {
     }
 }
 
-//Inicio das Buscas extra de Medicos que envolve Patients
+//Inicio das Buscas extras de Medicos que envolve Patients
 export async function listarMedicos() {
     try {
         const response = await api.get(`/medicos`);
