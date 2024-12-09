@@ -121,7 +121,7 @@ const Table = ({ tableInformation, setTableInformation, pacientesDados }) => {
             <a
               href="#"
               className="text-decoration-none text-primary"
-              onClick={() => deletar(item.id)}
+              onClick={() => deletar(item)}
             >
               Deletar
             </a>
@@ -365,18 +365,46 @@ const Table = ({ tableInformation, setTableInformation, pacientesDados }) => {
     }
   }
 
-    async function deletar(id) {
+    async function deletar(item) {
         if (!window.confirm("Deseja realmente excluir este registro?")) {
            return;
         }
         try {
-          const response = await api.delete(`/clientes/${id}`); // Deleta o paciente via API
-          if (response.status === 204) {
-            alert("Paciente deletado com sucesso!");
-            window.location.reload();
+
+          debugger;
+          let response;
+
+          if (tableInformation.tableId === "patientsTable") {
+            response = await api.delete(`/clientes/${item.id}`);
+          } else if (tableInformation.tableId === "servicesTable") {
+            response = await api.delete(`/servicos/${item.id}`);
           }
+          else if (tableInformation.tableId === "financesTable") {
+            response = await api.delete(`/financas/${item.id}`);
+          }
+          else if (tableInformation.tableId === "employeesTable") {
+            
+            if(item.crm){
+              response = await api.delete(`/medicos/${item.id}`);
+            }else{
+              response = await api.delete(`/funcionais/${item.id}`);
+            }
+
+          }
+          else {
+            response = await api.delete(`/consultas/${item.id}`);
+          }
+
+          if (response.status === 204) {
+            const newData = tableInformation.data.filter(
+              (element) => element.id !== item.id
+            );
+            setTableInformation({ ...tableInformation, data: newData });
+            alert("Item deletado com sucesso.");
+          }
+
         } catch (error) {
-          alert("Erro ao deletar paciente.");
+          alert("Erro ao deletar Item.");
           console.error(error);
         }
       }      
