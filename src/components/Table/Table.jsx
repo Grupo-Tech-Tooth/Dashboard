@@ -144,118 +144,132 @@ const Table = ({ tableInformation }) => {
 
       {tableInformation.data.length > 0 && (
         <div
-            className={`${style["table"]} table-responsive ${
+          className={`${style["table"]} table-responsive ${
             pageSize === 10 ? "overflow-hidden" : ""
-            }`}
+          }`}
         >
-            <table className="table table-hover mb-2" id={tableInformation.tableId}>
+          <table
+            className="table table-hover mb-2"
+            id={tableInformation.tableId}
+          >
             <thead>
-                <tr>
+              <tr>
                 {tableInformation.columns &&
-                    tableInformation.columns.map((item, index) => (
+                  tableInformation.columns.map((item, index) => (
                     <th key={index} scope="col" className={style["title"]}>
-                        {item.name}
+                      {item.name}
                     </th>
-                    ))}
-                </tr>
+                  ))}
+              </tr>
             </thead>
             <tbody id={tableInformation.tbodyId}>
-                {paginatedData &&
+              {paginatedData &&
                 paginatedData.map((item, index) => (
-                    <tr key={item.id}>
+                  <tr key={item.id}>
                     {tableInformation.columns.map((col, i) =>
-                        col.key !== "acoes" ? (
+                      col.key !== "acoes" ? (
                         <td key={i}>
-                            {col.key === ""
+                          {col.key === ""
                             ? index + 1 + (currentPage - 1) * pageSize
+                            : col.key === "amount"
+                            ? "R$ " + item[col.key] + ",00"
+                            : col.key === "paymentMethod" && item[col.key] === "Cartão de Crédito"
+                            ? item[col.key] + " - " + item["installments"] + "x"
                             : item[col.key]}
                         </td>
-                        ) : (
+                      ) : (
                         <td style={{ gap: "5px" }}>
-                            <Dropdown
+                          <Dropdown
                             menu={{
-                                items: getMenuItems(item, tableInformation.tbodyId),
+                              items: getMenuItems(
+                                item,
+                                tableInformation.tbodyId
+                              ),
                             }}
                             placement="bottomLeft"
                             trigger={["click"]}
-                            >
+                          >
                             <Space
-                                wrap
-                                className={`btn btn-outline-primary ${style["buttonActions"]}`}
+                              wrap
+                              className={`btn btn-outline-primary ${style["buttonActions"]}`}
                             >
-                                <svg
+                              <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="20"
                                 height="20"
                                 fill="currentColor"
                                 className="bi bi-three-dots-vertical"
                                 viewBox="0 0 16 16"
-                                >
+                              >
                                 <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0" />
-                                </svg>
+                              </svg>
                             </Space>
-                            </Dropdown>
+                          </Dropdown>
                         </td>
-                        )
+                      )
                     )}
-                    </tr>
+                  </tr>
                 ))}
             </tbody>
-            </table>
-            <div className={style["divPagination"]}>
+          </table>
+          <div className={style["divPagination"]}>
             <Pagination
-                current={currentPage}
-                pageSize={pageSize}
-                total={tableInformation.data.length}
-                onChange={onPageChange}
-                onShowSizeChange={onShowSizeChange}
-                showSizeChanger
-                pageSizeOptions={["10", "20", "50"]}
+              current={currentPage}
+              pageSize={pageSize}
+              total={tableInformation.data.length}
+              onChange={onPageChange}
+              onShowSizeChange={onShowSizeChange}
+              showSizeChanger
+              pageSizeOptions={["10", "20", "50"]}
             />
-            </div>
+          </div>
 
-            {formUser !== "none" && (
-            <FormUser display={formUser} userData={userEdit} close={closeForm} />
-            )}
-            {formConsultation !== "none" && (
+          {formUser !== "none" && (
+            <FormUser
+              display={formUser}
+              userData={userEdit}
+              close={closeForm}
+            />
+          )}
+          {formConsultation !== "none" && (
             <FormConsultation
-                display={formConsultation}
-                consultationData={consultationEdit}
-                listUsers={tableInformation.data}
-                doctors={tableInformation.doctor}
-                treatments={tableInformation.treatment}
-                close={closeForm}
+              display={formConsultation}
+              consultationData={consultationEdit}
+              listUsers={tableInformation.data}
+              doctors={tableInformation.doctor}
+              treatments={tableInformation.treatment}
+              close={closeForm}
             />
-            )}
-            {formService !== "none" && (
+          )}
+          {formService !== "none" && (
             <FormService
-                display={formService}
-                serviceData={serviceEdit}
-                close={closeForm}
+              display={formService}
+              serviceData={serviceEdit}
+              close={closeForm}
             />
-            )}
-            {formFinance !== "none" && (
+          )}
+          {formFinance !== "none" && (
             <FormFinance
-                display={formFinance}
-                financeData={financeEdit}
-                close={closeForm}
+              display={formFinance}
+              financeData={financeEdit}
+              listUsers={tableInformation.data}
+              close={closeForm}
             />
-            )}
-            {formFunctional !== "none" && (
+          )}
+          {formFunctional !== "none" && (
             <FormFunctional
-                display={formFunctional}
-                userData={userEdit}
-                close={closeForm}
-                listSpecialization={tableInformation.specialization}
+              display={formFunctional}
+              userData={userEdit}
+              close={closeForm}
+              listSpecialization={tableInformation.specialization}
             />
-            )}
+          )}
 
-            {modalViewQuery && (
+          {modalViewQuery && (
             <ViewQuery queryData={viewQuery} close={closeForm} />
-            )}
+          )}
         </div>
       )}
-
 
       {!tableInformation.data.length > 0 && (
         <div className={style.carregamento} id="carregamento">
