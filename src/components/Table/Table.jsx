@@ -11,7 +11,7 @@ import { Pagination } from "antd";
 import ModalFinalization from "../ModalFinalization/ModalFinalization";
 import ViewQuery from "../ViewQuery/ViewQuery";
 
-const Table = ({ tableInformation }) => {
+const Table = ({ tableInformation, setTableInformation, pacientesDados }) => {
   const [count, setCount] = useState(0);
   const [formUser, setFormUser] = useState("none");
   const [userEdit, setUserEdit] = useState([]);
@@ -224,46 +224,46 @@ const Table = ({ tableInformation }) => {
             />
           </div>
 
-          {formUser !== "none" && (
-            <FormUser
-              display={formUser}
-              userData={userEdit}
-              close={closeForm}
-            />
-          )}
-          {formConsultation !== "none" && (
-            <FormConsultation
-              display={formConsultation}
-              consultationData={consultationEdit}
-              listUsers={tableInformation.data}
-              doctors={tableInformation.doctor}
-              treatments={tableInformation.treatment}
-              close={closeForm}
-            />
-          )}
-          {formService !== "none" && (
-            <FormService
-              display={formService}
-              serviceData={serviceEdit}
-              close={closeForm}
-            />
-          )}
-          {formFinance !== "none" && (
-            <FormFinance
-              display={formFinance}
-              financeData={financeEdit}
-              listUsers={tableInformation.data}
-              close={closeForm}
-            />
-          )}
-          {formFunctional !== "none" && (
-            <FormFunctional
-              display={formFunctional}
-              userData={userEdit}
-              close={closeForm}
-              listSpecialization={tableInformation.specialization}
-            />
-          )}
+                {formUser !== "none" && (
+                    <FormUser
+                        display={formUser}
+                        userData={userEdit}
+                        listaClientes={pacientesDados}
+                        close={closeForm} />
+                )}
+                {formConsultation !== "none" && (
+                    <FormConsultation
+                        display={formConsultation}
+                        consultationData={consultationEdit}
+                        listUsers={tableInformation.data}
+                        doctors={tableInformation.doctor}
+                        treatments={tableInformation.treatment}
+                        close={closeForm}
+                    />
+                )}
+                {formService !== "none" && (
+                    <FormService
+                        display={formService}
+                        serviceData={serviceEdit}
+                        close={closeForm}
+                    />
+                )}
+                {formFinance !== "none" && (
+                    <FormFinance
+                        display={formFinance}
+                        financeData={financeEdit}
+                        listUsers={tableInformation.data}
+                        close={closeForm}
+                    />
+                )}
+                {formFunctional !== "none" && (
+                    <FormFunctional
+                        display={formFunctional}
+                        userData={userEdit}
+                        close={closeForm}
+                        listSpecialization={tableInformation.specialization}
+                    />
+                )}
 
           {modalViewQuery && (
             <ViewQuery queryData={viewQuery} close={closeForm} />
@@ -365,25 +365,27 @@ const Table = ({ tableInformation }) => {
     }
   }
 
-  function deletar(id) {
-    if (!window.confirm("Deseja realmente excluir este registro?")) {
-      return;
-    }
-    tableInformation.data = tableInformation.data.filter(
-      (item) => item.id !== id
-    );
-    tableInformation.dataNotFilter = tableInformation.dataNotFilter.filter(
-      (item) => item.id !== id
-    );
-    setCount(count + 1);
-        if (tableInformation.tbodyId === 'employeesBody') {
-            api.delete(`/medicos/${id}`);
-        }else if(tableInformation.tbodyId === 'servicesBody'){
-            api.delete(`/servicos/${id}`);
-        }else if(tableInformation.tbodyId === "employeesBody") {
-            api.delete(`/medicos/${id}`);
+    async function deletar(id) {
+        if (!window.confirm("Deseja realmente excluir este registro?")) {
+           return;
         }
-  }
+        try {
+           if (tableInformation.tbodyId === 'employeesBody') {
+               const response = await api.delete(`/medicos/${id}`);
+          }else if(tableInformation.tbodyId === 'servicesBody'){
+               const response = await api.delete(`/servicos/${id}`);
+          }else if(tableInformation.tbodyId === "employeesBody") {
+               const response = await api.delete(`/medicos/${id}`);
+          }
+          if (response.status === 204) {
+            alert("Paciente deletado com sucesso!");
+            window.location.reload();
+          }
+        } catch (error) {
+          alert("Erro ao deletar paciente.");
+          console.error(error);
+        }
+      }      
 
   function concluir(item) {
     modalFinalization === "block"
