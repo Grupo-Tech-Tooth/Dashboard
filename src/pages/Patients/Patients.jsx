@@ -220,7 +220,7 @@ function Patients() {
   return (
     <>
       <Navbar />
-      <h2 className="text-primary text-center my-3">Gerenciar Pacientes</h2>
+      <h2 className="text-primary text-center my-3">Pacientes</h2>
       <Container>
         {viewFormAdd === "block" && (
           <Add Display={viewFormAdd} close={closeForm} />
