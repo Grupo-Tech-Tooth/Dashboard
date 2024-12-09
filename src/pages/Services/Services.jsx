@@ -55,7 +55,7 @@ function Services() {
   return (
     <>
       <Navbar />
-      <h2 className="text-primary text-center my-3">Gerenciar Serviços</h2>
+      <h2 className="text-primary text-center my-3">Serviços</h2>
       <Container>
         {viewFormAdd === 'block' && <Add Display={viewFormAdd} close={closeForm} />}
         <div className={style['card']}>

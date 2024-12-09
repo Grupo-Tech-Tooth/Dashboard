@@ -342,8 +342,7 @@ function Edit({
                             placeholder="CPF do Paciente"
                             maxLength="11"
                             value={inputValueCpf}
-                            onChange={searchCpf}
-                            required
+                            disabled
                           />
                           <div
                             id="suggestions"
@@ -385,7 +384,7 @@ function Edit({
                       </div>
                       <div className="mb-3">
                         <label for="appointmentDate" className="form-label">
-                          Data De Nascimento
+                          Data Da Consulta
                         </label>
                         <input
                           type="date"

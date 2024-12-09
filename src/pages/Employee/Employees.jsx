@@ -54,7 +54,7 @@ function Employees() {
           fullName: `${medico.nome} ${medico.sobrenome ? medico.sobrenome : ''}`,
           name: medico.nome,
           surname: medico.sobrenome,
-          email: medico.loginInfo.email,
+          email: medico.email,
           crm: medico.crm,
           phone: medico.telefone,
           department: "Médico",
@@ -80,230 +80,7 @@ function Employees() {
           dateBirth: funcional.dataNascimento,
         });
       });
-      responseFuncionais.data.forEach((funcional) => {
-        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
-        data.push({
-          id: funcional.id,
-          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
-          name: funcional.nome,
-          email: funcional.loginInfo.email,
-          phone: funcional.telefone,
-          department: funcional.departamento,
-          specialization: "-",
-          cpf: funcional.cpf,
-          dateBirth: funcional.dataNascimento,
-        });
-      });
-      responseFuncionais.data.forEach((funcional) => {
-        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
-        data.push({
-          id: funcional.id,
-          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
-          name: funcional.nome,
-          email: funcional.loginInfo.email,
-          phone: funcional.telefone,
-          department: funcional.departamento,
-          specialization: "-",
-          cpf: funcional.cpf,
-          dateBirth: funcional.dataNascimento,
-        });
-      });
-      responseFuncionais.data.forEach((funcional) => {
-        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
-        data.push({
-          id: funcional.id,
-          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
-          name: funcional.nome,
-          email: funcional.loginInfo.email,
-          phone: funcional.telefone,
-          department: funcional.departamento,
-          specialization: "-",
-          cpf: funcional.cpf,
-          dateBirth: funcional.dataNascimento,
-        });
-      });
-      responseFuncionais.data.forEach((funcional) => {
-        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
-        data.push({
-          id: funcional.id,
-          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
-          name: funcional.nome,
-          email: funcional.loginInfo.email,
-          phone: funcional.telefone,
-          department: funcional.departamento,
-          specialization: "-",
-          cpf: funcional.cpf,
-          dateBirth: funcional.dataNascimento,
-        });
-      });
-      responseFuncionais.data.forEach((funcional) => {
-        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
-        data.push({
-          id: funcional.id,
-          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
-          name: funcional.nome,
-          email: funcional.loginInfo.email,
-          phone: funcional.telefone,
-          department: funcional.departamento,
-          specialization: "-",
-          cpf: funcional.cpf,
-          dateBirth: funcional.dataNascimento,
-        });
-      });
-      responseFuncionais.data.forEach((funcional) => {
-        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
-        data.push({
-          id: funcional.id,
-          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
-          name: funcional.nome,
-          email: funcional.loginInfo.email,
-          phone: funcional.telefone,
-          department: funcional.departamento,
-          specialization: "-",
-          cpf: funcional.cpf,
-          dateBirth: funcional.dataNascimento,
-        });
-      });
-      responseFuncionais.data.forEach((funcional) => {
-        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
-        data.push({
-          id: funcional.id,
-          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
-          name: funcional.nome,
-          email: funcional.loginInfo.email,
-          phone: funcional.telefone,
-          department: funcional.departamento,
-          specialization: "-",
-          cpf: funcional.cpf,
-          dateBirth: funcional.dataNascimento,
-        });
-      });
-      responseFuncionais.data.forEach((funcional) => {
-        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
-        data.push({
-          id: funcional.id,
-          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
-          name: funcional.nome,
-          email: funcional.loginInfo.email,
-          phone: funcional.telefone,
-          department: funcional.departamento,
-          specialization: "-",
-          cpf: funcional.cpf,
-          dateBirth: funcional.dataNascimento,
-        });
-      });
-      responseFuncionais.data.forEach((funcional) => {
-        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
-        data.push({
-          id: funcional.id,
-          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
-          name: funcional.nome,
-          email: funcional.loginInfo.email,
-          phone: funcional.telefone,
-          department: funcional.departamento,
-          specialization: "-",
-          cpf: funcional.cpf,
-          dateBirth: funcional.dataNascimento,
-        });
-      });
-      responseFuncionais.data.forEach((funcional) => {
-        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
-        data.push({
-          id: funcional.id,
-          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
-          name: funcional.nome,
-          email: funcional.loginInfo.email,
-          phone: funcional.telefone,
-          department: funcional.departamento,
-          specialization: "-",
-          cpf: funcional.cpf,
-          dateBirth: funcional.dataNascimento,
-        });
-      });
-      responseFuncionais.data.forEach((funcional) => {
-        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
-        data.push({
-          id: funcional.id,
-          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
-          name: funcional.nome,
-          email: funcional.loginInfo.email,
-          phone: funcional.telefone,
-          department: funcional.departamento,
-          specialization: "-",
-          cpf: funcional.cpf,
-          dateBirth: funcional.dataNascimento,
-        });
-      });
-      responseFuncionais.data.forEach((funcional) => {
-        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
-        data.push({
-          id: funcional.id,
-          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
-          name: funcional.nome,
-          email: funcional.loginInfo.email,
-          phone: funcional.telefone,
-          department: funcional.departamento,
-          specialization: "-",
-          cpf: funcional.cpf,
-          dateBirth: funcional.dataNascimento,
-        });
-      });
-      responseFuncionais.data.forEach((funcional) => {
-        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
-        data.push({
-          id: funcional.id,
-          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
-          name: funcional.nome,
-          email: funcional.loginInfo.email,
-          phone: funcional.telefone,
-          department: funcional.departamento,
-          specialization: "-",
-          cpf: funcional.cpf,
-          dateBirth: funcional.dataNascimento,
-        });
-      });
-      responseFuncionais.data.forEach((funcional) => {
-        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
-        data.push({
-          id: funcional.id,
-          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
-          name: funcional.nome,
-          email: funcional.loginInfo.email,
-          phone: funcional.telefone,
-          department: funcional.departamento,
-          specialization: "-",
-          cpf: funcional.cpf,
-          dateBirth: funcional.dataNascimento,
-        });
-      });
-      responseFuncionais.data.forEach((funcional) => {
-        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
-        data.push({
-          id: funcional.id,
-          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
-          name: funcional.nome,
-          email: funcional.loginInfo.email,
-          phone: funcional.telefone,
-          department: funcional.departamento,
-          specialization: "-",
-          cpf: funcional.cpf,
-          dateBirth: funcional.dataNascimento,
-        });
-      });
-      responseFuncionais.data.forEach((funcional) => {
-        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
-        data.push({
-          id: funcional.id,
-          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
-          name: funcional.nome,
-          email: funcional.loginInfo.email,
-          phone: funcional.telefone,
-          department: funcional.departamento,
-          specialization: "-",
-          cpf: funcional.cpf,
-          dateBirth: funcional.dataNascimento,
-        });
-      });
+      
     }
 
     setTableInformation((prevTableInformation) => ({
@@ -320,7 +97,9 @@ function Employees() {
   return (
     <>
       <Navbar />
-      <h2 className="text-primary text-center my-3">Gerenciar Funcionários</h2>
+      <h2 className="text-primary text-center my-3">
+        Funcionários
+      </h2>
       <Container>
         {viewFormAdd === "block" && (
           <Add Display={viewFormAdd} close={closeForm} listSpecialization={tableInformation.specialization} />

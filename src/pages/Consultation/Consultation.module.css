@@ -1,3 +1,4 @@
+
 .card {
     width: 84%;
     margin: 0 8%;
@@ -46,11 +47,26 @@
             white-space: nowrap;
         }
     }
-}
+  }
 
 .add {
     position: fixed;
     z-index: 1;
     top: 4.5rem;
     right: 5%;
+}
+.pacienteItem {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 8px;
+    font-size: 17px;
+
+    span{
+        text-align: start;
+        width: auto;
+        align-content: center;
+    }
+    .nome{
+        width: 50% !important;
+    }
 }
