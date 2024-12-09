@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Line, Bar, Pie } from "react-chartjs-2";
+import style from "./Dashboard.module.css";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -31,6 +32,7 @@ ChartJS.register(
 
 const Dashboard = () => {
   const [timeframe, setTimeframe] = useState("Mensal");
+  const [dashInformation, setDashInformation] = useState({ data: [] });
 
   const [filter, setFilter] = useState({
     year: "2024",
@@ -100,6 +102,8 @@ const Dashboard = () => {
         });
         const services = Array.isArray(response.data) ? response.data : [];
 
+        
+        
         // Atualizando o gráfico com os dados retornados
         const updatedData = {
           labels: services.map((service) => service.nome),
@@ -115,7 +119,7 @@ const Dashboard = () => {
             },
           ],
         };
-
+        
         setServicesData(updatedData);
       } catch (error) {
         console.error("Erro ao buscar dados dos serviços mais usados:", error);
@@ -404,11 +408,20 @@ const Dashboard = () => {
                 height: "fit-content",
                 marginBottom: "2%",
               }}
+
             >
               <h4 className="text-primary align-self-start">
                 Faturamento Por Período{" "}
                 <span style={{ fontSize: "14px" }}>(Valor Bruto)</span>
               </h4>
+
+              {!revenueData.datasets.length > 0 && (
+                <div className={style.carregamento} id="carregamento">
+                  <div className={style.loader}></div>
+                </div>
+              )}
+
+              {revenueData.datasets.length > 0 && (
               <div
                 style={{
                   height: "33vh",
@@ -416,9 +429,12 @@ const Dashboard = () => {
                   width: "100%",
                   justifyItems: "center",
                 }}
-              >
+              >  
                 <Bar data={revenueData} options={lineOptions} />
               </div>
+              )}
+
+
               <select
                 onChange={(e) => setTimeframe(e.target.value)}
                 value={timeframe}
@@ -430,6 +446,7 @@ const Dashboard = () => {
                 <option value="Anual">Anual</option>
               </select>
             </div>
+
             <div
               className="d-flex justify-content-between"
               style={{ width: "100%", height: "fit-content" }}
@@ -474,6 +491,14 @@ const Dashboard = () => {
                   Serviços Mais Usados{" "}
                   <span style={{ fontSize: "14px" }}>(Nº Absoluto)</span>
                 </h4>
+
+              {popularServicesData.datasets[0].data.length < 1 && (
+                <div className={style.carregamento} id="carregamento">
+                  <div className={style.loader}></div>
+              </div>
+              )}
+              
+              {popularServicesData.datasets[0].data.length > 0 && (
                 <div style={{ height: "fit-content", minWidth: "100%" }}>
                   <Pie
                     data={popularServicesData}
@@ -481,6 +506,8 @@ const Dashboard = () => {
                     style={{ maxHeight: "23vh", minWidth: "60%" }}
                   />
                 </div>
+              )}
+
                 <select
                   onChange={(e) =>
                     setFilter({ ...filter, periodo: e.target.value, })
@@ -517,9 +544,19 @@ const Dashboard = () => {
                 Faturamento Semestral Por Especialidade{" "}
                 <span style={{ fontSize: "14px" }}>(Valor Bruto)</span>
               </h4>
-              <div style={{ height: "40vh", maxHeight: "40vh", width: "auto" }}>
-                <Bar data={annualRevenueData} options={lineOptions2} />
-              </div>
+
+              {!annualRevenueData.datasets[0].data.length > 0 && (
+               <div className={style.carregamento} id="carregamento">
+                 <div className={style.loader}></div>
+                </div>
+              )}
+
+              {annualRevenueData.datasets[0].data.length > 0 && (
+                <div style={{ height: "40vh", maxHeight: "40vh", width: "auto" }}>
+                  <Bar data={annualRevenueData} options={lineOptions2} />
+                </div>
+              )}
+
               <select
                 onChange={(e) =>
                   setFilter({ ...filter, specialty: e.target.value })

@@ -31,6 +31,8 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
   const ano = hoje.getFullYear();
   const dataAtualFormatada = `${dia}-${mes}-${ano}`;
 
+  const [carregando, setCarregando] = useState(false)
+
   const availableHours = [
     { class: "red", time: "00:00" },
     { class: "green", time: "01:00" },
@@ -435,6 +437,11 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
                           Confirmar Consulta
                         </button>
                       </div>
+                      {carregando && (
+                            <div className={style.carregamento} id="carregamento">
+                              <div className={style.loader}></div>  
+                            </div>
+                          )}
                     </div>
                   </div>
                 </form>
