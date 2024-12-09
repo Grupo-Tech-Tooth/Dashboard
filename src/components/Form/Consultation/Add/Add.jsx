@@ -361,7 +361,7 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
                       </div>
                       <div className="mb-3">
                         <label for="appointmentDate" className="form-label">
-                          Data De Nascimento
+                          Data Da Consulta
                         </label>
                         <input
                           type="date"

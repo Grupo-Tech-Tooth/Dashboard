@@ -388,7 +388,7 @@ const Dashboard = () => {
         }}
       >
         <h2 className="text-primary text-center pb-3 m-0">
-          Dashboard Financeira - Tech Tooth
+          Relatório de Desempenho
         </h2>
 
         <div className="row" style={{ width: "100%", height: "90vh" }}>

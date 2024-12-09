@@ -6,163 +6,19 @@ import Button from "../../components/Botao/Botao";
 import Table from "../../components/Table/Table";
 import Add from "../../components/Form/User/Add/Add";
 import api from "../../api";
+import { filtrarClientes, criarCliente } from '../../api';
 
 function Patients() {
   const [tableInformation, setTableInformation] = useState({
     columns: [
-      { name: "#", key: '', tamanho: '1' },
-      { name: "Nome", key: 'fullName', tamanho: '3' },
-      { name: "Email", key: 'email', tamanho: '3' },
-      { name: "Telefone", key: 'phone', tamanho: '2' },
-      { name: "Última Consulta", key: 'lastVisit', tamanho: '2' },
-      { name: "Ações", key: 'acoes', tamanho: '1' },
+      { name: "#", key: 'id' },
+      { name: "Nome", key: 'fullName' },
+      { name: "Email", key: 'email' },
+      { name: "Telefone", key: 'phone' },
+      { name: "Última Consulta", key: 'lastVisit' },
+      { name: "Ações", key: 'acoes' },
     ],
-    data: [
-      {
-        id: 1,
-        name: "João",
-        surname: "da Silva",
-        fullName: "João da Silva",
-        email: "joao@example.com",
-        phone: "(11) 91234-5678",
-        lastVisit: "2024-08-15",
-        cpf: "12345678909",
-        dateBirth: "2005-05-03",
-        gender: "Masculino"
-      },
-      {
-        id: 2,
-        name: "Maria",
-        surname: "da Silva",
-        fullName: "Maria da Silva",
-        email: "maria@example.com",
-        phone: "(21) 99876-5432",
-        lastVisit: "2024-08-20",
-        dateBirth: "2005-05-03",
-        cpf: "98765432100",
-        gender: "Feminino"
-      },
-      {
-        id: 3,
-        name: "Pedro",
-        surname: "Souza",
-        fullName: "Pedro Souza",
-        email: "pedro@example.com",
-        phone: "(31) 98765-4321",
-        lastVisit: "2024-08-10",
-        dateBirth: "2005-05-03",
-        cpf: "11122233344",
-        gender: "Masculino"
-      },
-      {
-        id: 4,
-        name: "João",
-        surname: "da Silva",
-        fullName: "João da Silva",
-        email: "joao2@example.com",
-        phone: "(11) 91234-5678",
-        lastVisit: "2024-08-15",
-        dateBirth: "2005-05-03",
-        cpf: "12345678901",
-        gender: "Masculino"
-      },
-      {
-        id: 5,
-        name: "Maria",
-        surname: "Oliveira",
-        fullName: "Maria Oliveira",
-        email: "maria.oliveira@example.com",
-        phone: "(21) 99876-5432",
-        lastVisit: "2024-08-20",
-        dateBirth: "2005-05-03",
-        cpf: "22233344455",
-        gender: "Feminino"
-      },
-      {
-        id: 6,
-        name: "Pedro",
-        surname: "Silva",
-        fullName: "Pedro Silva",
-        email: "pedro.silva@example.com",
-        phone: "(31) 98765-4321",
-        lastVisit: "2024-08-10",
-        dateBirth: "2005-05-03",
-        cpf: "33344455566",
-        gender: "Masculino"
-      },
-      {
-        id: 7,
-        name: "João",
-        surname: "Santos",
-        fullName: "João Santos",
-        email: "joao.santos@example.com",
-        phone: "(11) 91234-5678",
-        lastVisit: "2024-08-15",
-        dateBirth: "2005-05-03",
-        cpf: "44455566677",
-        gender: "Masculino"
-      },
-      {
-        id: 8,
-        name: "Maria",
-        surname: "Pereira",
-        fullName: "Maria Pereira",
-        email: "maria.pereira@example.com",
-        phone: "(21) 99876-5432",
-        lastVisit: "2024-08-20",
-        dateBirth: "2005-05-03",
-        cpf: "55566677788",
-        gender: "Feminino"
-      },
-      {
-        id: 9,
-        name: "Pedro",
-        surname: "Lima",
-        fullName: "Pedro Lima",
-        email: "pedro.lima@example.com",
-        phone: "(31) 98765-4321",
-        lastVisit: "2024-08-10",
-        dateBirth: "2005-05-03",
-        cpf: "66677788899",
-        gender: "Masculino"
-      },
-      {
-        id: 10,
-        name: "João",
-        surname: "Almeida",
-        fullName: "João Almeida",
-        email: "joao.almeida@example.com",
-        phone: "(11) 91234-5678",
-        lastVisit: "2024-08-15",
-        dateBirth: "2005-05-03",
-        cpf: "77788899900",
-        gender: "Masculino"
-      },
-      {
-        id: 11,
-        name: "Maria",
-        surname: "Cruz",
-        fullName: "Maria Cruz",
-        email: "maria.cruz@example.com",
-        phone: "(21) 99876-5432",
-        lastVisit: "2024-08-20",
-        dateBirth: "2005-05-03",
-        cpf: "88899900011",
-        gender: "Feminino"
-      },
-      {
-        id: 12,
-        name: "Pedro",
-        surname: "Ferreira",
-        fullName: "Pedro Ferreira",
-        email: "pedro.ferreira@example.com",
-        phone: "(31) 98765-4321",
-        lastVisit: "2024-08-10",
-        dateBirth: "2005-05-03",
-        cpf: "99900011122",
-        gender: "Masculino"
-      }
-    ],
+    data: [],
     dataNotFilter: [],
     tableId: "patientsTable",
     tbodyId: "patientsBody",
@@ -172,39 +28,44 @@ function Patients() {
   const [searchName, setSearchName] = useState("");
   const [searchCpf, setSearchCpf] = useState("");
   const [searchPhone, setSearchPhone] = useState("");
+  const [pacientesData, setPacientesData] = useState("");
 
   const [viewFormAdd, setViewFormAdd] = useState("none");
 
+  // Função para pegar os dados dos pacientes
   async function getData() {
     try {
-      const response = await api.get(`/clientes`);
-
-      formatData(response.data.content)
+      const response = await api.get(`/clientes/agendamentos`);
+      console.log(response.data);
+      resetFields();
+      setPacientesData(response.data);
+      formatData(response.data); // Passa os dados diretamente
     } catch (error) {
       console.log("Erro ao obter consultas:", error);
     }
-    setTimeout(() => {
-      getData();
-    }, 50000);
   }
 
-
+  // Função para formatar os dados dos pacientes
   function formatData(pacientes) {
-    const data = [];
-    //Pedir para alterarem o endPoint para trazer o telefone e a data da ultima visita
-    pacientes.forEach((paciente) => {
-      data.push({
-        id: paciente.id,
-        fullName: `${paciente.nome} ${paciente.sobrenome ? paciente.sobrenome : ''}`,
-        name: paciente.nome,
-        surname: paciente.sobrenome,
-        email: paciente.loginInfo.email,
-        cpf: paciente.cpf,
-        dateBirth: paciente.dataNascimento,
-        gender: paciente.genero
-      })
+    if (!Array.isArray(pacientes) || pacientes.length === 0) {
+      setTableInformation((prevTableInformation) => ({
+        ...prevTableInformation,
+        data: [],
+        dataNotFilter: [],
+      }));
+      return;
+    }
 
-    });
+    const data = pacientes.map((paciente) => ({
+      id: paciente.id,
+      fullName: `${paciente.nome} ${paciente.sobrenome || ''}`,
+      email: paciente.email,
+      phone: paciente.telefone,
+      lastVisit: paciente.ultimoAgendamento
+        ? new Date(paciente.ultimoAgendamento.dataHora).toISOString().split('T')[0] // Apenas a data
+        : 'Não agendado',
+    }));
+
     setTableInformation((prevTableInformation) => ({
       ...prevTableInformation,
       data: data,
@@ -213,23 +74,93 @@ function Patients() {
   }
 
   useEffect(() => {
-    tableInformation.dataNotFilter = tableInformation.data;
     getData();
-  }, []);
+  }, []); // Chama getData ao montar o componente
+
+  // Função para limpar os filtros
+  function resetFields() {
+    setSearchName("");
+    setSearchEmail("");
+    setSearchCpf("");
+    setSearchPhone("");
+  }
+
+  // Função de busca para filtrar os pacientes
+  async function buscar() {
+    try {
+      const filtros = {
+        nome: searchName || undefined,
+        email: searchEmail || undefined,
+        cpf: searchCpf || undefined,
+        telefone: searchPhone || undefined,
+      };
+
+      const filtrosValidos = Object.fromEntries(
+        Object.entries(filtros).filter(([_, v]) => v != null)
+      );
+
+      const response = await filtrarClientes(filtrosValidos);
+
+      if (!response || response.length === 0) {
+        formatData([]); // Limpa a tabela se não encontrar resultados
+        console.warn('Nenhum cliente encontrado.');
+        return;
+      }
+
+      formatData(response); // Atualiza a tabela com os resultados
+    } catch (error) {
+      console.error('Erro ao filtrar clientes:', error);
+    }
+  }
+
+  // Função para abrir o modal de adicionar paciente
+  function abrirModalAdd() {
+    setViewFormAdd("block");
+  }
+
+  // Função para fechar o formulário de adicionar paciente e salvar
+  function closeForm(newUser) {
+    setViewFormAdd("none");
+    saveFields(newUser);
+    setTimeout(() => getData(), 1500);
+  }
+
+  // Função assíncrona para salvar o paciente
+  async function saveFields(newUser) {
+    if (newUser?.name) {
+      try {
+
+        // Definir o atributo hierarquia como "CLIENTE"
+        newUser.hierarquia = "CLIENTE";
+
+        const response = await criarCliente(newUser); // Envia o novo paciente para a API
+        const savedPatient = response.data; // Recebe o paciente recém-criado
+
+        alert("Paciente adicionado com sucesso!");
+
+        // Atualiza a tabela com o novo paciente
+        setTableInformation((prevTableInformation) => ({
+          ...prevTableInformation,
+          data: [...prevTableInformation.data, savedPatient],
+          dataNotFilter: [...prevTableInformation.data, savedPatient],
+        }));
+      } catch (error) {
+        alert("Erro ao adicionar paciente.");
+        console.error(error);
+      }
+    }
+  }
 
   return (
     <>
       <Navbar />
-      <h2 className="text-primary text-center my-3">Gerenciar Pacientes</h2>
+      <h2 className="text-primary text-center my-3">Pacientes</h2>
       <Container>
         {viewFormAdd === "block" && (
           <Add Display={viewFormAdd} close={closeForm} />
         )}
         <div className={style["card"]}>
-          <div
-            className="row mb-2"
-            style={{ display: "flex", alignItems: "center", gap: '0%', margin: '0' }}
-          >
+          <div className="row mb-4" style={{ display: "flex", alignItems: "center", gap: '0%', margin: '0' }}>
             <div className="col-md-2 mx-auto">
               <label htmlFor="searchNome">Nome do Paciente</label>
               <input
@@ -258,7 +189,7 @@ function Patients() {
                 id="searchCpf"
                 className="form-control"
                 type="text"
-                placeholder="Filtrar por CPF"
+                placeholder="CPF completo"
                 value={searchCpf}
                 onChange={(e) => setSearchCpf(e.target.value)}
               />
@@ -285,14 +216,14 @@ function Patients() {
               <button
                 className={`${style["button-limpar"]} btn btn-secondary`}
                 type="button"
-                onClick={resetFields}
+                onClick={getData}
               >
                 Limpar Filtro
               </button>
             </div>
           </div>
           <div className={style['table']}>
-            <Table tableInformation={tableInformation} />
+            <Table tableInformation={tableInformation} pacientesDados={pacientesData}/>
           </div>
         </div>
       </Container>
@@ -301,62 +232,6 @@ function Patients() {
       </div>
     </>
   );
-
-  function resetFields() {
-    setSearchName("");
-    setSearchEmail("");
-    setSearchCpf("");
-    setSearchPhone("");
-    setTableInformation((prevTableInformation) => ({
-      ...prevTableInformation,
-      data: tableInformation.dataNotFilter,
-    }));
-  }
-
-  function buscar() {
-    const filteredData = tableInformation.dataNotFilter.filter((item) => {
-      const matchesName = searchName
-        ? item.fullName?.toLowerCase().includes(searchName.toLowerCase())
-        : true;
-      const matchesEmail = searchEmail
-        ? item.email?.toLowerCase().includes(searchEmail.toLowerCase())
-        : true;
-      const matchesCpf = searchCpf
-        ? item.cpf?.includes(searchCpf)
-        : true;
-      const matchesPhone = searchPhone
-        ? item.phone?.includes(searchPhone)
-        : true;
-
-      return matchesName && matchesEmail && matchesCpf && matchesPhone;
-    });
-
-    setTableInformation((prevTableInformation) => ({
-      ...prevTableInformation,
-      data: filteredData,
-    }));
-  }
-
-  function abrirModalAdd() {
-    setViewFormAdd("block");
-  }
-
-  function closeForm(newUser) {
-    setViewFormAdd("none");
-    saveFields(newUser);
-  }
-
-  function saveFields(newUser) {
-    if (newUser?.name) {
-      newUser.id =
-        tableInformation.dataNotFilter[
-          tableInformation.dataNotFilter.length - 1
-        ].id + 1;
-      tableInformation.dataNotFilter.push(newUser);
-
-      alert("Usar essa função para salvar");
-    }
-  }
 }
 
 export default Patients;
