@@ -326,7 +326,7 @@ function Consultation() {
         toggleArrivalModal={toggleArrivalModal}
         toggleStackModal={toggleStackModal}
       />
-      <h2 className="text-primary text-center my-3">Gerenciar Consultas</h2>
+      <h2 className="text-primary text-center my-3">Consultas</h2>
       <Container>
         {viewFormAdd === "block" && (
           <Add

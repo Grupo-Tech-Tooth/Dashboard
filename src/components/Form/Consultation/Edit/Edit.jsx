@@ -342,8 +342,7 @@ function Edit({
                             placeholder="CPF do Paciente"
                             maxLength="11"
                             value={inputValueCpf}
-                            onChange={searchCpf}
-                            required
+                            disabled
                           />
                           <div
                             id="suggestions"
