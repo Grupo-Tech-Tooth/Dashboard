@@ -371,7 +371,6 @@ const Table = ({ tableInformation, setTableInformation, pacientesDados }) => {
         }
         try {
 
-          debugger;
           let response;
 
           if (tableInformation.tableId === "patientsTable") {

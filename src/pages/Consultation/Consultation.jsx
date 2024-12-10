@@ -16,6 +16,7 @@ function Consultation() {
   const [pacientesAgendados, setPacientesAgendados] = useState([]);
   const [showStackModal, setShowStackModal] = useState(false);
   const [showArrivalList, setShowArrivalList] = useState(false);
+  const [showEvaluationModal] = useState(false);
   const [tableInformation, setTableInformation] = useState({
     columns: [
       { name: "#", key: "" },
@@ -28,165 +29,16 @@ function Consultation() {
       { name: "Ações", key: "acoes" },
     ],
     data: [
-      {
-        id: 1,
-        nomePaciente: "Carlos Silva",
-        cpf: "12345678900",
-        date: "25/12/2024",
-        time: "10:00",
-        status: "Remarcado",
-        treatment: "Limpeza",
-        doctor: "Dra. Yeda Uyema",
-      },
-      {
-        id: 2,
-        nomePaciente: "Ana Souza",
-        cpf: "23456789011",
-        date: "26/09/2024",
-        time: "14:30",
-        status: "Pendente",
-        treatment: "Clinico Geral",
-        doctor: "Dr. Lucas Santos",
-      },
-      {
-        id: 3,
-        nomePaciente: "Marcos Pereira",
-        cpf: "34567890122",
-        date: "27/09/2024",
-        time: "09:00",
-        status: "Cancelado",
-        treatment: "Tratamento de Canal",
-        doctor: "Dra. Mariana Ferraz",
-      },
-      {
-        id: 4,
-        nomePaciente: "Beatriz Costa",
-        cpf: "45678901233",
-        date: "28/09/2024",
-        time: "13:00",
-        status: "Confirmado",
-        treatment: "Clareamento Dental",
-        doctor: "Dr. Ricardo Oliveira",
-      },
-      {
-        id: 5,
-        nomePaciente: "José Oliveira",
-        cpf: "56789012344",
-        date: "29/09/2024",
-        time: "15:45",
-        status: "Remarcado",
-        treatment: "Implante Dental",
-        doctor: "Dra. Claudia Tavares",
-      },
-      {
-        id: 6,
-        nomePaciente: "Juliana Mendes",
-        cpf: "67890123455",
-        date: "30/09/2024",
-        time: "11:15",
-        status: "Pendente",
-        treatment: "Restauração",
-        doctor: "Dra. Yeda Uyema",
-      },
-      {
-        id: 7,
-        nomePaciente: "Rafael Almeida",
-        cpf: "78901234566",
-        date: "01/10/2024",
-        time: "16:00",
-        status: "Confirmado",
-        treatment: "Tratamento de sensibilidade",
-        doctor: "Dr. Lucas Santos",
-      },
-      {
-        id: 8,
-        nomePaciente: "Fernanda Rodrigues",
-        cpf: "89012345677",
-        date: "02/10/2024",
-        time: "10:30",
-        status: "Cancelado",
-        treatment: "Limpeza",
-        doctor: "Dra. Mariana Ferraz",
-      },
-      {
-        id: 9,
-        nomePaciente: "Pedro Martins",
-        cpf: "90123456788",
-        date: "03/10/2024",
-        time: "12:00",
-        status: "Confirmado",
-        treatment: "Clinico Geral",
-        doctor: "Dr. Ricardo Oliveira",
-      },
-      {
-        id: 10,
-        nomePaciente: "Larissa Barbosa",
-        cpf: "01234567899",
-        date: "04/10/2024",
-        time: "08:45",
-        status: "Pendente",
-        treatment: "Tratamento de Canal",
-        doctor: "Dra. Claudia Tavares",
-      },
     ],
     dataNotFilter: [],
     tableId: "consultationTable",
     tbodyId: "consultationBody",
     treatment: [
-      {
-        id: "1",
-        name: "Limpeza",
-      },
-      {
-        id: "2",
-        name: "Clinico Geral",
-      },
-      {
-        id: "3",
-        name: "Tratamento de Canal",
-      },
-      {
-        id: "4",
-        name: "Clareamento Dental",
-      },
-      {
-        id: "5",
-        name: "Implante Dental",
-      },
-      {
-        id: "6",
-        name: "Restauração",
-      },
-      {
-        id: "7",
-        name: "Tratamento de sensibilidade",
-      },
     ],
     doctor: [
-      {
-        id: "1",
-        name: "Dra. Yeda Uyema",
-      },
-      {
-        id: "2",
-        name: "Dr. Lucas Santos",
-      },
-      {
-        id: "3",
-        name: "Dra. Mariana Ferraz",
-      },
-      {
-        id: "4",
-        name: "Dr. Ricardo Oliveira",
-      },
-      {
-        id: "5",
-        name: "Dra. Claudia Tavares",
-      },
     ],
   });
   const [viewFormAdd, setViewFormAdd] = useState("none");
-
   const [searchPatient, setSearchPatient] = useState("");
   const [searchTreatment, setSearchTreatment] = useState(undefined);
   const [searchDoctor, setSearchDoctor] = useState(undefined);
