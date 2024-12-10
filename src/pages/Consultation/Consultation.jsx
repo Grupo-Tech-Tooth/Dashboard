@@ -149,7 +149,7 @@ function Consultation() {
           <Add
             Display={viewFormAdd}
             close={closeForm}
-            listUsers={tableInformation.data}
+            listUsers={tableInformation.pacientes}
             doctors={tableInformation.doctor}
             treatments={tableInformation.treatment}
           />
@@ -250,7 +250,7 @@ function Consultation() {
             </div>
           </div>
           <div className={style["table"]}>
-            <Table tableInformation={tableInformation} />
+            <Table tableInformation={tableInformation} close={closeForm}/>
           </div>
         </div>
         <Modal
@@ -451,13 +451,7 @@ function Consultation() {
 
   function closeForm(newConsultation) {
     setViewFormAdd("none");
-    if (newConsultation?.nomePaciente) {
-      newConsultation.id =
-        tableInformation.dataNotFilter[
-          tableInformation.dataNotFilter.length - 1
-        ].id + 1;
-      tableInformation.data.push(newConsultation);
-    }
+    getData();
   }
 }
 
