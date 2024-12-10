@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import style from "./EditFinance.module.css";
+import api from "../../../../api";
 
 const EditFinance = ({ display, financeData, listUsers, close }) => {
   const [formData, setFormData] = useState(financeData);
@@ -7,20 +8,58 @@ const EditFinance = ({ display, financeData, listUsers, close }) => {
   const [inputValueName, setInputValueName] = useState("");
   const [optionsUsers, setOptionsUsers] = useState({});
 
-  console.log(financeData);
-
   useEffect(() => {
     setFormData(financeData);
   }, [financeData]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    await updateFinance();
     close();
+  };
+
+  const updateFinance = async () => {
+    const [dia, mes, ano] = formData.dataPagamento.split("/");
+    const dataPagamentoISO = new Date(`${ano}-${mes}-${dia}`).toISOString();
+
+    const valorBruto = parseFloat(formData.valorBruto.replace("R$", "").replace(",", "."));
+
+    // Garantir que todos os campos necessários estejam presentes
+    console.log("Form data", formData);
+    const payload = {
+      idAgendamento: formData.agendamentoId || 0,
+      idPaciente: formData.pacienteId || 0,
+      idMedico: formData.medicoId || 0,
+      dataPagamento: dataPagamentoISO,
+      formaPagamento: formData.formaPagamento || "PIX",
+      parcelas: formData.parcelas || 1,
+      valorBruto: isNaN(valorBruto) ? 0 : valorBruto,
+      observacao: formData.observacao || "string",
+      taxas: formData.taxas || 0,
+    };
+
+    console.log("Payload enviado:", payload);
+
+    try {
+      const response = await api.put(`/financeiro/${formData.id}`, payload, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.status !== 200) {
+        throw new Error("Erro ao atualizar os dados financeiros");
+      }
+
+      console.log("Dados financeiros atualizados com sucesso:", response.data);
+    } catch (error) {
+      console.error("Erro ao atualizar os dados financeiros:", error);
+    }
   };
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-  
+
     if (name === "dataPagamento") {
       // Converte de yyyy-MM-dd para dd/MM/yyyy
       const [ano, mes, dia] = value.split("-");
@@ -35,13 +74,13 @@ const EditFinance = ({ display, financeData, listUsers, close }) => {
       }));
     }
   };
-  
 
   function userSelect(user) {
     setInputValueCpf(user.cpf);
     setInputValueName(user.name);
     setOptionsUsers({});
   }
+
   function searchCpf(event) {
     const valor = event.target.value;
     setInputValueCpf(valor);
@@ -187,6 +226,7 @@ const EditFinance = ({ display, financeData, listUsers, close }) => {
                       <input
                         type="text"
                         className="form-control"
+                        name="valorBruto"
                         value={formData.valorBruto}
                         onChange={handleChange}
                       />
@@ -200,29 +240,23 @@ const EditFinance = ({ display, financeData, listUsers, close }) => {
                     </label>
                     <select
                       id="paymentMethod"
-                      name="paymentMethod"
+                      name="formaPagamento"
                       className="form-select"
                       onChange={handleChange}
-                      defaultValue={formData.formaPagamento}
+                      value={formData.formaPagamento}
                     >
                       <option value="Dinheiro"> Dinheiro </option>
                       <option value="PIX"> PIX </option>
-                      <option value="Cartão de Débito">
-                        {" "}
-                        Cartão de Débito{" "}
-                      </option>
-                      <option value="Cartão de Crédito">
-                        {" "}
-                        Cartão de Crédito{" "}
-                      </option>
+                      <option value="Cartão de Débito"> Cartão de Débito </option>
+                      <option value="Cartão de Crédito"> Cartão de Crédito </option>
                       <option value="Cheque"> Cheque </option>
                       <option value="Permuta"> Permuta </option>
                     </select>
                   </div>
                 </div>
 
-                {(formData.paymentMethod === "Cartão de Crédito" ||
-                  formData.paymentMethod === "Cartão de Débito") && (
+                {(formData.formaPagamento === "Cartão de Crédito" ||
+                  formData.formaPagamento === "Cartão de Débito") && (
                   <div className="row">
                     <div className="col-md-6 mb-3">
                       <label htmlFor="taxMachine" className="form-label">
@@ -250,17 +284,12 @@ const EditFinance = ({ display, financeData, listUsers, close }) => {
                         id="installments"
                         name="installments"
                         className="form-select"
-                        value={formData.installments}
+                        value={formData.installments || ''}
                         onChange={handleChange}
                         required
-                        disabled={
-                          formData.paymentMethod !== "Cartão de Crédito"
-                        }
+                        disabled={formData.formaPagamento !== "Cartão de Crédito"}
                       >
-                        <option value="1" selected>
-                          {" "}
-                          1 Parcela{" "}
-                        </option>
+                        <option value="1"> 1 Parcela </option>
                         <option value="2"> 2 Parcelas </option>
                         <option value="3"> 3 Parcelas </option>
                         <option value="4"> 4 Parcelas </option>
@@ -284,8 +313,7 @@ const EditFinance = ({ display, financeData, listUsers, close }) => {
                   >
                     Fechar
                   </button>
-                  <button type="submit" className="btn btn-primary col-md-2"
-                  onClick={saveFields}>
+                  <button type="submit" className="btn btn-primary col-md-2">
                     Salvar
                   </button>
                 </div>
@@ -297,21 +325,5 @@ const EditFinance = ({ display, financeData, listUsers, close }) => {
     </>
   );
 };
-
-function saveFields(){
-  
-  const fields = {
-    cpf: document.getElementById("cpf").value,
-    nomeCliente: document.getElementById("nomePaciente").value,
-    agendamentoData: document.getElementById("consultationDate").value,
-    nomeMedico: document.getElementById("doctor").value,
-    dataPagamento: document.getElementById("paymentDate").value,
-    valorBruto: document.getElementById("amount").value,
-    formaPagamento: document.getElementById("paymentMethod").value,
-    taxMachine: document.getElementById("taxMachine").value,
-    installments: document.getElementById("installments").value,
-  }
-  console.log(fields);
-}
 
 export default EditFinance;

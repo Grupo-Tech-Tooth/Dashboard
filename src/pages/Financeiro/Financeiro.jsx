@@ -49,6 +49,8 @@ function Financeiro() {
       data = response.data.map(item => ({
         id: item.id,
         agendamentoId: item.agendamentoId,
+        medicoId: item.medicoId,
+        pacienteId: item.clienteId,
         nomeCliente: cliente.data.nome,
         cpfCliente: cliente.data.cpf,
         nomeMedico: medico.data.nome,
@@ -217,13 +219,13 @@ function Financeiro() {
           </div>
         </div>
       </Container>
-      <button
+      {/* <button
         type="button"
         onClick={abrirModalAdd}
         className={`${style['add']} btn btn-primary`}
       >
         Cadastrar Pagamento
-      </button>
+      </button> */}
     </>
   );
 
