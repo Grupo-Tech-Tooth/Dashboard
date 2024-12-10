@@ -8,6 +8,10 @@ const AddService = ({ Display, close }) => {
     const [newService, setNewService] = useState({});
     const [error, setError] = useState('');
     const [AlertSuccess, setAlertSuccess] = useState(false);
+
+    const [carregando, setCarregando] = useState(false)
+    const [consultaConfirmada, setConsultaConfirmada] = useState(true);
+
     const [listaCategorias, setListaCategorias] = useState([
         { key: 'CONSULTAS_GERAIS', name: 'Consultas Gerais' },
         { key: 'PREVENCAO', name: 'Prevenção' },
@@ -75,7 +79,12 @@ const AddService = ({ Display, close }) => {
                                             placeholder="Descrição do serviço" required></textarea>
                                     </div>
                                 </div>
-                                <button type="submit" className="btn btn-primary">Salvar</button>
+                                <button type="submit" className="btn btn-primary" hidden={carregando}>Salvar</button>
+                                {consultaConfirmada && carregando && (
+                                    <div className={style.carregamento} id="carregamento">
+                                        <div className={style.loader}></div>  
+                                    </div>
+                                )}
                             </form>
                         </div>
                     </div>
@@ -85,6 +94,7 @@ const AddService = ({ Display, close }) => {
     );
 
     function saveFields(e) {
+        setCarregando(true);
         e.preventDefault();
 
         const service = {
@@ -99,6 +109,7 @@ const AddService = ({ Display, close }) => {
             setNewService(response);
             setAlertSuccess(true);
             setTimeout(() => {
+                setCarregando(false);
                 close(newService);
             }, 2000);
         }).catch((error) => {

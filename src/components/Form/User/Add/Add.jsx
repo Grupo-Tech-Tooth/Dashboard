@@ -12,6 +12,9 @@ const Add = ({ Display, close }) => {
     const [AlertSuccess, setAlertSucess] = useState(false);
     const [medicos, setMedicos] = useState([]);
 
+    const [carregando, setCarregando] = useState(false)
+    const [consultaConfirmada, setConsultaConfirmada] = useState(true);
+
      // Carrega os médicos assim que o componente é montado
      useEffect(() => {
         async function fetchMedicos() {
@@ -183,7 +186,12 @@ const Add = ({ Display, close }) => {
                                     </div>
                                 </div>
 
-                                <button type="submit" className="btn btn-primary float-end">Salvar</button>
+                                <button type="submit" className="btn btn-primary float-end" hidden={carregando}>Salvar</button>
+                                {consultaConfirmada && carregando && (
+                                    <div className={style.carregamento} id="carregamento">
+                                        <div className={style.loader}></div>  
+                                    </div>
+                                )}                                
                             </form>
                         </div>
                     </div>
@@ -213,6 +221,7 @@ const Add = ({ Display, close }) => {
 
     // Função para salvar os campos
     async function saveFields(event) {
+        setCarregando(true);
         event.preventDefault(); // Previne o comportamento padrão do formulário
     
         try {
@@ -271,6 +280,7 @@ const Add = ({ Display, close }) => {
             // Fecha o formulário após sucesso
             setTimeout(() => {
                 setAlertSucess(false);
+                setCarregando(false);
                 close(novoUsuario);
             }, 1500);
         } catch (error) {

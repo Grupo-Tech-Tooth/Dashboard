@@ -18,6 +18,9 @@ const Edit = ({ userData, display, close, listaClientes }) => {
     // const [clienteData, setClienteData] = useState(null);
     const [medicos, setMedicos] = useState([]);
 
+    const [carregando, setCarregando] = useState(false)
+    const [consultaConfirmada, setConsultaConfirmada] = useState(true);
+
     // Carrega os médicos assim que o componente é montado
     useEffect(() => {
         async function fetchMedicos() {
@@ -241,8 +244,13 @@ const Edit = ({ userData, display, close, listaClientes }) => {
                                     {
                                         disabled ? (
                                             <>
-                                                <button type="button" className="btn btn-primary me-2" onClick={() => editUser()}>Editar</button>
-                                                <button type="submit" className="btn" disabled>Salvar</button>
+                                                <button hidden={carregando} type="button" className="btn btn-primary me-2" onClick={() => editUser()}>Editar</button>
+                                                <button hidden={carregando} type="submit" className="btn" disabled>Salvar</button>
+                                                {consultaConfirmada && carregando && (
+                                                    <div className={style.carregamento} id="carregamento">
+                                                        <div className={style.loader}></div>  
+                                                    </div>
+                                                )}
                                             </>
                                         ) : (
                                             <>

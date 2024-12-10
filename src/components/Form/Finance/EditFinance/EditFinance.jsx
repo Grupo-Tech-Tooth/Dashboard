@@ -7,6 +7,9 @@ const EditFinance = ({ display, financeData, listUsers, onSave, close }) => {
   const [inputValueName, setInputValueName] = useState("");
   const [optionsUsers, setOptionsUsers] = useState({});
 
+  const [carregando, setCarregando] = useState(false)
+  const [consultaConfirmada, setConsultaConfirmada] = useState(true);
+
   useEffect(() => {
     setFormData(financeData);
   }, [financeData]);
@@ -256,9 +259,14 @@ const EditFinance = ({ display, financeData, listUsers, onSave, close }) => {
                   >
                     Fechar
                   </button>
-                  <button type="submit" className="btn btn-primary col-md-2">
+                  <button hidden={carregando} type="submit" className="btn btn-primary col-md-2">
                     Salvar
                   </button>
+                  {consultaConfirmada && carregando && (
+                    <div className={style.carregamento} id="carregamento" >
+                        <div className={style.loader}></div>  
+                    </div>
+                  )}                  
                 </div>
               </form>
             </div>

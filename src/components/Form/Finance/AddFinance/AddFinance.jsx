@@ -18,6 +18,9 @@ function AddFinance({ Display, close, listUsers }) {
     const [messageAlert, setMessageAlert] = useState(false);
     const [AlertSuccess, setAlertSucess] = useState(false);
 
+    // const [carregando, setCarregando] = useState(false)
+    // const [consultaConfirmada, setConsultaConfirmada] = useState(true);
+
     const [optionsUsers, setOptionsUsers] = useState({});
 
     useEffect(() => {
@@ -147,7 +150,8 @@ function AddFinance({ Display, close, listUsers }) {
         }
         setAlertSucess(true);
         setTimeout(() => {
-            setAlertSucess(false);
+            // setAlertSucess(false);
+            setCarregando(false);
         }, 3000)
         setTimeout(() => {
             close(newValues);
