@@ -103,6 +103,7 @@ function Financeiro() {
 
   function closeForm() {
     setViewFormAdd("none");
+    getData();
   }
 
   function onSave(newUser) {
@@ -110,24 +111,24 @@ function Financeiro() {
       const updatedData = tableInformation.data.map(item =>
         item.id === newUser.id ? newUser : item
       );
-      setTableInformation(prevTableInformation => ({
-        ...prevTableInformation,
-        data: updatedData,
-        dataNotFilter: updatedData,
-      }));
+      // setTableInformation(prevTableInformation => ({
+      //   ...prevTableInformation,
+      //   data: updatedData,
+      //   dataNotFilter: updatedData,
+      // }));
     } else {
       newUser.id =
         tableInformation.dataNotFilter[
           tableInformation.dataNotFilter.length - 1
         ].id + 1;
       tableInformation.dataNotFilter.push(newUser);
-      setTableInformation(prevTableInformation => ({
-        ...prevTableInformation,
-        data: [...prevTableInformation.data, newUser],
-        dataNotFilter: [...prevTableInformation.dataNotFilter, newUser],
-      }));
+      // setTableInformation(prevTableInformation => ({
+      //   ...prevTableInformation,
+      //   data: [...prevTableInformation.data, newUser],
+      //   dataNotFilter: [...prevTableInformation.dataNotFilter, newUser],
+      // }));
     }
-    closeForm();
+    getData();
   }
 
   return (
