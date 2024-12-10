@@ -20,6 +20,15 @@ class ServiceControl{
         }
     }
 
+    static async filtrar(nome, duracao, preco){
+        try{
+            let servicos = await ServiceModel.filtrar(nome, duracao, preco);
+            return servicos;
+        }catch(e){
+            throw new Error((e.message));
+        }
+    }
+
 }
 
 export default ServiceControl;
