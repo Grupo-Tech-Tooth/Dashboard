@@ -32,6 +32,7 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
   const dataAtualFormatada = `${dia}-${mes}-${ano}`;
 
   const [carregando, setCarregando] = useState(false)
+  const [consultaConfirmada, setConsultaConfirmada] = useState(true); 
 
   const availableHours = [
     { class: "red", time: "00:00" },
@@ -433,15 +434,15 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
                         </select>
                       </div>
                       <div className="d-grid">
-                        <button type="submit" className="btn btn-primary w-100" style={{marginTop: '2rem'}}>
+                        <button hidden={carregando} type="submit" className="btn btn-primary w-100" style={{marginTop: '2rem'}}>
                           Confirmar Consulta
                         </button>
-                      </div>
-                      {carregando && (
-                            <div className={style.carregamento} id="carregamento">
+                        {consultaConfirmada && carregando && (
+                          <div className={style.carregamento} id="carregamento">
                               <div className={style.loader}></div>  
-                            </div>
-                          )}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </form>
@@ -556,6 +557,7 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
   }
 
   function saveFields(value) {
+    setCarregando(true)
     value.preventDefault();
     const formElements = value.target.elements;
     const newValues = {};
@@ -573,6 +575,7 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
     setAlertSucess(true);
     setTimeout(() => {
       setAlertSucess(false);
+      setCarregando(false);
     }, 3000);
     setTimeout(() => {
       close(newValues);

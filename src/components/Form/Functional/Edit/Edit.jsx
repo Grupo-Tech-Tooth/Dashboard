@@ -12,6 +12,9 @@ const Edit = ({ userData, display, close, listSpecialization }) => {
     const [userEdit, setUserEdit] = useState(userData || {});
     const [userUpdate, setUserUpdate] = useState({});
 
+    const [carregando, setCarregando] = useState(false)
+    const [consultaConfirmada, setConsultaConfirmada] = useState(true);
+
     const validateDate = (inputDate) => {
         const [day, month, year] = inputDate.split('/').map(Number);
         const inputDateObject = new Date(year, month - 1, day);
@@ -208,13 +211,20 @@ const Edit = ({ userData, display, close, listSpecialization }) => {
                     {
                         disabled ? (
                             <>
-                                <button className="btn btn-primary" onClick={() => editUser()} type='button'>Editar</button>
-                                <button type="submit" className="btn" disabled>Salvar</button>
+                                <button className="btn btn-primary" onClick={() => editUser()} type='button' hidden={carregando}>Editar</button>
+                                <button type="submit" className="btn" hidden={carregando} disabled>Salvar</button>
                             </>
                         ) : (
                             <>
-                                <button className={style['btnSecund']} onClick={() => editUser()}type='button'>Editar</button>
-                                <button type="submit" className="btn btn-primary">Salvar</button>
+                                <div>
+                                    {consultaConfirmada && carregando && (
+                                        <div className={style.carregamento} id="carregamento">
+                                            <div className={style.loader}></div>  
+                                        </div>
+                                    )}
+                                </div>
+                                <button className={style['btnSecund']} onClick={() => editUser()}type='button' hidden={carregando}>Editar</button>
+                                <button type="submit" className="btn btn-primary" hidden={carregando}>Salvar</button>
                             </>
                         )
                     }
@@ -232,6 +242,7 @@ const Edit = ({ userData, display, close, listSpecialization }) => {
     }
 
     function saveFields(user) {
+        setCarregando(true)
         user.preventDefault();
         let data = {
             id: userEdit.id,
@@ -252,7 +263,10 @@ const Edit = ({ userData, display, close, listSpecialization }) => {
         };
         setUserUpdate(data);
         setAlertSucess(true);
-        setTimeout(() => setAlertSucess(false), 1500);
+        setTimeout(() => {
+            setAlertSucess(false);
+            setCarregando(false);
+          }, 1500);
     }
 
     function fetchAddress() {

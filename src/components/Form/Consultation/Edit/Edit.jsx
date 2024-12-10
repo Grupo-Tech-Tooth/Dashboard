@@ -57,6 +57,9 @@ function Edit({
   const ano = hoje.getFullYear();
   const dataAtualFormatada = `${dia}-${mes}-${ano}`;
 
+  const [carregando, setCarregando] = useState(false)
+  const [consultaConfirmada, setConsultaConfirmada] = useState(true);
+
   const availableHours = [
     { class: "red", time: "00:00" },
     { class: "green", time: "01:00" },
@@ -456,13 +459,19 @@ function Edit({
                         </select>
                       </div>
                       <div className="d-grid">
-                        <button
+                        <button 
                           type="submit"
                           className="btn btn-primary w-100"
                           style={{ marginTop: "2rem" }}
+                          hidden={carregando}
                         >
                           Confirmar Consulta
                         </button>
+                        {consultaConfirmada && carregando && (
+                          <div className={style.carregamento} id="carregamento">
+                              <div className={style.loader}></div>  
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -600,6 +609,7 @@ function Edit({
 
   function saveFields(value) {
     value.preventDefault();
+    setCarregando(true)
     const formElements = value.target.elements;
     const newValues = {};
 
@@ -627,6 +637,7 @@ function Edit({
     setAlertSucess(true);
     setTimeout(() => {
       setAlertSucess(false);
+      setCarregando(false);
       close(newConsultation);
     }, 2000);
   }

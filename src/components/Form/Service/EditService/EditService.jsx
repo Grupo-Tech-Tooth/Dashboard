@@ -10,6 +10,9 @@ const EditService = ({ serviceData, display, close }) => {
     const [AlertSuccess, setAlertSucess] = useState(false);
     const [disabled, setDisabled] = useState(true);
 
+    const [carregando, setCarregando] = useState(false)
+    const [consultaConfirmada, setConsultaConfirmada] = useState(true);
+
     const [dtoServico, setDtoServico] = useState({
         nome: '',
         descricao: '',
@@ -88,13 +91,19 @@ const EditService = ({ serviceData, display, close }) => {
                                     {
                                         disabled ? (
                                             <>
-                                                <label className="btn btn-primary" onClick={() => editService()}>Editar</label>
+                                                <label  className="btn btn-primary" onClick={() => editService()}>Editar</label>
                                                 <button type="submit" className="btn" disabled>Salvar</button>
                                             </>
                                         ) : (
                                             <>
-                                                <label className={style['btnSecund']} onClick={() => editService()}>Editar</label>
-                                                <button type="submit" className="btn btn-primary">Salvar</button>
+                                                <label hidden={carregando} className={style['btnSecund']} onClick={() => editService()}>Editar</label>
+                                                <button hidden={carregando} type="submit" className="btn btn-primary">Salvar</button>
+                                                
+                                                {consultaConfirmada && carregando && (
+                                                    <div className={style.carregamento} id="carregamento">
+                                                        <div className={style.loader}></div>  
+                                                    </div>
+                                                )}
                                             </>
                                         )
                                     }
@@ -112,6 +121,7 @@ const EditService = ({ serviceData, display, close }) => {
     }
 
     async function saveFields(e) {
+        setCarregando(true);
         e.preventDefault();
         setAlertSucess(true);
     
@@ -133,6 +143,7 @@ const EditService = ({ serviceData, display, close }) => {
                 setAlertSucess(true);
                 setTimeout(() => {
                     setAlertSucess(false);
+                    setCarregando(false);
                     close(serviceEdit);
                 }, 2000);
             }

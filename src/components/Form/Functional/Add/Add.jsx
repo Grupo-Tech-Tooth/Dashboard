@@ -9,6 +9,9 @@ const Add = ({ display, close, listSpecialization }) => {
     const [error, setError] = useState('');
     const [AlertSuccess, setAlertSucess] = useState(false);
 
+    const [carregando, setCarregando] = useState(false)
+    const [consultaConfirmada, setConsultaConfirmada] = useState(true);
+
     const validateDate = (inputDate) => {
         const [day, month, year] = inputDate.split('/').map(Number);
         const inputDateObject = new Date(year, month - 1, day);
@@ -143,15 +146,21 @@ const Add = ({ display, close, listSpecialization }) => {
                     <label htmlFor="employeesCity" className="form-label">Cidade</label>
                     <input type="text" className="form-control" id="employeesCity" placeholder="Cidade do Funcionário" disabled />
                 </div>
-                <div className={style['lineButton']}>
-                    <button type="submit" className="btn btn-primary">Salvar</button>
-                </div>
+                    <div className={style['lineButton']}>
+                        <button id='botaoSalvar' type="submit" className="btn btn-primary" hidden={carregando}>Salvar</button>
+                    </div>
+                    {consultaConfirmada && carregando && (
+                        <div className={style.carregamento} id="carregamento">
+                            <div className={style.loader}></div>  
+                        </div>
+                    )}
             </form>
         </div>
     );
 
 
     function saveFields(user) {
+        setCarregando(true)
         user.preventDefault();
         let data = {
             id: null,
@@ -171,7 +180,10 @@ const Add = ({ display, close, listSpecialization }) => {
             specialization: user.target.inputSpecialization.value
         };
         setAlertSucess(true);
-        setTimeout(() => setAlertSucess(false), 1500);
+        setTimeout(() => {
+            setAlertSucess(false);
+            setCarregando(false);
+          }, 1500);
         setTimeout(() => close(), 1500);
     }
 
