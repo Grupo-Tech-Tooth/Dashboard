@@ -1,61 +1,24 @@
 import React, { useState, useEffect } from "react";
-import style from "../Financeiro/Financeiro.module.css";
+import style from "./Financeiro.module.css";
 import Navbar from "../../components/Navbar/Navbar";
 import Container from "../../components/Container/Container";
-import Button from "../../components/Botao/Botao";
 import Table from "../../components/Table/Table";
-import Add from "../../components/Form/Finance/AddFinance/AddFinance";
+import EditFinance from "../../components/Form/Finance/EditFinance/EditFinance";
+import api from "../../api";
 
 function Financeiro() {
   const [tableInformation, setTableInformation] = useState({
     columns: [
-      { name: "#" },
-      { name: "Data do pagamento", key: "paymentDate" },
-      { name: "Nome", key: "name" },
-      { name: "Médico", key: "doctor" },
-      { name: "Data da consulta", key: "consultationDate" },
-      { name: "Forma de pagamento", key: "paymentMethod" },
-      { name: "Valor Bruto", key: "amount" },
-      { name: "Ações", key: "acoes" },
+      { name: "#", key: '' },
+      { name: "Data do pagamento", key: 'dataPagamento' },
+      { name: "Nome", key: 'nomeCliente' },
+      { name: "Médico", key: 'nomeMedico' },
+      { name: "Data da consulta", key: 'agendamentoData' },
+      { name: "Forma de pagamento", key: 'formaPagamento' },
+      { name: "Valor Bruto", key: 'valorBruto' },
+      { name: "Ações", key: 'acoes' },
     ],
-    data: [
-      {
-        id: 1,
-        cpf: "12345678909",
-        name: "João da Silva",
-        consultationDate: "2023-10-01",
-        doctor: "Dr. Pedro",
-        paymentDate: "2023-10-02",
-        amount: "200",
-        paymentMethod: "Cartão de Crédito",
-        taxMachine: "5",
-        installments: "2",
-      },
-      {
-        id: 2,
-        cpf: "98765432100",
-        name: "Maria Oliveira",
-        consultationDate: "2023-10-03",
-        doctor: "Dra. Ana",
-        paymentDate: "2023-10-04",
-        amount: "150",
-        paymentMethod: "Cartão de Débito",
-        taxMachine: "0",
-        installments: "1",
-      },
-      {
-        id: 3,
-        cpf: "12312312312",
-        name: "Carlos Souza",
-        consultationDate: "2023-10-05",
-        doctor: "Dr. João",
-        paymentDate: "2023-10-06",
-        amount: "100",
-        paymentMethod: "Dinheiro",
-        taxMachine: "0",
-        installments: "1",
-      },
-    ],
+    data: [],
     dataNotFilter: [],
     tableId: "financesTable",
     tbodyId: "financesBody",
@@ -66,36 +29,108 @@ function Financeiro() {
   const [searchPaymentMethod, setSearchPaymentMethod] = useState("");
   const [searchStartDate, setSearchStartDate] = useState("");
   const [searchEndDate, setSearchEndDate] = useState("");
-
   const [viewFormAdd, setViewFormAdd] = useState("none");
+  const [editData, setEditData] = useState(null);
 
-  useEffect(() => {
+  async function getData() {
+    const response = await api.get("/financeiro");
+
+    const data = response.data.map(item => ({
+      id: item.id,
+      dataPagamento: new Date(item.dataPagamento).toLocaleDateString(),
+      nomeCliente: item.nomeCliente,
+      nomeMedico: item.nomeMedico,
+      agendamentoData: new Date(item.dataPagamento).toLocaleDateString(),
+      formaPagamento: item.formaPagamento,
+      valorBruto: item.valorBruto.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
+      cpfCliente: item.cpfCliente,
+      taxMachine: item.taxMachine || "",
+      installments: item.installments || "1",
+      acoes: (
+        <button onClick={() => editarItem(item)} className="btn btn-primary">
+          Editar
+        </button>
+      ),
+    }));
+
     setTableInformation((prevTableInformation) => ({
       ...prevTableInformation,
-      dataNotFilter: prevTableInformation.data,
+      data: data,
+      dataNotFilter: data,
     }));
+  }
+
+  useEffect(() => {
+    getData();
   }, []);
+
+  function editarItem(item) {
+    setEditData({
+      id: item.id,
+      cpf: item.cpfCliente,
+      name: item.nomeCliente,
+      consultationDate: item.agendamentoData,
+      doctor: item.nomeMedico,
+      paymentDate: item.dataPagamento.split('/').reverse().join('-'),
+      amount: item.valorBruto.replace('R$', '').replace(',', '').trim(),
+      paymentMethod: item.formaPagamento,
+      taxMachine: item.taxMachine || "",
+      installments: item.installments || "1",
+    });
+    setViewFormAdd("block");
+  }
+
+  function abrirModalAdd() {
+    setEditData(null);
+    setViewFormAdd("block");
+  }
+
+  function closeForm() {
+    setViewFormAdd("none");
+  }
+
+  function onSave(newUser) {
+    if (newUser?.id) {
+      const updatedData = tableInformation.data.map(item =>
+        item.id === newUser.id ? newUser : item
+      );
+      setTableInformation(prevTableInformation => ({
+        ...prevTableInformation,
+        data: updatedData,
+        dataNotFilter: updatedData,
+      }));
+    } else {
+      newUser.id =
+        tableInformation.dataNotFilter[
+          tableInformation.dataNotFilter.length - 1
+        ].id + 1;
+      tableInformation.dataNotFilter.push(newUser);
+      setTableInformation(prevTableInformation => ({
+        ...prevTableInformation,
+        data: [...prevTableInformation.data, newUser],
+        dataNotFilter: [...prevTableInformation.dataNotFilter, newUser],
+      }));
+    }
+    closeForm();
+  }
 
   return (
     <>
       <Navbar />
-      <h2 className="text-primary text-center my-3"> Pagamentos
-
-      </h2>
+      <h2 className="text-primary text-center my-3"> Pagamentos </h2>
       <Container>
         {viewFormAdd === "block" && (
-          <Add Display={viewFormAdd} 
-          listUsers={tableInformation.data} close={closeForm} />
+          <EditFinance 
+            display={viewFormAdd} 
+            financeData={editData} 
+            onSave={onSave} 
+            close={closeForm} 
+          />
         )}
-        <div className={style["card"]}>
+        <div className={style["card"]} inert={viewFormAdd === "block" ? "true" : undefined}>
           <div
             className="row mb-2"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "0%",
-              margin: "0",
-            }}
+            style={{ display: "flex", alignItems: "center", gap: '0%', margin: '0' }}
           >
             <div className="col-md-2 mx-auto">
               <label htmlFor="searchNome">Nome do Paciente</label>
@@ -151,34 +186,30 @@ function Financeiro() {
               />
             </div>
             <div className={`col-md-2 mx-auto ${style["lineButton"]}`}>
-              <Button
-                className={`${style["buttonSearch"]} btn btn-primary`}
-                id="searchButton"
-                onClick={buscar}
-                label="Buscar"
-                style={{ width: "fit-content" }}
-              />
+              <button className="btn btn-primary" type="submit" onClick={buscar}>
+                Filtrar
+              </button>
               <button
                 className={`${style["button-limpar"]} btn btn-secondary`}
                 type="button"
                 onClick={resetFields}
               >
-                Limpar
+                Limpar Filtro
               </button>
             </div>
           </div>
-          <div className={style["table"]}>
-            <Table tableInformation={tableInformation} />
+          <div className={style['table']}>
+            <Table tableInformation={tableInformation} setTableInformation={setTableInformation} />
           </div>
         </div>
       </Container>
-      {/* <button
+      <button
         type="button"
-        onClick={() => abrirModalAdd()}
-        className={`${style["add"]} btn btn-primary`}
+        onClick={abrirModalAdd}
+        className={`${style['add']} btn btn-primary`}
       >
         Cadastrar Pagamento
-      </button> */}
+      </button>
     </>
   );
 
@@ -188,10 +219,7 @@ function Financeiro() {
     setSearchPaymentMethod("");
     setSearchStartDate("");
     setSearchEndDate("");
-    setTableInformation((prevTableInformation) => ({
-      ...prevTableInformation,
-      data: tableInformation.dataNotFilter,
-    }));
+    getData();
   }
 
   function buscar() {
@@ -204,31 +232,31 @@ function Financeiro() {
     if (searchClientName) {
       const searchLower = searchClientName.toLowerCase();
       listClientName = tableInformation.dataNotFilter.filter((item) =>
-        item.name.toLowerCase().includes(searchLower)
+        item.nomeCliente.toLowerCase().includes(searchLower)
       );
     }
     if (searchDoctor) {
       const searchLower = searchDoctor.toLowerCase();
       listDoctor = tableInformation.dataNotFilter.filter((item) =>
-        item.date.toLowerCase().includes(searchLower)
+        item.nomeMedico.toLowerCase().includes(searchLower)
       );
     }
     if (searchPaymentMethod) {
       const searchLower = searchPaymentMethod.toLowerCase();
       listPaymentMethod = tableInformation.dataNotFilter.filter((item) =>
-        item.payment.includes(searchLower)
+        item.formaPagamento.toLowerCase().includes(searchLower)
       );
     }
     if (searchStartDate) {
       const searchLower = searchStartDate.toLowerCase();
       listStartDate = tableInformation.dataNotFilter.filter((item) =>
-        item.date.toLowerCase().includes(searchLower)
+        item.dataPagamento.toLowerCase().includes(searchLower)
       );
     }
     if (searchEndDate) {
       const searchLower = searchEndDate.toLowerCase();
       listEndDate = tableInformation.dataNotFilter.filter((item) =>
-        item.date.toLowerCase().includes(searchLower)
+        item.dataPagamento.toLowerCase().includes(searchLower)
       );
     }
 
@@ -247,27 +275,6 @@ function Financeiro() {
         ...prevTableInformation,
         data: listOrdenada,
       }));
-    }
-  }
-
-  function abrirModalAdd() {
-    setViewFormAdd("block");
-  }
-
-  function closeForm(newUser) {
-    setViewFormAdd("none");
-    saveFields(newUser);
-  }
-
-  function saveFields(newUser) {
-    if (newUser?.name) {
-      newUser.id =
-        tableInformation.dataNotFilter[
-          tableInformation.dataNotFilter.length - 1
-        ].id + 1;
-      tableInformation.dataNotFilter.push(newUser);
-
-      alert("Usar essa função para salvar");
     }
   }
 }
