@@ -6,17 +6,17 @@ import Button from "../../components/Botao/Botao";
 import Table from "../../components/Table/Table";
 import Add from "../../components/Form/User/Add/Add";
 import api from "../../api";
-import { filtrarClientes, criarCliente } from '../../api';
+import { filtrarClientes, criarCliente } from "../../api";
 
 function Patients() {
   const [tableInformation, setTableInformation] = useState({
     columns: [
-      { name: "#", key: 'id' },
-      { name: "Nome", key: 'fullName' },
-      { name: "Email", key: 'email' },
-      { name: "Telefone", key: 'phone' },
-      { name: "Última Consulta", key: 'lastVisit' },
-      { name: "Ações", key: 'acoes' },
+      { name: "#", key: "id" },
+      { name: "Nome", key: "fullName" },
+      { name: "Email", key: "email" },
+      { name: "Telefone", key: "phone" },
+      { name: "Última Consulta", key: "lastVisit" },
+      { name: "Ações", key: "acoes" },
     ],
     data: [],
     dataNotFilter: [],
@@ -58,12 +58,14 @@ function Patients() {
 
     const data = pacientes.map((paciente) => ({
       id: paciente.id,
-      fullName: `${paciente.nome} ${paciente.sobrenome || ''}`,
+      fullName: `${paciente.nome} ${paciente.sobrenome || ""}`,
       email: paciente.email,
       phone: paciente.telefone,
       lastVisit: paciente.ultimoAgendamento
-        ? new Date(paciente.ultimoAgendamento.dataHora).toISOString().split('T')[0] // Apenas a data
-        : 'Não agendado',
+        ? new Date(paciente.ultimoAgendamento.dataHora)
+            .toISOString()
+            .split("T")[0] // Apenas a data
+        : "Não agendado",
     }));
 
     setTableInformation((prevTableInformation) => ({
@@ -103,13 +105,13 @@ function Patients() {
 
       if (!response || response.length === 0) {
         formatData([]); // Limpa a tabela se não encontrar resultados
-        console.warn('Nenhum cliente encontrado.');
+        console.warn("Nenhum cliente encontrado.");
         return;
       }
 
       formatData(response); // Atualiza a tabela com os resultados
     } catch (error) {
-      console.error('Erro ao filtrar clientes:', error);
+      console.error("Erro ao filtrar clientes:", error);
     }
   }
 
@@ -129,7 +131,6 @@ function Patients() {
   async function saveFields(newUser) {
     if (newUser?.name) {
       try {
-
         // Definir o atributo hierarquia como "CLIENTE"
         newUser.hierarquia = "CLIENTE";
 
@@ -160,7 +161,10 @@ function Patients() {
           <Add Display={viewFormAdd} close={closeForm} />
         )}
         <div className={style["card"]}>
-          <div className="row mb-4" style={{ display: "flex", alignItems: "center", gap: '0%', margin: '0' }}>
+          <div
+            className="row mb-4"
+            style={{ display: "flex", alignItems: "center" }}
+          >
             <div className="col-md-2 mx-auto">
               <label htmlFor="searchNome">Nome do Paciente</label>
               <input
@@ -222,13 +226,23 @@ function Patients() {
               </button>
             </div>
           </div>
-          <div className={style['table']}>
-            <Table tableInformation={tableInformation} pacientesDados={pacientesData}/>
+          <div className={style["table"]}>
+            <Table
+              tableInformation={tableInformation}
+              pacientesDados={pacientesData}
+              setTableInformation={setTableInformation}
+            />
           </div>
         </div>
       </Container>
-      <div className={`position-absolute p-5 rounded-3 ${style['boxButton']}`}>
-        <button type="button" onClick={() => abrirModalAdd()} className={`${style['add']} btn btn-primary`}>Cadastrar Paciente</button>
+      <div className={`position-absolute p-5 rounded-3 ${style["boxButton"]}`}>
+        <button
+          type="button"
+          onClick={() => abrirModalAdd()}
+          className={`${style["add"]} btn btn-primary`}
+        >
+          Cadastrar Paciente
+        </button>
       </div>
     </>
   );

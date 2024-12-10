@@ -1,36 +1,49 @@
-import style from './Edit.module.css';
-import React, { useState, useEffect } from 'react';
-import Input from '../../../Input/Input';
-import InputMask from 'react-input-mask';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import SuccessAlert from '../../../AlertSuccess/AlertSuccess';
+import style from "./Edit.module.css";
+import React, { useState, useEffect } from "react";
+import Input from "../../../Input/Input";
+import InputMask from "react-input-mask";
+import "bootstrap/dist/css/bootstrap.min.css";
+import SuccessAlert from "../../../AlertSuccess/AlertSuccess";
+import EmployeesModel from "../../../../pages/Employee/EmployeesModel";
+import GenericModalError from "../../../GenericModal/GenericModalError/GenericModalError";
 
-const Edit = ({ userData, display, close, listSpecialization }) => {
-    const [error, setError] = useState('');
-    const [disabled, setDisabled] = useState(true);
-    const [AlertSuccess, setAlertSucess] = useState(false);
-    const [userEdit, setUserEdit] = useState(userData || {});
-    const [userUpdate, setUserUpdate] = useState({});
+function Edit({ userData, display, close, listSpecialization }) {
+  const [error, setError] = useState("");
+  const [disabled, setDisabled] = useState(true);
+  const [AlertSuccess, setAlertSucess] = useState(false);
+  const [userEdit, setUserEdit] = useState({});
+  const [genericModalError, setGenericModalError] = useState({
+    view: false,
+  });
 
-    const validateDate = (inputDate) => {
-        const [day, month, year] = inputDate.split('/').map(Number);
-        const inputDateObject = new Date(year, month - 1, day);
-        const minDate = new Date(1900, 0, 1);
-        const today = new Date();
-        if (inputDateObject < minDate) {
-            return 'A data não pode ser anterior a 01/01/1900.';
-        } else if (inputDateObject > today) {
-            return 'A data não pode ser futura.';
-        } else {
-            return '';
-        }
-    };
+  const validateDate = (inputDate) => {
+    const [day, month, year] = inputDate.split("/").map(Number);
+    const inputDateObject = new Date(year, month - 1, day);
+    const minDate = new Date(1900, 0, 1);
+    const today = new Date();
+    if (inputDateObject < minDate) {
+      return "A data não pode ser anterior a 01/01/1900.";
+    } else if (inputDateObject > today) {
+      return "A data não pode ser futura.";
+    } else {
+      return "";
+    }
+  };
 
-
-    useEffect(() => {
-        setUserEdit(userData);
-    }, [userEdit, userData])
-
+  async function getData(id, crm) {
+    try {
+      let response = await EmployeesModel.buscarPorId(id, crm);
+      setUserEdit(response);
+    } catch (e) {
+      setGenericModalError((prev) => ({
+        view: true,
+        title: "Ops.... Tivemos um erro ao concluir a ação",
+        description: e.message,
+        icon: "iconErro",
+      }));
+    }
+    fetchAddress();
+  }
 
     return (
         <div className={style['bottom']} style={{ display: display }}>
@@ -44,10 +57,10 @@ const Edit = ({ userData, display, close, listSpecialization }) => {
                         onClick={() => close(userUpdate)}></button>
                 </div>
                 <div className="col-md-3">
-                    <Input name={'firstName'} type={'text'} label={'Nome'} placeholder={'Nome do Funcionário'} required={'true'} disabled={disabled} value={userEdit.name} />
+                    <Input name={'firstName'} type={'text'} label={'Nome'} placeholder={'Nome do Funcionário'} required={'true'} disabled={disabled} value={userEdit?.name} />
                 </div>
                 <div className="col-md-3">
-                    <Input name={'lastName'} type={'text'} label={'Sobrenome'} placeholder={'Sobrenome do Funcionário'} disabled={disabled} value={userEdit.surname} />
+                    <Input name={'lastName'} type={'text'} label={'Sobrenome'} placeholder={'Sobrenome do Funcionário'} disabled={disabled} value={userEdit?.surname} />
                 </div>
                 <div className="col-md-3">
                     <label htmlFor="inputGender" className="form-label">Sexo</label>
@@ -55,7 +68,7 @@ const Edit = ({ userData, display, close, listSpecialization }) => {
                         id="inputGender"
                         className="form-select"
                         disabled={disabled}
-                        value={userEdit.gender || ''}
+                        value={userEdit?.gender || ''}
                         onChange={(e) => {
                             setUserEdit((prevData) => ({
                                 ...prevData,
@@ -75,7 +88,7 @@ const Edit = ({ userData, display, close, listSpecialization }) => {
                         className={`form-control ${error ? 'is-invalid' : ''}`}
                         id="date"
                         placeholder="Data de Nascimento (DD/MM/YYYY)"
-                        value={userEdit.dateBirth}
+                        value={userEdit?.dateBirth}
                         onChange={(e) => {
                             const inputValue = e.target.value;
                             setUserEdit((prevData) => ({
@@ -102,7 +115,7 @@ const Edit = ({ userData, display, close, listSpecialization }) => {
                                     id="cpf"
                                     placeholder="CPF do Funcionário"
                                     disabled={disabled}
-                                    value={userEdit.cpf}
+                                    value={userEdit?.cpf}
                                     onChange={(e) => {
                                         setUserEdit(prevData => ({
                                             ...prevData,
@@ -112,14 +125,14 @@ const Edit = ({ userData, display, close, listSpecialization }) => {
                                 />
                             </div>
                 <div className="col-md-3">
-                    <Input name={'phone'} type={'text'} label={'Telefone'} placeholder={'Telefone do Funcionário'} disabled={disabled} value={userEdit.phone} />
+                    <Input name={'phone'} type={'text'} label={'Telefone'} placeholder={'Telefone do Funcionário'} disabled={disabled} value={userEdit?.phone} />
                 </div>
                 <div className="col-md-3">
-                    <Input name={'email'} type={'email'} label={'E-mail'} placeholder={'E-mail do Funcionário'} disabled={disabled} value={userEdit.email} />
+                    <Input name={'email'} type={'email'} label={'E-mail'} placeholder={'E-mail do Funcionário'} disabled={disabled} value={userEdit?.email} />
                 </div>
                 <div className="col-md-3"></div>
                 <div className="col-md-3">
-                    <Input name={'crm'} type={'text'} label={'CRM'} placeholder={'CRM do Funcionário (Se for Médico)'} disabled={disabled} value={userEdit.crm} />
+                    <Input name={'crm'} type={'text'} label={'CRM'} placeholder={'CRM do Funcionário (Se for Médico)'} disabled={disabled} value={userEdit?.crm} />
                 </div>
                 <div className="col-md-3">
                     <label htmlFor="inputSpecialization" className="form-label">Especialização</label>
@@ -127,7 +140,7 @@ const Edit = ({ userData, display, close, listSpecialization }) => {
                         id="inputSpecialization"
                         className="form-select"
                         disabled={disabled}
-                        value={userEdit.specialization || "Não se aplica"}
+                        value={userEdit?.specialization || "Não se aplica"}
                         onChange={(e) => {
                             setUserEdit((prevData) => ({
                                 ...prevData,
@@ -154,7 +167,7 @@ const Edit = ({ userData, display, close, listSpecialization }) => {
                         type="text"
                         className="form-control"
                         id="patientCep"
-                        value={userEdit.cep}
+                        value={userEdit?.cep}
                         disabled={disabled}
                         placeholder="CEP do Funcionário"
                         onBlur={() => fetchAddress()}
@@ -169,13 +182,13 @@ const Edit = ({ userData, display, close, listSpecialization }) => {
                 </div>
                 <div className="col-md-3">
                     <label htmlFor="patientStreet" className="form-label">Rua</label>
-                    <input type="text" className="form-control" id="patientStreet" value={userEdit.street} placeholder="Rua do Funcionário"
+                    <input type="text" className="form-control" id="patientStreet" value={userEdit?.street} placeholder="Rua do Funcionário"
                         disabled />
                 </div>
                 <div className="col-md-3">
                     <Input
                         type="text"
-                        value={userEdit.number}
+                        value={userEdit?.number}
                         className="form-control"
                         name="patientNumber"
                         disabled={disabled}
@@ -196,12 +209,12 @@ const Edit = ({ userData, display, close, listSpecialization }) => {
                 </div>
                 <div className="col-md-3">
                     <label htmlFor="patientNeighborhood" className="form-label">Bairro</label>
-                    <input type="text" className="form-control" id="patientNeighborhood" value={userEdit.neighborhood}
+                    <input type="text" className="form-control" id="patientNeighborhood" value={userEdit?.neighborhood}
                         placeholder="Bairro do Funcionário" disabled />
                 </div>
                 <div className="col-md-3">
                     <label htmlFor="patientCity" className="form-label">Cidade</label>
-                    <input type="text" className="form-control" id="patientCity" value={userEdit.city}
+                    <input type="text" className="form-control" id="patientCity" value={userEdit?.city}
                         placeholder="Cidade do Funcionário" disabled />
                 </div>
                 <div className={style['lineButton']}>
@@ -219,62 +232,50 @@ const Edit = ({ userData, display, close, listSpecialization }) => {
                         )
                     }
                 </div>
-            </form>
-        </div>
-    );
+      </form>
+    </div>
+  );
 
-    function editUser() {
-        if (disabled) {
-            setDisabled(false);
-        } else {
-            setDisabled(true);
-        }
+  function editUser() {
+    if (disabled) {
+      setDisabled(false);
+    } else {
+      setDisabled(true);
     }
+  }
 
-    function saveFields(user) {
-        user.preventDefault();
-        let data = {
-            id: userEdit.id,
-            name: user.target.firstName.value,
-            surname: user.target.lastName.value,
-            dateBirth: user.target.date.value,
-            phone: user.target.phone.value,
-            email: user.target.email.value,
-            cpf: user.target.cpf.value,
-            gender: user.target.inputGender.value,
-            cep: user.target.patientCep.value,
-            street: user.target.patientStreet.value,
-            number: user.target.patientNumber.value,
-            neighborhood: user.target.patientNeighborhood.value,
-            city: user.target.patientCity.value,
-            crm: user.target.crm.value,
-            specialization: user.target.inputSpecialization.value
-        };
-        setUserUpdate(data);
-        setAlertSucess(true);
-        setTimeout(() => setAlertSucess(false), 1500);
+  async function saveFields(user) {
+    user.preventDefault();
+    try {
+      await EmployeesModel.editar(userData.id, user.target);
+      setAlertSucess(true);
+      setTimeout(() => setAlertSucess(false), 1500);
+      close();
+    } catch (e) {
+      console.error("Erro ao editar");
     }
+  }
 
-    function fetchAddress() {
-        const cep = document.getElementById('patientCep').value.replace(/\D/g, '');
-        if (cep.length === 8) {
-            fetch(`https://viacep.com.br/ws/${cep}/json/`)
-                .then(response => response.json())
-                .then(data => {
-                    if (!data.erro) {
-                        document.getElementById('patientStreet').value = data.logradouro;
-                        document.getElementById('patientNeighborhood').value = data.bairro;
-                        document.getElementById('patientCity').value = data.localidade;
-                        document.getElementById('patientState').value = data.uf;
-                    } else {
-                        alert('CEP não encontrado.');
-                    }
-                })
-                .catch(error => {
-                    console.error('Erro ao buscar o endereço:', error);
-                });
-        }
+  function fetchAddress() {
+    const cep = document.getElementById("patientCep").value.replace(/\D/g, "");
+    if (cep.length === 8) {
+      fetch(`https://viacep.com.br/ws/${cep}/json/`)
+        .then((response) => response.json())
+        .then((data) => {
+          if (!data.erro) {
+            document.getElementById("patientStreet").value = data.logradouro;
+            document.getElementById("patientNeighborhood").value = data.bairro;
+            document.getElementById("patientCity").value = data.localidade;
+            document.getElementById("patientState").value = data.uf;
+          } else {
+            alert("CEP não encontrado.");
+          }
+        })
+        .catch((error) => {
+          console.error("Erro ao buscar o endereço:", error);
+        });
     }
+  }
 }
 
 export default Edit;

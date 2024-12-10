@@ -3,6 +3,8 @@ import style from "./Add.module.css";
 import Calendario from "../../../Calendario/Calendario";
 import { Alert } from "antd";
 import SuccessAlert from "../../../AlertSuccess/AlertSuccess";
+import ConsultationControl from "../../../../pages/Consultation/ConsultationControl";
+import { use } from "react";
 
 function Add({ Display, close, listUsers, doctors, treatments }) {
   const [newConsultation, setNewConsultation] = useState({
@@ -10,8 +12,10 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
     time: null,
   });
   const [inputValueCpf, setInputValueCpf] = useState("");
+  const [inputValueId, setInputValueId] = useState("");
   const [inputValueName, setInputValueName] = useState("");
   const [inputValueTreatment, setInputValueTreatment] = useState("");
+  const [inputValueTreatmentId, setInputValueTreatmentId] = useState();
   const [inputValueDoctor, setInputValueDoctor] = useState("");
 
   const [step, setStep] = useState(0);
@@ -31,34 +35,44 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
   const ano = hoje.getFullYear();
   const dataAtualFormatada = `${dia}-${mes}-${ano}`;
 
-  const [carregando, setCarregando] = useState(false)
+  const [dataDisabled, setDataDisabled] = useState();
 
   const availableHours = [
-    { class: "red", time: "00:00" },
-    { class: "green", time: "01:00" },
-    { class: "green", time: "02:00" },
-    { class: "red", time: "03:00" },
-    { class: "red", time: "04:00" },
-    { class: "green", time: "05:00" },
-    { class: "green", time: "06:00" },
-    { class: "red", time: "07:00" },
-    { class: "red", time: "08:00" },
+    { class: "green", time: "08:00" },
+    { class: "green", time: "08:15" },
+    { class: "green", time: "08:30" },
+    { class: "green", time: "08:45" },
     { class: "green", time: "09:00" },
+    { class: "green", time: "09:15" },
+    { class: "green", time: "09:30" },
+    { class: "green", time: "09:45" },
     { class: "green", time: "10:00" },
-    { class: "red", time: "11:00" },
-    { class: "green", time: "12:00" },
-    { class: "green", time: "13:00" },
-    { class: "red", time: "14:00" },
-    { class: "red", time: "15:00" },
+    { class: "green", time: "10:15" },
+    { class: "green", time: "10:30" },
+    { class: "green", time: "10:45" },
+    { class: "green", time: "11:00" },
+    { class: "green", time: "11:15" },
+    { class: "green", time: "11:30" },
+    { class: "green", time: "11:45" },
+    { class: "green", time: "13:15" },
+    { class: "green", time: "13:30" },
+    { class: "green", time: "13:45" },
+    { class: "green", time: "14:00" },
+    { class: "green", time: "14:15" },
+    { class: "green", time: "14:30" },
+    { class: "green", time: "14:45" },
+    { class: "green", time: "15:00" },
+    { class: "green", time: "15:15" },
+    { class: "green", time: "15:30" },
+    { class: "green", time: "15:45" },
     { class: "green", time: "16:00" },
-    { class: "red", time: "17:00" },
-    { class: "green", time: "18:00" },
-    { class: "red", time: "19:00" },
-    { class: "green", time: "20:00" },
-    { class: "green", time: "21:00" },
-    { class: "red", time: "22:00" },
-    { class: "green", time: "23:40" },
-    { class: "red", time: "23:30" },
+    { class: "green", time: "16:15" },
+    { class: "green", time: "16:30" },
+    { class: "green", time: "16:45" },
+    { class: "green", time: "17:00" },
+    { class: "green", time: "17:15" },
+    { class: "green", time: "17:30" },
+    { class: "green", time: "17:45" }
   ];
 
   const [optionsUsers, setOptionsUsers] = useState({});
@@ -67,21 +81,23 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
 
   useEffect(() => {
     setAgora(new Date());
-  }, []);
+  }, [inputValueDoctor, dataDisabled]);
 
   function userSelect(user) {
     setInputValueCpf(user.cpf);
-    setInputValueName(user.name);
+    setInputValueName(user.nome);
+    setInputValueId(user.id);
     setOptionsUsers({});
   }
 
   function doctorSelect(doctor) {
-    setInputValueDoctor(doctor);
+    setInputValueDoctor({ nome: doctor.nome, id: doctor.id });
     setOptionsDoctor({});
   }
 
   function treatmentSelect(treatment) {
-    setInputValueTreatment(treatment);
+    setInputValueTreatment(treatment.nome);
+    setInputValueTreatmentId(treatment.id);
     setOptionsTreatment({});
   }
 
@@ -153,7 +169,7 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
                 className="btn-close"
                 data-bs-dismiss="modal"
                 aria-label="Close"
-                onClick={() => close(newConsultation)}
+                onClick={() => close()}
               ></button>
             </div>
 
@@ -195,9 +211,9 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
                             <div
                               key={treatment.id}
                               className="suggestion-item"
-                              onClick={() => treatmentSelect(treatment.name)}
+                              onClick={() => treatmentSelect(treatment)}
                             >
-                              {`${treatment.name}`}
+                              {`${treatment.nome}`}
                             </div>
                           ))
                         ) : (
@@ -217,7 +233,7 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
                         id="doctor"
                         placeholder="Nome do Doutor"
                         onChange={searchDoctor}
-                        value={inputValueDoctor}
+                        value={inputValueDoctor.nome}
                         required
                       />
                       <div
@@ -233,9 +249,9 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
                             <div
                               key={doctor.id}
                               className="suggestion-item"
-                              onClick={() => doctorSelect(doctor.name)}
+                              onClick={() => doctorSelect(doctor)}
                             >
-                              {`${doctor.name}`}
+                              {`${doctor.nome}`}
                             </div>
                           ))
                         ) : (
@@ -258,6 +274,7 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
                   <Calendario
                     className={style["calendario"]}
                     selectedDate={dateConsultation}
+                    dataDisabled={dataDisabled}
                   />
                 </>
               )}
@@ -267,38 +284,38 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
                 <div className={style["listDate"]}>
                   {newConsultation.data === dataAtualFormatada
                     ? availableHours
-                        .filter(
-                          (item) =>
-                            item.time > horarioAtual && item.class === "green"
-                        )
-                        .map((item) => (
-                            <button
-                              type="button"
-                              className={`${style[item.class]} btn btn-primary`}
-                              onClick={() =>
-                                timeConsultation(item.class, item.time)
-                              }
-                              disabled={item.class === "red"}
-                            >
-                              {item.time}{" "}
-                              {item.class === "red" && "- Horário Ocupado"}
-                            </button>
-                        ))
+                      .filter(
+                        (item) =>
+                          item.time > horarioAtual && item.class === "green"
+                      )
+                      .map((item) => (
+                        <button
+                          type="button"
+                          className={`${style[item.class]} btn btn-primary`}
+                          onClick={() =>
+                            timeConsultation(item.class, item.time)
+                          }
+                          disabled={item.class === "red"}
+                        >
+                          {item.time}{" "}
+                          {item.class === "red" && "- Horário Ocupado"}
+                        </button>
+                      ))
                     : availableHours
-                        .filter((item) => item.class === "green")
-                        .map((item) => (
-                            <button
-                              type="button"
-                              className={`${style[item.class]} btn btn-primary`}
-                              onClick={() =>
-                                timeConsultation(item.class, item.time)
-                              }
-                              disabled={item.class === "red"}
-                            >
-                              {item.time}{" "}
-                              {item.class === "red" && "- Horário Ocupado"}
-                            </button>
-                        ))}
+                      .filter((item) => item.class === "green")
+                      .map((item) => (
+                        <button
+                          type="button"
+                          className={`${style[item.class]} btn btn-primary`}
+                          onClick={() =>
+                            timeConsultation(item.class, item.time)
+                          }
+                          disabled={item.class === "red"}
+                        >
+                          {item.time}{" "}
+                          {item.class === "red" && "- Horário Ocupado"}
+                        </button>
+                      ))}
                 </div>
               )}
 
@@ -337,7 +354,7 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
                                   className="suggestion-item"
                                   onClick={() => userSelect(patient)}
                                 >
-                                  {`${patient.name} (${patient.cpf})`}
+                                  {`${patient.nome} (${patient.cpf})`}
                                 </div>
                               ))
                             ) : (
@@ -370,9 +387,9 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
                           value={
                             newConsultation.data
                               ? newConsultation.data
-                                  .split("-")
-                                  .reverse()
-                                  .join("-")
+                                .split("-")
+                                .reverse()
+                                .join("-")
                               : ""
                           }
                           disabled
@@ -402,7 +419,7 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
                           id="doctor"
                           placeholder="Nome do Doutor"
                           onChange={searchDoctor}
-                          value={inputValueDoctor}
+                          value={inputValueDoctor.nome}
                           required
                           disabled
                         />
@@ -427,21 +444,14 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
                           Status
                         </label>
                         <select className="form-select" id="status">
-                          <option value="Confirmado">Confirmado</option>
                           <option value="Pendente">Pendente</option>
-                          <option value="Cancelado">Cancelado</option>
                         </select>
                       </div>
                       <div className="d-grid">
-                        <button type="submit" className="btn btn-primary w-100" style={{marginTop: '2rem'}}>
+                        <button type="submit" className="btn btn-primary w-100" style={{ marginTop: '2rem' }}>
                           Confirmar Consulta
                         </button>
                       </div>
-                      {carregando && (
-                            <div className={style.carregamento} id="carregamento">
-                              <div className={style.loader}></div>  
-                            </div>
-                          )}
                     </div>
                   </div>
                 </form>
@@ -453,19 +463,28 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
     </>
   );
 
-  function treatmentConsultation() {
+  async function treatmentConsultation(value) {
+    value.preventDefault();
+    try {
+      let response = await ConsultationControl.buscarDiasIndiponiveis(inputValueDoctor.id);
+      setDataDisabled(response);
+    } catch (e) {
+      console.error(e);
+    }
     setStep(step + 1);
   }
 
-  function dateConsultation(value) {
+  async function dateConsultation(value) {
     if (value) {
+      try {
+        let response = await ConsultationControl.buscarHorariosIndiponiveis(inputValueDoctor.id, value);
+      } catch (e) {
+        console.error(e);
+      }
       setNewConsultation({
         data: value,
       });
       setStep(step + 1);
-      console.log(
-        "Quando essa opção for selecionada precisa fazer uma requisição para os horarios disponiveis"
-      );
     } else {
       setStep(step - 1);
     }
@@ -497,8 +516,9 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
       for (let patient of listUsers) {
         if (patient.cpf && patient.cpf.includes(valor)) {
           filteredPatients.push({
-            name: patient.nomePaciente,
+            nome: patient.nome,
             cpf: patient.cpf,
+            id: patient.id
           });
         }
       }
@@ -516,13 +536,13 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
       const filteredDoctors = [];
       for (let doctorDaVez of doctors) {
         if (
-          doctorDaVez.name &&
-          typeof doctorDaVez.name === "string" &&
-          doctorDaVez.name.toLowerCase().includes(valor.toLowerCase())
+          doctorDaVez.nome &&
+          typeof doctorDaVez.nome === "string" &&
+          doctorDaVez.nome.toLowerCase().includes(valor.toLowerCase())
         ) {
           filteredDoctors.push({
             id: doctorDaVez.id,
-            name: doctorDaVez.name,
+            nome: doctorDaVez.nome,
           });
         }
       }
@@ -539,13 +559,13 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
       const filteredTreatments = [];
       for (let treatment of treatments) {
         if (
-          treatment.name &&
-          typeof treatment.name === "string" &&
-          treatment.name.toLowerCase().includes(valor.toLowerCase())
+          treatment.nome &&
+          typeof treatment.nome === "string" &&
+          treatment.nome.toLowerCase().includes(valor.toLowerCase())
         ) {
           filteredTreatments.push({
             id: treatment.id,
-            name: treatment.name,
+            nome: treatment.nome,
           });
         }
       }
@@ -555,7 +575,7 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
     }
   }
 
-  function saveFields(value) {
+  async function saveFields(value) {
     value.preventDefault();
     const formElements = value.target.elements;
     const newValues = {};
@@ -570,13 +590,20 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
         }));
       }
     }
-    setAlertSucess(true);
-    setTimeout(() => {
-      setAlertSucess(false);
-    }, 3000);
-    setTimeout(() => {
-      close(newValues);
-    }, 4000);
+
+    try {
+      let response = await ConsultationControl.cadastrar(inputValueId, inputValueDoctor.id, inputValueTreatmentId, value.target.status.value, newConsultation);
+
+      setAlertSucess(true);
+      setTimeout(() => {
+        setAlertSucess(false);
+      }, 3000);
+      setTimeout(() => {
+        close();
+      }, 4000);
+    } catch (e) {
+      console.error(e)
+    }
   }
 }
 

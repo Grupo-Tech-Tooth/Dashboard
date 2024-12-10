@@ -10,8 +10,9 @@ import api from "../../api";
 import { Pagination } from "antd";
 import ModalFinalization from "../ModalFinalization/ModalFinalization";
 import ViewQuery from "../ViewQuery/ViewQuery";
+import ConsultationControl from "../../pages/Consultation/ConsultationControl";
 
-const Table = ({ tableInformation, setTableInformation, pacientesDados }) => {
+function Table({ tableInformation, setTableInformation, pacientesDados, close }) {
   const [count, setCount] = useState(0);
   const [formUser, setFormUser] = useState("none");
   const [userEdit, setUserEdit] = useState([]);
@@ -65,12 +66,24 @@ const Table = ({ tableInformation, setTableInformation, pacientesDados }) => {
           ),
         },
         {
+          key: "6",
+          label: (
+            <a
+              href="#"
+              className="text-decoration-none text-primary"
+              onClick={() => confirmar(item)}
+            >
+              Confirmar
+            </a>
+          ),
+        },
+        {
           key: "2",
           label: (
             <a
               href="#"
               className="text-decoration-none text-primary"
-              onClick={() => deletar(item.id)}
+              onClick={() => cancelar(item.id)}
             >
               Cancelar
             </a>
@@ -97,6 +110,18 @@ const Table = ({ tableInformation, setTableInformation, pacientesDados }) => {
               onClick={() => visualizarConsulta(item)}
             >
               Visualizar
+            </a>
+          ),
+        },
+        {
+          key: "5",
+          label: (
+            <a
+              href="#"
+              className="text-decoration-none text-primary"
+              onClick={() => deletar(item.id)}
+            >
+              Deletar
             </a>
           ),
         },
@@ -144,9 +169,8 @@ const Table = ({ tableInformation, setTableInformation, pacientesDados }) => {
 
       {tableInformation.data.length > 0 && (
         <div
-          className={`${style["table"]} table-responsive ${
-            pageSize === 10 ? "overflow-hidden" : ""
-          }`}
+          className={`${style["table"]} table-responsive ${pageSize === 10 ? "overflow-hidden" : ""
+            }`}
         >
           <table
             className="table table-hover mb-2"
@@ -237,7 +261,7 @@ const Table = ({ tableInformation, setTableInformation, pacientesDados }) => {
             <FormConsultation
               display={formConsultation}
               consultationData={consultationEdit}
-              listUsers={tableInformation.data}
+              listUsers={tableInformation.pacientes}
               doctors={tableInformation.doctor}
               treatments={tableInformation.treatment}
               close={closeForm}
@@ -322,20 +346,10 @@ const Table = ({ tableInformation, setTableInformation, pacientesDados }) => {
       setCount(count + 1);
       setFormFunctional("none");
     } else if (tableInformation.tableId === "consultationTable") {
-      if (information?.id) {
-        const position = tableInformation.data.findIndex(
-          (item) => item.id === information.id
-        );
-        if (position >= 0) {
-          tableInformation.data[position] = {
-            ...tableInformation.data[position],
-            ...information,
-          };
-        }
-      }
       setCount(count + 1);
       setFormConsultation("none");
       setModalViewQuery(false);
+      close();
     }
   }
 
@@ -363,23 +377,27 @@ const Table = ({ tableInformation, setTableInformation, pacientesDados }) => {
       return;
     }
     try {
-      debugger;
       let response;
 
       if (tableInformation.tableId === "patientsTable") {
         response = await api.delete(`/clientes/${item.id}`);
       } else if (tableInformation.tableId === "servicesTable") {
         response = await api.delete(`/servicos/${item.id}`);
-      } else if (tableInformation.tableId === "financesTable") {
+      }
+      else if (tableInformation.tableId === "financesTable") {
         response = await api.delete(`/financas/${item.id}`);
-      } else if (tableInformation.tableId === "employeesTable") {
+      }
+      else if (tableInformation.tableId === "employeesTable") {
+
         if (item.crm) {
           response = await api.delete(`/medicos/${item.id}`);
         } else {
           response = await api.delete(`/funcionais/${item.id}`);
         }
-      } else {
-        response = await api.delete(`/consultas/${item.id}`);
+      }
+
+      else {
+        let response = await ConsultationControl.deletar(item);
       }
 
       if (response.status === 204) {
@@ -389,9 +407,29 @@ const Table = ({ tableInformation, setTableInformation, pacientesDados }) => {
         setTableInformation({ ...tableInformation, data: newData });
         alert("Item deletado com sucesso.");
       }
+      close();
+
     } catch (error) {
       alert("Erro ao deletar Item.");
       console.error(error);
+    }
+  }
+
+  async function cancelar(id) {
+    try {
+      let response = await ConsultationControl.cancelar(id);
+      close();
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  async function confirmar(item) {
+    try {
+      let response = await ConsultationControl.confirmar(item);
+      close();
+    } catch (e) {
+      console.error(e);
     }
   }
 
@@ -400,6 +438,7 @@ const Table = ({ tableInformation, setTableInformation, pacientesDados }) => {
       ? setModalFinalization("none")
       : setModalFinalization("block");
     setUserEdit(item);
+    close();
   }
 
   function visualizarConsulta(item) {
