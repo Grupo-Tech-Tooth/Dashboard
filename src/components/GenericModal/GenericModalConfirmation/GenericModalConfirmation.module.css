@@ -1,0 +1,31 @@
+.bottom {
+    width: 100vw !important;
+    height: 100vh !important;
+    display: block;
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.4);
+    padding: 0% !important;
+    margin: 0% !important;
+
+    .modalGeneric {
+        position: absolute;
+        width: 30vw;
+        top: 15vh;
+        border: 1px solid gray;
+        border-radius: 5px;
+        padding: 0;
+        overflow: hidden;
+        background-color: #FFFFFF;
+        border: none;
+        border-top: 4px solid #0D6EFD;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    p{
+        font-size: 1.2rem;
+    }
+
+    button{
+        font-size: 1.1rem;
+    }
+}

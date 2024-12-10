@@ -49,11 +49,17 @@
     }
   }
 
-.add {
+  .add {
     position: fixed;
     z-index: 1;
     top: 4.5rem;
     right: 5%;
+}
+.csv {
+    position: fixed;
+    z-index: 1;
+    top: 4.5rem;
+    left: 5%;
 }
 .pacienteItem {
     display: flex;

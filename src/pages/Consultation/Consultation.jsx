@@ -17,6 +17,7 @@ function Consultation() {
   const [pacientesAgendados, setPacientesAgendados] = useState([]);
   const [showStackModal, setShowStackModal] = useState(false);
   const [showArrivalList, setShowArrivalList] = useState(false);
+  const [showEvaluationModal] = useState(false);
   const [tableInformation, setTableInformation] = useState({
     columns: [
       { name: "#", key: "" },
@@ -36,7 +37,6 @@ function Consultation() {
     doctor: [],
   });
   const [viewFormAdd, setViewFormAdd] = useState("none");
-
   const [searchPatient, setSearchPatient] = useState("");
   const [searchTreatment, setSearchTreatment] = useState(undefined);
   const [searchDoctor, setSearchDoctor] = useState(undefined);
@@ -250,7 +250,7 @@ function Consultation() {
             </div>
           </div>
           <div className={style["table"]}>
-            <Table tableInformation={tableInformation} close={closeForm} />
+            <Table tableInformation={tableInformation} setTableInformation={setTableInformation} close={closeForm}/>
           </div>
         </div>
         <Modal
@@ -336,6 +336,14 @@ function Consultation() {
           className={`${style["add"]} btn btn-primary`}
         >
           Marcar Nova Consulta
+        </button>
+      </div><div className={`position-absolute p-5 rounded-3 ${style["boxButton"]}`}>
+        <button
+          type="button"
+          onClick={() => exportCSVAppointments()}
+          className={`${style["csv"]} btn btn-primary`}
+        >
+          Exportar Lista de Consultas
         </button>
       </div>
     </>
@@ -439,6 +447,35 @@ function Consultation() {
   function abrirModalAdd() {
     setViewFormAdd("block");
   }
+
+  async function exportCSVAppointments() {
+    try {
+      const response = await api.get(`/agendamentos/exportar-csv`, {
+        responseType: "blob", // Garante que a resposta será tratada como arquivo binário
+      });
+  
+      // Criação do blob com o arquivo CSV
+      const blob = new Blob([response.data], { type: "text/csv" });
+  
+      // Criação de um link temporário para download
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "agendamentos.csv"; // Nome do arquivo
+      document.body.appendChild(link);
+      link.click();
+  
+      // Cleanup: Remove o link temporário
+      link.remove();
+      window.URL.revokeObjectURL(url);
+  
+      alert("Sucesso ao exportar CSV");
+    } catch (error) {
+      alert("Erro ao exportar CSV");
+      console.log("Erro ao exportar CSV:", error);
+    }
+  }
+  
 
   function closeForm(newConsultation) {
     setViewFormAdd("none");
