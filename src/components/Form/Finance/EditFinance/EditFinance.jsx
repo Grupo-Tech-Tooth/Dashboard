@@ -1,29 +1,41 @@
 import React, { useState, useEffect } from "react";
 import style from "./EditFinance.module.css";
 
-const EditFinance = ({ display, financeData, listUsers, onSave, close }) => {
+const EditFinance = ({ display, financeData, listUsers, close }) => {
   const [formData, setFormData] = useState(financeData);
   const [inputValueCpf, setInputValueCpf] = useState("");
   const [inputValueName, setInputValueName] = useState("");
   const [optionsUsers, setOptionsUsers] = useState({});
 
+  console.log(financeData);
+
   useEffect(() => {
     setFormData(financeData);
   }, [financeData]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSave(formData);
     close();
   };
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+  
+    if (name === "dataPagamento") {
+      // Converte de yyyy-MM-dd para dd/MM/yyyy
+      const [ano, mes, dia] = value.split("-");
+      setFormData((prev) => ({
+        ...prev,
+        dataPagamento: `${dia}/${mes}/${ano}`,
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
+  };
+  
 
   function userSelect(user) {
     setInputValueCpf(user.cpf);
@@ -78,7 +90,7 @@ const EditFinance = ({ display, financeData, listUsers, onSave, close }) => {
                 onClick={close}
               ></button>
             </div>
-            <div className="modal-body" style={{overflow: "hidden"}}>
+            <div className="modal-body" style={{ overflow: "hidden" }}>
               <form onSubmit={handleSubmit}>
                 <div className="row">
                   <div className="col-md-6 mb-3">
@@ -92,7 +104,7 @@ const EditFinance = ({ display, financeData, listUsers, onSave, close }) => {
                         id="cpf"
                         placeholder="CPF do Paciente"
                         maxLength="11"
-                        value={formData.cpf}
+                        value={formData.cpfCliente}
                         disabled
                       />
                     </div>
@@ -107,7 +119,7 @@ const EditFinance = ({ display, financeData, listUsers, onSave, close }) => {
                       className="form-control"
                       id="nomePaciente"
                       placeholder="Nome do Paciente"
-                      value={formData.name}
+                      value={formData.nomeCliente}
                       disabled
                     />
                   </div>
@@ -118,11 +130,11 @@ const EditFinance = ({ display, financeData, listUsers, onSave, close }) => {
                       Data da Consulta:
                     </label>
                     <input
-                      type="date"
+                      type="text"
                       id="consultationDate"
                       name="consultationDate"
                       className="form-control"
-                      value={formData.consultationDate}
+                      value={formData.agendamentoData}
                       disabled
                     />
                   </div>
@@ -136,7 +148,7 @@ const EditFinance = ({ display, financeData, listUsers, onSave, close }) => {
                       id="doctor"
                       name="doctor"
                       className="form-control"
-                      value={formData.doctor}
+                      value={formData.nomeMedico}
                       disabled
                     />
                   </div>
@@ -149,9 +161,17 @@ const EditFinance = ({ display, financeData, listUsers, onSave, close }) => {
                     <input
                       type="date"
                       id="paymentDate"
-                      name="paymentDate"
+                      name="dataPagamento"
                       className="form-control"
-                      value={formData.paymentDate}
+                      value={
+                        formData.dataPagamento
+                          ? (() => {
+                              const [dia, mes, ano] =
+                                formData.dataPagamento.split("/");
+                              return `${ano}-${mes}-${dia}`;
+                            })()
+                          : ""
+                      }
                       onChange={handleChange}
                     />
                   </div>
@@ -167,7 +187,7 @@ const EditFinance = ({ display, financeData, listUsers, onSave, close }) => {
                       <input
                         type="text"
                         className="form-control"
-                        value={formData.amount}
+                        value={formData.valorBruto}
                         onChange={handleChange}
                       />
                       <span className="input-group-text">,00</span>
@@ -183,12 +203,18 @@ const EditFinance = ({ display, financeData, listUsers, onSave, close }) => {
                       name="paymentMethod"
                       className="form-select"
                       onChange={handleChange}
-                      defaultValue={formData.paymentMethod}
+                      defaultValue={formData.formaPagamento}
                     >
                       <option value="Dinheiro"> Dinheiro </option>
                       <option value="PIX"> PIX </option>
-                      <option value="Cartão de Débito"> Cartão de Débito </option>
-                      <option value="Cartão de Crédito"> Cartão de Crédito </option>
+                      <option value="Cartão de Débito">
+                        {" "}
+                        Cartão de Débito{" "}
+                      </option>
+                      <option value="Cartão de Crédito">
+                        {" "}
+                        Cartão de Crédito{" "}
+                      </option>
                       <option value="Cheque"> Cheque </option>
                       <option value="Permuta"> Permuta </option>
                     </select>
@@ -227,7 +253,9 @@ const EditFinance = ({ display, financeData, listUsers, onSave, close }) => {
                         value={formData.installments}
                         onChange={handleChange}
                         required
-                        disabled={formData.paymentMethod !== "Cartão de Crédito"}
+                        disabled={
+                          formData.paymentMethod !== "Cartão de Crédito"
+                        }
                       >
                         <option value="1" selected>
                           {" "}
@@ -256,7 +284,8 @@ const EditFinance = ({ display, financeData, listUsers, onSave, close }) => {
                   >
                     Fechar
                   </button>
-                  <button type="submit" className="btn btn-primary col-md-2">
+                  <button type="submit" className="btn btn-primary col-md-2"
+                  onClick={saveFields}>
                     Salvar
                   </button>
                 </div>
@@ -268,5 +297,21 @@ const EditFinance = ({ display, financeData, listUsers, onSave, close }) => {
     </>
   );
 };
+
+function saveFields(){
+  
+  const fields = {
+    cpf: document.getElementById("cpf").value,
+    nomeCliente: document.getElementById("nomePaciente").value,
+    agendamentoData: document.getElementById("consultationDate").value,
+    nomeMedico: document.getElementById("doctor").value,
+    dataPagamento: document.getElementById("paymentDate").value,
+    valorBruto: document.getElementById("amount").value,
+    formaPagamento: document.getElementById("paymentMethod").value,
+    taxMachine: document.getElementById("taxMachine").value,
+    installments: document.getElementById("installments").value,
+  }
+  console.log(fields);
+}
 
 export default EditFinance;

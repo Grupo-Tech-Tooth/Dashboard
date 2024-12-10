@@ -166,19 +166,20 @@ const Table = ({ tableInformation, setTableInformation, pacientesDados }) => {
               {paginatedData &&
                 paginatedData.map((item, index) => (
                   <tr key={item.id}>
-                    {tableInformation.columns.map((col, i) =>
+                    {tableInformation.columns.map((col) =>
                       col.key !== "acoes" ? (
-                        <td key={i}>
+                        <td key={`${item.id}-${col.key}`}>
                           {col.key === ""
                             ? index + 1 + (currentPage - 1) * pageSize
                             : col.key === "amount"
                             ? "R$ " + item[col.key] + ",00"
-                            : col.key === "paymentMethod" && item[col.key] === "Cartão de Crédito"
+                            : col.key === "paymentMethod" &&
+                              item[col.key] === "Cartão de Crédito"
                             ? item[col.key] + " - " + item["installments"] + "x"
                             : item[col.key]}
                         </td>
                       ) : (
-                        <td style={{ gap: "5px" }}>
+                        <td style={{ gap: "5px" }} key={`${item.id}-acoes`}>
                           <Dropdown
                             menu={{
                               items: getMenuItems(
@@ -224,46 +225,47 @@ const Table = ({ tableInformation, setTableInformation, pacientesDados }) => {
             />
           </div>
 
-                {formUser !== "none" && (
-                    <FormUser
-                        display={formUser}
-                        userData={userEdit}
-                        listaClientes={pacientesDados}
-                        close={closeForm} />
-                )}
-                {formConsultation !== "none" && (
-                    <FormConsultation
-                        display={formConsultation}
-                        consultationData={consultationEdit}
-                        listUsers={tableInformation.data}
-                        doctors={tableInformation.doctor}
-                        treatments={tableInformation.treatment}
-                        close={closeForm}
-                    />
-                )}
-                {formService !== "none" && (
-                    <FormService
-                        display={formService}
-                        serviceData={serviceEdit}
-                        close={closeForm}
-                    />
-                )}
-                {formFinance !== "none" && (
-                    <FormFinance
-                        display={formFinance}
-                        financeData={financeEdit}
-                        listUsers={tableInformation.data}
-                        close={closeForm}
-                    />
-                )}
-                {formFunctional !== "none" && (
-                    <FormFunctional
-                        display={formFunctional}
-                        userData={userEdit}
-                        close={closeForm}
-                        listSpecialization={tableInformation.specialization}
-                    />
-                )}
+          {formUser !== "none" && (
+            <FormUser
+              display={formUser}
+              userData={userEdit}
+              listaClientes={pacientesDados}
+              close={closeForm}
+            />
+          )}
+          {formConsultation !== "none" && (
+            <FormConsultation
+              display={formConsultation}
+              consultationData={consultationEdit}
+              listUsers={tableInformation.data}
+              doctors={tableInformation.doctor}
+              treatments={tableInformation.treatment}
+              close={closeForm}
+            />
+          )}
+          {formService !== "none" && (
+            <FormService
+              display={formService}
+              serviceData={serviceEdit}
+              close={closeForm}
+            />
+          )}
+          {formFinance !== "none" && (
+            <FormFinance
+              display={formFinance}
+              financeData={financeEdit}
+              listUsers={tableInformation.data}
+              close={closeForm}
+            />
+          )}
+          {formFunctional !== "none" && (
+            <FormFunctional
+              display={formFunctional}
+              userData={userEdit}
+              close={closeForm}
+              listSpecialization={tableInformation.specialization}
+            />
+          )}
 
           {modalViewQuery && (
             <ViewQuery queryData={viewQuery} close={closeForm} />
@@ -305,15 +307,6 @@ const Table = ({ tableInformation, setTableInformation, pacientesDados }) => {
       setCount(count + 1);
       setFormService("none");
     } else if (tableInformation.tableId === "financesTable") {
-      const position = tableInformation.data.findIndex(
-        (item) => item.id === information.id
-      );
-      if (position >= 0) {
-        tableInformation.data[position] = {
-          ...tableInformation.data[position],
-          ...information,
-        };
-      }
       setCount(count + 1);
       setFormFinance("none");
     } else if (tableInformation.tableId === "employeesTable") {
@@ -365,49 +358,42 @@ const Table = ({ tableInformation, setTableInformation, pacientesDados }) => {
     }
   }
 
-    async function deletar(item) {
-        if (!window.confirm("Deseja realmente excluir este registro?")) {
-           return;
+  async function deletar(item) {
+    if (!window.confirm("Deseja realmente excluir este registro?")) {
+      return;
+    }
+    try {
+      debugger;
+      let response;
+
+      if (tableInformation.tableId === "patientsTable") {
+        response = await api.delete(`/clientes/${item.id}`);
+      } else if (tableInformation.tableId === "servicesTable") {
+        response = await api.delete(`/servicos/${item.id}`);
+      } else if (tableInformation.tableId === "financesTable") {
+        response = await api.delete(`/financas/${item.id}`);
+      } else if (tableInformation.tableId === "employeesTable") {
+        if (item.crm) {
+          response = await api.delete(`/medicos/${item.id}`);
+        } else {
+          response = await api.delete(`/funcionais/${item.id}`);
         }
-        try {
+      } else {
+        response = await api.delete(`/consultas/${item.id}`);
+      }
 
-          debugger;
-          let response;
-
-          if (tableInformation.tableId === "patientsTable") {
-            response = await api.delete(`/clientes/${item.id}`);
-          } else if (tableInformation.tableId === "servicesTable") {
-            response = await api.delete(`/servicos/${item.id}`);
-          }
-          else if (tableInformation.tableId === "financesTable") {
-            response = await api.delete(`/financas/${item.id}`);
-          }
-          else if (tableInformation.tableId === "employeesTable") {
-            
-            if(item.crm){
-              response = await api.delete(`/medicos/${item.id}`);
-            }else{
-              response = await api.delete(`/funcionais/${item.id}`);
-            }
-
-          }
-          else {
-            response = await api.delete(`/consultas/${item.id}`);
-          }
-
-          if (response.status === 204) {
-            const newData = tableInformation.data.filter(
-              (element) => element.id !== item.id
-            );
-            setTableInformation({ ...tableInformation, data: newData });
-            alert("Item deletado com sucesso.");
-          }
-
-        } catch (error) {
-          alert("Erro ao deletar Item.");
-          console.error(error);
-        }
-      }      
+      if (response.status === 204) {
+        const newData = tableInformation.data.filter(
+          (element) => element.id !== item.id
+        );
+        setTableInformation({ ...tableInformation, data: newData });
+        alert("Item deletado com sucesso.");
+      }
+    } catch (error) {
+      alert("Erro ao deletar Item.");
+      console.error(error);
+    }
+  }
 
   function concluir(item) {
     modalFinalization === "block"

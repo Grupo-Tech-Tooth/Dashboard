@@ -11,7 +11,7 @@ function Financeiro() {
     columns: [
       { name: "#", key: '' },
       { name: "Data do pagamento", key: 'dataPagamento' },
-      { name: "Nome", key: 'nomeCliente' },
+      { name: "Cliente", key: 'nomeCliente' },
       { name: "Médico", key: 'nomeMedico' },
       { name: "Data da consulta", key: 'agendamentoData' },
       { name: "Forma de pagamento", key: 'formaPagamento' },
@@ -35,23 +35,37 @@ function Financeiro() {
   async function getData() {
     const response = await api.get("/financeiro");
 
-    const data = response.data.map(item => ({
-      id: item.id,
-      dataPagamento: new Date(item.dataPagamento).toLocaleDateString(),
-      nomeCliente: item.nomeCliente,
-      nomeMedico: item.nomeMedico,
-      agendamentoData: new Date(item.dataPagamento).toLocaleDateString(),
-      formaPagamento: item.formaPagamento,
-      valorBruto: item.valorBruto.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
-      cpfCliente: item.cpfCliente,
-      taxMachine: item.taxMachine || "",
-      installments: item.installments || "1",
-      acoes: (
-        <button onClick={() => editarItem(item)} className="btn btn-primary">
-          Editar
-        </button>
-      ),
-    }));
+    let cliente = {};
+    let medico = {};
+    let agendamento = {};
+    let data = [];
+
+    if(response.data) {
+      cliente = await api.get(`/clientes/${response.data[0].clienteId}`);
+      medico = await api.get(`/medicos/${response.data[0].medicoId}`);
+      agendamento = await api.get(`/agendamentos/${response.data[0].agendamentoId}`);
+
+
+      data = response.data.map(item => ({
+        id: item.id,
+        agendamentoId: item.agendamentoId,
+        nomeCliente: cliente.data.nome,
+        cpfCliente: cliente.data.cpf,
+        nomeMedico: medico.data.nome,
+        agendamentoData: new Date(agendamento.data.dataHora).toLocaleDateString(),
+        dataPagamento: new Date(item.dataPagamento).toLocaleDateString(),
+        formaPagamento: item.formaPagamento,
+        valorBruto: item.valorBruto.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
+        taxMachine: item.taxMachine || "",
+        installments: item.installments || "1",
+        acoes: (
+          <button onClick={() => editarItem(item)} className="btn btn-primary">
+            Editar
+          </button>
+        ),
+      }));
+    }
+
 
     setTableInformation((prevTableInformation) => ({
       ...prevTableInformation,
