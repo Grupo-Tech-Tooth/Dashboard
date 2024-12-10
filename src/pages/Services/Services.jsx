@@ -118,7 +118,7 @@ function Services() {
               >
                 Limpar Filtro
               </button>
-              <button type="button" onClick={() => abrirModalAdd()} className={style['add']}>Novo Serviço</button>
+              <button type="button" onClick={() => abrirModalAdd()} className={`${style["add"]} btn btn-primary`}>Novo Serviço</button>
             </div>
           </div>
           <div className={style['table']}>
