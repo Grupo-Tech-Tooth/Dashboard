@@ -7,6 +7,7 @@ import Table from '../../components/Table/Table';
 import Add from '../../components/Form/Service/AddService/AddService';
 import axios from 'axios';
 import api from '../../api';
+import ServiceControl from './ServiceControl';
 
 function Services() {
   const [tableInformation, setTableInformation] = useState({
@@ -32,14 +33,11 @@ function Services() {
 
   async function getData() {
     try {
-      const response = await api.get(`/servicos`);
-
-      console.log('Serviços:', response.data);
-
+      const response = await ServiceControl.buscar();
       setTableInformation((prevTableInformation) => ({
         ...prevTableInformation,
-        data: response.data,
-        dataNotFilter: response.data
+        data: response,
+        dataNotFilter: response
       }));
     } catch (error) {
       console.log('Erro ao obter serviços:', error);
@@ -57,7 +55,7 @@ function Services() {
   return (
     <>
       <Navbar />
-      <h2 className="text-primary text-center my-3">Gerenciar Serviços</h2>
+      <h2 className="text-primary text-center my-3">Serviços</h2>
       <Container>
         {viewFormAdd === 'block' && <Add Display={viewFormAdd} close={closeForm} />}
         <div className={style['card']}>
@@ -109,7 +107,8 @@ function Services() {
             <div className={`col-md-2 mx-auto ${style['lineButton']}`}>
               <button
                 className="btn btn-primary"
-                type="submit">
+                type="submit"
+                onClick={filtrar}>
                 Filtra
               </button>
               <button
@@ -123,12 +122,23 @@ function Services() {
             </div>
           </div>
           <div className={style['table']}>
-            <Table tableInformation={tableInformation} />
+            <Table tableInformation={tableInformation} setTableInformation={setTableInformation}/>
           </div>
         </div>
       </Container>
     </>
   );
+
+  async function filtrar() {
+    
+    let servicosFiltrados = await ServiceControl.filtrar(searchName, searchDuration, searchPrice);
+
+    setTableInformation((prev) => ({
+      ...prev,
+      data: servicosFiltrados
+    }));
+
+  }
 
   function resetFields() {
     setSearchName('');
