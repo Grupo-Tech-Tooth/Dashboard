@@ -3,6 +3,7 @@ import style from "./Edit.module.css";
 import SuccessAlert from "../../../AlertSuccess/AlertSuccess";
 import Calendario from "../../../Calendario/Calendario";
 import { Alert } from "antd";
+import ConsultationControl from "../../../../pages/Consultation/ConsultationControl";
 
 function Edit({
   display,
@@ -13,7 +14,7 @@ function Edit({
   close,
 }) {
     
-  const [newConsultation, setNewConsultation] = useState({});
+  const [newConsultation, setNewConsultation] = useState({idConsulta: consultationData.id});
 
   const [inputValueCpf, setInputValueCpf] = useState(consultationData.cpf);
   const [inputValueName, setInputValueName] = useState(
@@ -22,9 +23,11 @@ function Edit({
   const [inputValueTreatment, setInputValueTreatment] = useState(
     consultationData.treatment
   );
-  const [inputValueDoctor, setInputValueDoctor] = useState(
-    consultationData.doctor
-  );
+  const [inputValueTreatmentId, setInputValueTreatmentId] = useState(consultationData.idTratamento)
+  const [inputValueDoctor, setInputValueDoctor] = useState({
+    nome: consultationData.doctor,
+    id: consultationData.idDoctor
+  });
   const [inputValueDate, setInputValueDate] = useState(
     consultationData.date
       ? consultationData.date.split("/").reverse().join("-")
@@ -57,32 +60,44 @@ function Edit({
   const ano = hoje.getFullYear();
   const dataAtualFormatada = `${dia}-${mes}-${ano}`;
 
+  const [dataDisabled, setDataDisabled] = useState();
+
   const availableHours = [
-    { class: "red", time: "00:00" },
-    { class: "green", time: "01:00" },
-    { class: "green", time: "02:00" },
-    { class: "red", time: "03:00" },
-    { class: "red", time: "04:00" },
-    { class: "green", time: "05:00" },
-    { class: "green", time: "06:00" },
-    { class: "red", time: "07:00" },
-    { class: "red", time: "08:00" },
+    { class: "green", time: "08:00" },
+    { class: "green", time: "08:15" },
+    { class: "green", time: "08:30" },
+    { class: "green", time: "08:45" },
     { class: "green", time: "09:00" },
+    { class: "green", time: "09:15" },
+    { class: "green", time: "09:30" },
+    { class: "green", time: "09:45" },
     { class: "green", time: "10:00" },
-    { class: "red", time: "11:00" },
-    { class: "green", time: "12:00" },
-    { class: "green", time: "13:00" },
-    { class: "red", time: "14:00" },
-    { class: "red", time: "15:00" },
+    { class: "green", time: "10:15" },
+    { class: "green", time: "10:30" },
+    { class: "green", time: "10:45" },
+    { class: "green", time: "11:00" },
+    { class: "green", time: "11:15" },
+    { class: "green", time: "11:30" },
+    { class: "green", time: "11:45" },
+    { class: "green", time: "13:15" },
+    { class: "green", time: "13:30" },
+    { class: "green", time: "13:45" },
+    { class: "green", time: "14:00" },
+    { class: "green", time: "14:15" },
+    { class: "green", time: "14:30" },
+    { class: "green", time: "14:45" },
+    { class: "green", time: "15:00" },
+    { class: "green", time: "15:15" },
+    { class: "green", time: "15:30" },
+    { class: "green", time: "15:45" },
     { class: "green", time: "16:00" },
-    { class: "red", time: "17:00" },
-    { class: "green", time: "18:00" },
-    { class: "red", time: "19:00" },
-    { class: "green", time: "20:00" },
-    { class: "green", time: "21:00" },
-    { class: "red", time: "22:00" },
-    { class: "green", time: "23:40" },
-    { class: "red", time: "23:30" },
+    { class: "green", time: "16:15" },
+    { class: "green", time: "16:30" },
+    { class: "green", time: "16:45" },
+    { class: "green", time: "17:00" },
+    { class: "green", time: "17:15" },
+    { class: "green", time: "17:30" },
+    { class: "green", time: "17:45" }
   ];
 
   function userSelect(user) {
@@ -92,20 +107,18 @@ function Edit({
   }
 
   function doctorSelect(doctor) {
-    setInputValueDoctor(doctor);
+    setInputValueDoctor({nome: doctor.nome, id: doctor.id});
     setOptionsDoctor({});
   }
 
   function treatmentSelect(treatment) {    
-    setInputValueTreatment(treatment);
+    setInputValueTreatment(treatment.name);
+    setInputValueTreatmentId(treatment.id)
     setOptionsTreatment({});
   }
 
   useEffect(() => {
-    if (consultationData && consultationData.status) {
-      setInputValueStatus(consultationData.status);
-    }
-  }, [consultationData]);
+  }, [step]);
 
   return (
     <>
@@ -218,7 +231,7 @@ function Edit({
                             <div
                               key={treatment.id}
                               className="suggestion-item"
-                              onClick={() => treatmentSelect(treatment.name)}
+                              onClick={() => treatmentSelect(treatment)}
                             >
                               {`${treatment.name}`}
                             </div>
@@ -240,7 +253,7 @@ function Edit({
                         id="doctor"
                         placeholder="Nome do Doutor"
                         onChange={searchDoctor}
-                        value={inputValueDoctor}
+                        value={inputValueDoctor.nome}
                         required
                       />
                       <div
@@ -256,9 +269,9 @@ function Edit({
                             <div
                               key={doctor.id}
                               className="suggestion-item"
-                              onClick={() => doctorSelect(doctor.name)}
+                              onClick={() => doctorSelect(doctor)}
                             >
-                              {`${doctor.name}`}
+                              {`${doctor.nome}`}
                             </div>
                           ))
                         ) : (
@@ -282,6 +295,7 @@ function Edit({
                     className={style["calendario"]}
                     selectedDate={dateConsultation}
                     date={inputValueDate}
+                    dataDisabled={dataDisabled}
                   />
                 </>
               )}
@@ -425,7 +439,7 @@ function Edit({
                           id="doctor"
                           placeholder="Nome do Doutor"
                           onChange={searchDoctor}
-                          value={inputValueDoctor}
+                          value={inputValueDoctor.nome}
                           required
                           disabled
                         />
@@ -475,15 +489,28 @@ function Edit({
     </>
   );
 
-  function treatmentConsultation() {
+  async function treatmentConsultation(e) {
+    e.preventDefault();
+    try {
+      let response = await ConsultationControl.buscarDiasIndiponiveis(inputValueDoctor.id);
+      setDataDisabled(response);
+    } catch (e) {
+      console.error(e);
+    }
     setStep(step + 1);
   }
 
-  function dateConsultation(value) {
+  async function dateConsultation(value) {
     if (value) {
-      setNewConsultation({
+      try {
+        let response = await ConsultationControl.buscarHorariosIndiponiveis(inputValueDoctor.id, value);
+      } catch (e) {
+        console.error(e);
+      }
+      setNewConsultation((prev)=>({
+        ...prev,
         data: value,
-      });
+      }));
       setInputValueDate(value);
       setStep(step + 1);
       console.log(
@@ -558,7 +585,7 @@ function Edit({
         ) {
           filteredDoctors.push({
             id: doctorDaVez.id,
-            name: doctorDaVez.nome,
+            nome: doctorDaVez.nome,
           });
         }
       }
@@ -598,36 +625,19 @@ function Edit({
     disabledInput ? setDisabledInput(false) : setDisabledInput(true);
   }
 
-  function saveFields(value) {
+  async function saveFields(value) {
     value.preventDefault();
-    const formElements = value.target.elements;
-    const newValues = {};
 
-    for (let i = 0; i < formElements.length; i++) {
-      let element = formElements[i];
-
-      if (element.id === "date") {
-        const [year, month, day] = element.value.split("-");
-        const dataFormatada = `${day}/${month}/${year}`;
-        setNewConsultation((prevNewConsultation) => ({
-          ...prevNewConsultation,
-          ...newValues,
-          date: dataFormatada,
-        }));
-      } else if (element.id && element.type !== "submit") {
-        newValues[element.id] = element.value;
-        setNewConsultation((prevNewConsultation) => ({
-          ...prevNewConsultation,
-          ...newValues,
-          id: consultationData.id,
-        }));
-      }
+    try {
+      let response = await ConsultationControl.editar(consultationData.idPaciente, inputValueDoctor.id, inputValueTreatmentId, value.target.status.value, newConsultation)
+    } catch (e) {
+      console.erro(e);
     }
     editar();
     setAlertSucess(true);
     setTimeout(() => {
       setAlertSucess(false);
-      close(newConsultation);
+      close();
     }, 2000);
   }
 }

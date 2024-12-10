@@ -10,8 +10,9 @@ import api from "../../api";
 import { Pagination } from "antd";
 import ModalFinalization from "../ModalFinalization/ModalFinalization";
 import ViewQuery from "../ViewQuery/ViewQuery";
+import ConsultationControl from "../../pages/Consultation/ConsultationControl";
 
-const Table = ({ tableInformation, setTableInformation, pacientesDados }) => {
+function Table({ tableInformation, setTableInformation, pacientesDados, close }) {
   const [count, setCount] = useState(0);
   const [formUser, setFormUser] = useState("none");
   const [userEdit, setUserEdit] = useState([]);
@@ -65,12 +66,24 @@ const Table = ({ tableInformation, setTableInformation, pacientesDados }) => {
           ),
         },
         {
+          key: "6",
+          label: (
+            <a
+              href="#"
+              className="text-decoration-none text-primary"
+              onClick={() => confirmar(item)}
+            >
+              Confirmar
+            </a>
+          ),
+        },
+        {
           key: "2",
           label: (
             <a
               href="#"
               className="text-decoration-none text-primary"
-              onClick={() => deletar(item.id)}
+              onClick={() => cancelar(item.id)}
             >
               Cancelar
             </a>
@@ -97,6 +110,18 @@ const Table = ({ tableInformation, setTableInformation, pacientesDados }) => {
               onClick={() => visualizarConsulta(item)}
             >
               Visualizar
+            </a>
+          ),
+        },
+        {
+          key: "5",
+          label: (
+            <a
+              href="#"
+              className="text-decoration-none text-primary"
+              onClick={() => deletar(item.id)}
+            >
+              Deletar
             </a>
           ),
         },
@@ -144,9 +169,8 @@ const Table = ({ tableInformation, setTableInformation, pacientesDados }) => {
 
       {tableInformation.data.length > 0 && (
         <div
-          className={`${style["table"]} table-responsive ${
-            pageSize === 10 ? "overflow-hidden" : ""
-          }`}
+          className={`${style["table"]} table-responsive ${pageSize === 10 ? "overflow-hidden" : ""
+            }`}
         >
           <table
             className="table table-hover mb-2"
@@ -172,10 +196,10 @@ const Table = ({ tableInformation, setTableInformation, pacientesDados }) => {
                           {col.key === ""
                             ? index + 1 + (currentPage - 1) * pageSize
                             : col.key === "amount"
-                            ? "R$ " + item[col.key] + ",00"
-                            : col.key === "paymentMethod" && item[col.key] === "Cartão de Crédito"
-                            ? item[col.key] + " - " + item["installments"] + "x"
-                            : item[col.key]}
+                              ? "R$ " + item[col.key] + ",00"
+                              : col.key === "paymentMethod" && item[col.key] === "Cartão de Crédito"
+                                ? item[col.key] + " - " + item["installments"] + "x"
+                                : item[col.key]}
                         </td>
                       ) : (
                         <td style={{ gap: "5px" }}>
@@ -224,46 +248,46 @@ const Table = ({ tableInformation, setTableInformation, pacientesDados }) => {
             />
           </div>
 
-                {formUser !== "none" && (
-                    <FormUser
-                        display={formUser}
-                        userData={userEdit}
-                        listaClientes={pacientesDados}
-                        close={closeForm} />
-                )}
-                {formConsultation !== "none" && (
-                    <FormConsultation
-                        display={formConsultation}
-                        consultationData={consultationEdit}
-                        listUsers={tableInformation.data}
-                        doctors={tableInformation.doctor}
-                        treatments={tableInformation.treatment}
-                        close={closeForm}
-                    />
-                )}
-                {formService !== "none" && (
-                    <FormService
-                        display={formService}
-                        serviceData={serviceEdit}
-                        close={closeForm}
-                    />
-                )}
-                {formFinance !== "none" && (
-                    <FormFinance
-                        display={formFinance}
-                        financeData={financeEdit}
-                        listUsers={tableInformation.data}
-                        close={closeForm}
-                    />
-                )}
-                {formFunctional !== "none" && (
-                    <FormFunctional
-                        display={formFunctional}
-                        userData={userEdit}
-                        close={closeForm}
-                        listSpecialization={tableInformation.specialization}
-                    />
-                )}
+          {formUser !== "none" && (
+            <FormUser
+              display={formUser}
+              userData={userEdit}
+              listaClientes={pacientesDados}
+              close={closeForm} />
+          )}
+          {formConsultation !== "none" && (
+            <FormConsultation
+              display={formConsultation}
+              consultationData={consultationEdit}
+              listUsers={tableInformation.pacientes}
+              doctors={tableInformation.doctor}
+              treatments={tableInformation.treatment}
+              close={closeForm}
+            />
+          )}
+          {formService !== "none" && (
+            <FormService
+              display={formService}
+              serviceData={serviceEdit}
+              close={closeForm}
+            />
+          )}
+          {formFinance !== "none" && (
+            <FormFinance
+              display={formFinance}
+              financeData={financeEdit}
+              listUsers={tableInformation.data}
+              close={closeForm}
+            />
+          )}
+          {formFunctional !== "none" && (
+            <FormFunctional
+              display={formFunctional}
+              userData={userEdit}
+              close={closeForm}
+              listSpecialization={tableInformation.specialization}
+            />
+          )}
 
           {modalViewQuery && (
             <ViewQuery queryData={viewQuery} close={closeForm} />
@@ -329,20 +353,10 @@ const Table = ({ tableInformation, setTableInformation, pacientesDados }) => {
       setCount(count + 1);
       setFormFunctional("none");
     } else if (tableInformation.tableId === "consultationTable") {
-      if (information?.id) {
-        const position = tableInformation.data.findIndex(
-          (item) => item.id === information.id
-        );
-        if (position >= 0) {
-          tableInformation.data[position] = {
-            ...tableInformation.data[position],
-            ...information,
-          };
-        }
-      }
       setCount(count + 1);
       setFormConsultation("none");
       setModalViewQuery(false);
+      close();
     }
   }
 
@@ -365,55 +379,73 @@ const Table = ({ tableInformation, setTableInformation, pacientesDados }) => {
     }
   }
 
-    async function deletar(item) {
-        if (!window.confirm("Deseja realmente excluir este registro?")) {
-           return;
+  async function deletar(item) {
+    if (!window.confirm("Deseja realmente excluir este registro?")) {
+      return;
+    }
+    try {
+      let response;
+
+      if (tableInformation.tableId === "patientsTable") {
+        response = await api.delete(`/clientes/${item.id}`);
+      } else if (tableInformation.tableId === "servicesTable") {
+        response = await api.delete(`/servicos/${item.id}`);
+      }
+      else if (tableInformation.tableId === "financesTable") {
+        response = await api.delete(`/financas/${item.id}`);
+      }
+      else if (tableInformation.tableId === "employeesTable") {
+
+        if (item.crm) {
+          response = await api.delete(`/medicos/${item.id}`);
+        } else {
+          response = await api.delete(`/funcionais/${item.id}`);
         }
-        try {
+      }
 
-          debugger;
-          let response;
+      else {
+        let response = await ConsultationControl.deletar(item);
+      }
 
-          if (tableInformation.tableId === "patientsTable") {
-            response = await api.delete(`/clientes/${item.id}`);
-          } else if (tableInformation.tableId === "servicesTable") {
-            response = await api.delete(`/servicos/${item.id}`);
-          }
-          else if (tableInformation.tableId === "financesTable") {
-            response = await api.delete(`/financas/${item.id}`);
-          }
-          else if (tableInformation.tableId === "employeesTable") {
-            
-            if(item.crm){
-              response = await api.delete(`/medicos/${item.id}`);
-            }else{
-              response = await api.delete(`/funcionais/${item.id}`);
-            }
+      if (response.status === 204) {
+        const newData = tableInformation.data.filter(
+          (element) => element.id !== item.id
+        );
+        setTableInformation({ ...tableInformation, data: newData });
+        alert("Item deletado com sucesso.");
+      }
+      close();
 
-          }
-          else {
-            response = await api.delete(`/consultas/${item.id}`);
-          }
+    } catch (error) {
+      alert("Erro ao deletar Item.");
+      console.error(error);
+    }
+  }
 
-          if (response.status === 204) {
-            const newData = tableInformation.data.filter(
-              (element) => element.id !== item.id
-            );
-            setTableInformation({ ...tableInformation, data: newData });
-            alert("Item deletado com sucesso.");
-          }
+  async function cancelar(id) {
+    try {
+      let response = await ConsultationControl.cancelar(id);
+      close();
+    } catch (e) {
+      console.error(e);
+    }
+  }
 
-        } catch (error) {
-          alert("Erro ao deletar Item.");
-          console.error(error);
-        }
-      }      
+  async function confirmar(item) {
+    try {
+      let response = await ConsultationControl.confirmar(item);
+      close();
+    } catch (e) {
+      console.error(e);
+    }
+  }
 
   function concluir(item) {
     modalFinalization === "block"
       ? setModalFinalization("none")
       : setModalFinalization("block");
     setUserEdit(item);
+    close();
   }
 
   function visualizarConsulta(item) {

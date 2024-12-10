@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Alert, Calendar, theme } from 'antd';
 import dayjs from 'dayjs';
 
-const Calendario = ({ selectedDate, date }) => {
+function Calendario ({ selectedDate, date, dataDisabled}) {
   const [appointmentDate, setAppointmentDate] = useState(dayjs(date));
   const hoje = new Date();
   const dia = hoje.getDate();
@@ -13,18 +13,7 @@ const Calendario = ({ selectedDate, date }) => {
   const [value, setValue] = useState(() => dayjs(dataFormatada));
   const { token } = theme.useToken();
   const [blockedDate, setBlockedDate] = useState({
-    'data': [
-      "2024-12-10",
-      "2024-12-09",
-      "2024-12-03",
-      "2024-12-15",
-      "2024-12-04",
-      "2024-12-08",
-      "2024-12-31",
-      "2024-12-29",
-      "2024-11-29",
-      "2024-12-28"
-    ]
+    data: []
   });
 
   const onSelect = (newValue) => {
@@ -49,8 +38,8 @@ const Calendario = ({ selectedDate, date }) => {
 
   const disabledDate = (date) => {
     let isDisabled = date.isBefore(`${ano}-${mes}-${dia}`, 'day');
-    if (blockedDate.data) {
-      isDisabled = isDisabled || blockedDate.data.some(blockedDateItem => date.isSame(blockedDateItem, 'day'));
+    if (dataDisabled?.diasDisponiveis) {
+      isDisabled = isDisabled || dataDisabled.diasDisponiveis.some(blockedDateItem => date.isSame(blockedDateItem, 'day'));
     }
     return isDisabled;
   };
