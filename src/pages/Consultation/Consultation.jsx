@@ -79,10 +79,10 @@ function Consultation() {
   }
 
   useEffect(() => {
-  //     // Busca a fila de chegada do backend
-  //     axios.get('/api/fila-chegada')  // Troque para o endpoint correto do seu backend
-  //         .then(response => setPacientes(response.data))
-  //         .catch(error => console.error('Erro ao buscar pacientes:', error));
+    //     // Busca a fila de chegada do backend
+    //     axios.get('/api/fila-chegada')  // Troque para o endpoint correto do seu backend
+    //         .then(response => setPacientes(response.data))
+    //         .catch(error => console.error('Erro ao buscar pacientes:', error));
 
     // Mock de dados para a fila de chegada
     const mockPacientes = [
@@ -250,7 +250,7 @@ function Consultation() {
             </div>
           </div>
           <div className={style["table"]}>
-            <Table tableInformation={tableInformation} close={closeForm}/>
+            <Table tableInformation={tableInformation} close={closeForm} />
           </div>
         </div>
         <Modal
@@ -360,89 +360,80 @@ function Consultation() {
     }));
   }
 
-  function buscar(value) {
+  async function buscar(value) {
     value.preventDefault();
-    if (
-      value.target.searchPatient.value ||
-      value.target.searchTreatment.value !== "Escolher tratamento" ||
-      value.target.searchDoctor.value !== "Escolher médico" ||
-      value.target.startDate.value ||
-      value.target.endDate.value
-    ) {
-      let filtered = tableInformation.dataNotFilter;
+    // if (
+    //   searchPatient ||
+    //   searchTreatment ||
+    //   searchDoctor ||
+    //   startDate ||
+    //   startDate
+    // ) {
+    //   let filtered = {};
 
-      if (value.target.searchPatient.value) {
-        filtered = filtered.filter((item) =>
-          item.nomePaciente
-            .toLowerCase()
-            .includes(value.target.searchPatient.value.toLowerCase())
-        );
-      }
+    //   if (searchPatient) {
+    //     filtered = {
+    //       ...filtered,
+    //       paciente: searchPatient,
+    //     };
+    //   }
 
-      if (value.target.searchTreatment.value !== "Escolher tratamento") {
-        filtered = filtered.filter(
-          (item) => item.treatment === value.target.searchTreatment.value
-        );
-      }
 
-      if (value.target.searchDoctor.value !== "Escolher médico") {
-        filtered = filtered.filter(
-          (item) => item.doctor === value.target.searchDoctor.value
-        );
-      }
+    //   if (searchTreatment) {
+    //     filtered = {
+    //       ...filtered,
+    //       tratamento: searchTreatment,
+    //     };
+    //   }
 
-      if (value.target.startDate.value || value.target.endDate.value) {
-        const hoje = new Date();
-        const dia = String(hoje.getDate()).padStart(2, "0");
-        const mes = String(hoje.getMonth() + 1).padStart(2, "0");
-        const ano = hoje.getFullYear();
-        const dataFormatada = new Date(`${ano}-${mes}-${dia}`);
+    //   if (searchDoctor) {
+    //     filtered = {
+    //       ...filtered,
+    //       medico: searchDoctor,
+    //     };
+    //   }
 
-        let startDateFormatted = null;
-        let endDateFormatted = null;
+    //   if (startDate || startDate) {
+    //     const hoje = new Date();
+    //     const dia = String(hoje.getDate()).padStart(2, "0");
+    //     const mes = String(hoje.getMonth() + 1).padStart(2, "0");
+    //     const ano = hoje.getFullYear();
+    //     const dataFormatada = new Date(`${ano}-${mes}-${dia}`);
 
-        if (value.target.startDate.value) {
-          const startDateParts = value.target.startDate.value.split("-");
-          startDateFormatted = new Date(
-            `${startDateParts[0]}-${startDateParts[1]}-${startDateParts[2]}`
-          );
-        }
-        if (value.target.endDate.value) {
-          const endDateParts = value.target.endDate.value.split("-");
-          endDateFormatted = new Date(
-            `${endDateParts[0]}-${endDateParts[1]}-${endDateParts[2]}`
-          );
-        }
+    //     let startDateFormatted = null;
+    //     let endDateFormatted = null;
 
-        filtered = filtered.filter((item) => {
-          const itemDateParts = item.date.split("/");
-          const itemDate = new Date(
-            `${itemDateParts[2]}-${itemDateParts[1]}-${itemDateParts[0]}`
-          );
+    //     if (startDate) {
+    //       filtered = {
+    //         ...filtered,
+    //         dataInicio: startDate,
+    //       };
+    //     }
+    //     if (startDate) {
+    //       filtered = {
+    //         ...filtered,
+    //         dataFim: startDate,
+    //       };
+    //     }
+    //   }
 
-          if (startDateFormatted && endDateFormatted) {
-            return (
-              itemDate >= startDateFormatted && itemDate <= endDateFormatted
-            );
-          } else if (startDateFormatted) {
-            return itemDate >= startDateFormatted && itemDate <= dataFormatada;
-          } else if (endDateFormatted) {
-            return itemDate >= dataFormatada && itemDate <= endDateFormatted;
-          }
-          return true;
-        });
-      }
-
-      setTableInformation((prevTableInformation) => ({
-        ...prevTableInformation,
-        data: filtered,
-      }));
-    } else {
-      setTableInformation((prevTableInformation) => ({
-        ...prevTableInformation,
-        data: tableInformation.dataNotFilter,
-      }));
-    }
+    //   try {
+    //     let response = await ConsultationControl.filtrar(filtered);
+    //     if (!response || response.length === 0) {
+    //       formatData([]); // Limpa a tabela se não encontrar resultados
+    //       console.warn('Nenhum cliente encontrado.');
+    //       return;
+    //     }
+    //     formatData(response)
+    //   } catch (e) {
+    //     console.error(e);
+    //   }
+    // } else {
+    //   setTableInformation((prevTableInformation) => ({
+    //     ...prevTableInformation,
+    //     data: tableInformation.dataNotFilter,
+    //   }));
+    // }
   }
 
   function abrirModalAdd() {
@@ -452,6 +443,41 @@ function Consultation() {
   function closeForm(newConsultation) {
     setViewFormAdd("none");
     getData();
+  }
+
+  function formatData(item) {
+    debugger
+    if (item.length === 0) {
+      setTableInformation((prevTableInformation) => ({
+        ...prevTableInformation,
+        data: [],
+        dataNotFilter: [],
+      }));
+      return;
+    }
+
+    debugger
+
+      const data = item.map((i) => ({
+        id: i.id,
+        idPaciente: i.cliente.id,
+        nomePaciente: i.cliente.nome,
+        cpf: i.cliente.cpf,
+        date: '',
+        time: '',
+        status: i.status,
+        treatment: i.servico.nome,
+        idTratamento: i.servico.id,
+        doctor: i.medico.nome,
+        idDoctor: i.medico.id
+      }));
+      debugger
+
+    setTableInformation((prevTableInformation) => ({
+      ...prevTableInformation,
+      data: data,
+      dataNotFilter: data,
+    }));
   }
 }
 

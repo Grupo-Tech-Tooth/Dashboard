@@ -87,6 +87,16 @@ class ConsultationModel {
             throw new Error((e.message));
         }
     }
+
+    static async filtrar(value) {
+        try {
+            const params = new URLSearchParams(value).toString();
+            let response = await api.get(`/agendamentos/filtrar?${params}`);
+            return response.data;
+        } catch (e) {
+            throw new Error((e.message));
+        }
+    }
 }
 
 export default ConsultationModel;

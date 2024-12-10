@@ -122,10 +122,10 @@ class ConsultationControl {
 
             let data = {
                 clienteId: item.idPaciente,
-                medicoId:  item.idDoctor,
-                servicoId:  item.idTratamento,
-                status:  "Confirmado",
-                dataHora:  formattedDate
+                medicoId: item.idDoctor,
+                servicoId: item.idTratamento,
+                status: "Confirmado",
+                dataHora: formattedDate
             }
             let response = await ConsultationModel.editar(item.id, data);
             return response;
@@ -134,31 +134,38 @@ class ConsultationControl {
         }
     }
 
-    static async finalizar(agendamento, newTreatment, price, selectedPaymentMethod, observation, taxMachine, installments){
+    static async finalizar(agendamento, newTreatment, price, selectedPaymentMethod, observation, taxMachine, installments) {
         try {
-            debugger
             const [day, month, year] = agendamento.date.split("/");
             const [hour, minute] = agendamento.time.split(":");
             const formattedDate = new Date(Date.UTC(year, month - 1, day, hour, minute, 0, 0));
 
             const dataAtual = this.formatDateToISO();
+            let parcelas = 1;
+            let taxas = 0;
+
+            if (installments) {
+                parcelas = installments;
+            }
+
+            if (taxMachine) {
+                taxas = taxMachine;
+            }
 
             let data = {
-                dataConsulta: formattedDate,
+                idAgendamento: agendamento.id,
                 idPaciente: agendamento.idPaciente,
                 idMedico: agendamento.idDoctor,
-                tratamentoPrincipalId: agendamento.idTratamento,
-                tratamentoAdicionalId: 6,
                 dataPagamento: dataAtual,
                 formaPagamento: selectedPaymentMethod,
-                parcelas: installments,
+                parcelas: parcelas,
                 valorBruto: price,
-                taxas: taxMachine,
-                observacao: newTreatment 
-                    ? `Tratamento adicional: ${newTreatment}\n${observation}` 
+                taxas: taxas,
+                observacao: newTreatment
+                    ? `Tratamento adicional: ${newTreatment}\n${observation}`
                     : `${observation}`
-            };        
-                
+            };
+
 
             let response = await ConsultationModel.finalizar(data);
             await ConsultationModel.concluido(agendamento.id);
@@ -168,21 +175,40 @@ class ConsultationControl {
         }
     }
 
+    static async filtrar(value) {
+        try {
+            let data = {
+                nomeCliente: value.paciente || undefined,
+                nomeServico: value.servico || undefined,
+                nomeMedico: value.medico || undefined,
+                dataInicio: value.dataInicio || undefined,
+                dataFim: value.dataFim || undefined
+            };
+            const filtrosValidos = Object.fromEntries(
+                Object.entries(data).filter(([_, v]) => v != null)
+              );
+            let response = await ConsultationModel.filtrar(filtrosValidos);
+            return response;
+        } catch (e) {
+            throw new Error((e.message));
+        }
+    }
+
 
     static formatDateToISO() {
         const now = new Date();
-      
+
         const year = now.getUTCFullYear();
         const month = String(now.getUTCMonth() + 1).padStart(2, '0'); // Mês de 0 a 11
         const day = String(now.getUTCDate()).padStart(2, '0');
-      
+
         const hours = String(now.getUTCHours()).padStart(2, '0');
         const minutes = String(now.getUTCMinutes()).padStart(2, '0');
         const seconds = String(now.getUTCSeconds()).padStart(2, '0');
         const milliseconds = String(now.getUTCMilliseconds()).padStart(3, '0');
-      
+
         return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}Z`;
-      }
+    }
 
 }
 
