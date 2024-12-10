@@ -48,7 +48,6 @@ function Employees() {
 
     if (responseMedicos.data.length !== 0) {
       responseMedicos.data.forEach((medico) => {
-        console.log(medico);
         data.push({
           id: medico.id,
           fullName: `${medico.nome} ${medico.sobrenome ? medico.sobrenome : ''}`,
@@ -167,7 +166,7 @@ function Employees() {
             </div>
           </div>
           <div className={style['table']}>
-            <Table tableInformation={tableInformation} />
+            <Table tableInformation={tableInformation} setTableInformation={setTableInformation} />
           </div>
         </div>
       </Container>
