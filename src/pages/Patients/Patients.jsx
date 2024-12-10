@@ -223,7 +223,7 @@ function Patients() {
             </div>
           </div>
           <div className={style['table']}>
-            <Table tableInformation={tableInformation} pacientesDados={pacientesData}/>
+            <Table tableInformation={tableInformation} pacientesDados={pacientesData} setTableInformation={setTableInformation}/>
           </div>
         </div>
       </Container>

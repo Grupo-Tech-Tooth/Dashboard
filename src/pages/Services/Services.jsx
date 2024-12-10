@@ -107,7 +107,8 @@ function Services() {
             <div className={`col-md-2 mx-auto ${style['lineButton']}`}>
               <button
                 className="btn btn-primary"
-                type="submit">
+                type="submit"
+                onClick={filtrar}>
                 Filtra
               </button>
               <button
@@ -121,12 +122,23 @@ function Services() {
             </div>
           </div>
           <div className={style['table']}>
-            <Table tableInformation={tableInformation} />
+            <Table tableInformation={tableInformation} setTableInformation={setTableInformation}/>
           </div>
         </div>
       </Container>
     </>
   );
+
+  async function filtrar() {
+    
+    let servicosFiltrados = await ServiceControl.filtrar(searchName, searchDuration, searchPrice);
+
+    setTableInformation((prev) => ({
+      ...prev,
+      data: servicosFiltrados
+    }));
+
+  }
 
   function resetFields() {
     setSearchName('');

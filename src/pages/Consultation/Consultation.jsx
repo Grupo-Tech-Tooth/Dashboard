@@ -433,7 +433,7 @@ function Consultation() {
             </div>
           </div>
           <div className={style["table"]}>
-            <Table tableInformation={tableInformation} />
+            <Table tableInformation={tableInformation} setTableInformation={setTableInformation}/>
           </div>
         </div>
         <Modal
