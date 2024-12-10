@@ -13,13 +13,12 @@ import style from './Appointments.module.css';
 
 const Appointments = () => {
   //
-  const [loading, setLoading] = useState(false);
-  // Dados do modal de marcar/remarcar consultas
+  // Dados do modal de marcar/remarcar consultasx
   const [showModal, setShowModal] = useState(false);
   // Dados do modal de avaliar consultas
   const [showEvaluationModal, setShowEvaluationModal] = useState(false);
   // Dados do modal de cancelar consultas
-  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [showCancelModal, setShowCancelModal] = useState(true);
   // Passo atual do modal de marcar/remarcar consultas
   const [step, setStep] = useState(0);
 
@@ -45,10 +44,10 @@ const Appointments = () => {
   const [searchFinalDate, setSearchFinalDate] = useState('');
 
   //Logica dos Inuts dos filtros
-  const [optionsTreatments, setOptionsTreatments] = useState([]);
-  const [inputValueTreatment, setInputValueTreatment] = useState(searchTreatment);
-  const [optionsDoctors, setOptionsDoctors] = useState([]);
-  const [inputValueDoctor, setInputValueDoctor] = useState(searchDoctor);
+  const [optionsTreatments] = useState([]);
+  const [inputValueTreatment] = useState(searchTreatment);
+  const [optionsDoctors] = useState([]);
+  const [inputValueDoctor] = useState(searchDoctor);
 
 
   //consultas
@@ -190,9 +189,7 @@ const Appointments = () => {
     return new Date(year, month, day, hours, minutes);
   };
 
-  const findTreatment = (id) => {
-    return treatments.find(treatment => treatment.id === id);
-  };
+
 
   const findAppointment = (id) => {
     return consultas.find(appointment => appointment.id === id);
@@ -244,33 +241,11 @@ const Appointments = () => {
     setStep(step + 1);
   };
 
-  //função para avançar os passos do modal de marcar/remarcar consultas
-  const handleBackardStep = () => {
-    if (step === 1) {
-      obterDatasDisponiveis(selectedDoctor, selectedTreatment);
-
-    }
-    if (step === 3) {
-      if (schedulementId === '') {
-        //post consulta
-      }
-      else {
-        const consulta = consultas.find(consulta => consulta.id === schedulementId);
-        if (consulta) {
-          //logica para atualizar/remarcar consulta
-        }
-        else {
-          console.log('Consulta não encontrada');
-        }
-      }
-    }
-    setStep(step + 1);
-  };
 
   //função para abrir o modal de avaliar consultas
   const handleOpenEvaluationModal = (id) => {
     const consulta = consultas.find(consulta => consulta.id === id);
-
+    console.log('Consulta:', consulta);
     if (consulta) {
       setSchedulementId(consulta.id);
       setSelectedTreatment(consulta.tratamento);
@@ -278,11 +253,13 @@ const Appointments = () => {
       setSelectedDate(parseDateBDtoDash(consulta.data));
       setSelectedTime(consulta.horario);
 
-      if (consulta.avaliacao !== '') {
+      if (consulta.avaliacao !== '' && consulta.avaliação !== null) {
+        console.log('entrei no if');
         setSelectedNote(consulta.avaliacao);
         setFilledFeedback(consulta.feedback);
         setStep(2); // Passo para exibir que já foi avaliada
       } else {
+        console.log('entrei no else');
         setSelectedNote('');
         setFilledFeedback('');
         setStep(0); // Passo inicial para avaliação
@@ -385,7 +362,7 @@ const Appointments = () => {
           <div>
             <div className='px-2'>
               <div className="schedulementData d-flex flex-column border-bottom border-top border-primary py-2 mb-2">
-                <span className='py-2'><b>Tipo de Tratamento: </b>{capitalizeFirstLetter(treatments[selectedTreatment - 1].nome)}</span>
+                <span className='py-2'><b>Tipo de Tratamento: </b>{capitalizeFirstLetter(treatments[selectedTreatment - 1]?.nome)}</span>
               </div>
               <h6 className='py-2 w-100' style={{ letterSpacing: '1px', fontWeight: '700' }}>Selecionar Médico</h6>
               <div className="d-flex flex-wrap" style={{ maxHeight: '500px', overflow: 'auto' }}>
@@ -418,7 +395,7 @@ const Appointments = () => {
             </div>
           </div >
         );
-      case 2: // Selecionar Data
+      case 2: // Selecionar Data  
         return (
           <div>
             <div className='px-2'>
@@ -620,7 +597,7 @@ const Appointments = () => {
   const getLastAppointment = (appointments = consultas) => {
     if (!Array.isArray(appointments)) {
       console.error('appointments não é um array:', appointments);
-      appointments.length == 1 ? (new Date(appointments[0].dataHora) < new Date() ? setLastAppointment(appointments[0]) : setLastAppointment(null)) : setLastAppointment(null);
+      appointments.length === 1 ? (new Date(appointments[0].dataHora) < new Date() ? setLastAppointment(appointments[0]) : setLastAppointment(null)) : setLastAppointment(null);
       return;
     }
 
@@ -639,7 +616,7 @@ const Appointments = () => {
   const getNextAppointment = (appointments = consultas) => {
     if (!Array.isArray(appointments)) {
       console.error('appointments não é um array:', appointments);
-      appointments.length == 1 ? (new Date(appointments[0].dataHora) > new Date() ? setNextAppointment(appointments[0]) : setNextAppointment(null)) : setNextAppointment(null);
+      appointments.length === 1 ? (new Date(appointments[0].dataHora) > new Date() ? setNextAppointment(appointments[0]) : setNextAppointment(null)) : setNextAppointment(null);
       return;
     }
 
@@ -757,7 +734,7 @@ const Appointments = () => {
   const obterDadosBanco = async () => {
     await obterMedicos();
     await obterServicos();
-    await obterConsultas(1);
+    await obterConsultas();
   };
 
 
@@ -804,7 +781,8 @@ const Appointments = () => {
   };
 
   //função para obter as consultas do banco de dados
-  const obterConsultas = async (clienteId) => {
+  const obterConsultas = async () => {
+    const clienteId = sessionStorage.getItem('id');
     try {
       const token = sessionStorage.getItem('token');
       const response = await fetch(`http://localhost:8080/agendamentos/cliente/${clienteId}`, {
@@ -833,6 +811,7 @@ const Appointments = () => {
 
   //função para obter as consultas do banco de dados
   const criarConsulta = async () => {
+    const clienteId = sessionStorage.getItem('id');
     try {
       const token = sessionStorage.getItem('token');
       const adjustedTime = subtractHours(selectedTime, 3);
@@ -844,7 +823,7 @@ const Appointments = () => {
         },
         body: JSON.stringify({
           // clienteId: sessionStorage.getItem('id'),
-          clienteId: 1,
+          clienteId: clienteId,
           medicoId: selectedDoctor,
           servicoId: selectedTreatment,
           status: 'Pendente',
@@ -869,9 +848,11 @@ const Appointments = () => {
 
   const remarcarConsulta = async (id) => {
     const consulta = findAppointment(id);
+    const clienteId = sessionStorage.getItem('id');
     console.log('consulta', consulta);
     try {
       const token = sessionStorage.getItem('token');
+      const adjustedTime = subtractHours(selectedTime, 3);
       const response = await fetch(`http://localhost:8080/agendamentos/${id}`, {
         method: 'PUT',
         headers: {
@@ -879,39 +860,7 @@ const Appointments = () => {
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
-          clienteId: consulta.clienteId,
-          medicoId: consulta.medicoId,
-          servicoId: consulta.servicoId,
-          status: 'Remarcado',
-          dataHora: consulta.dataHora
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error('Erro ao cancelar consulta');
-      }
-      const data = await response.json();
-      const newAppointmentList = consultas.filter(consulta => consulta.id !== id);
-      setConsultas(newAppointmentList);
-      fillAppointmentsData(newAppointmentList);
-      getLastAppointment();
-      getNextAppointment();
-    } catch (error) {
-      console.error('Erro ao cancelar consulta:', error);
-    }
-
-    try {
-      const token = sessionStorage.getItem('token');
-      const adjustedTime = subtractHours(selectedTime, 3);
-      const response = await fetch(`http://localhost:8080/agendamentos`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          // clienteId: sessionStorage.getItem('id'),
-          clienteId: consulta.clienteId,
+          clienteId: clienteId,
           medicoId: selectedDoctor,
           servicoId: selectedTreatment,
           status: 'Pendente',
@@ -919,18 +868,24 @@ const Appointments = () => {
         })
       });
 
-
       if (!response.ok) {
-        throw new Error('Erro ao criar consulta');
+        throw new Error('Erro ao cancelar consulta');
       }
+
       const data = await response.json();
-      const newAppointmentList = [...consultas, data];
+      const newAppointmentList = consultas.map(consulta => {
+        if (consulta.id === id) {
+          return { ...consulta, ...data };
+        }
+        return consulta;
+      });
+
       setConsultas(newAppointmentList);
       fillAppointmentsData(newAppointmentList);
-      getLastAppointment();
-      getNextAppointment();
+      getLastAppointment(newAppointmentList); 
+      getNextAppointment(newAppointmentList );
     } catch (error) {
-      console.error('Erro ao criar consulta:', error);
+      console.error('Erro ao cancelar consulta:', error);
     }
   };
 
@@ -939,7 +894,6 @@ const Appointments = () => {
   const cancelarConsulta = async (idConsulta) => {
     try {
       const token = sessionStorage.getItem('token');
-      const consulta = findAppointment(idConsulta);
       const response = await fetch(`http://localhost:8080/agendamentos/${idConsulta}/cancelar`, {
         method: 'PUT',
         headers: {
@@ -952,16 +906,15 @@ const Appointments = () => {
       if (!response.ok) {
         throw new Error('Erro ao cancelar consulta');
       }
-      const data = await response.json();
       const newAppointmentList = consultas.map(consulta => {
         if (consulta.id === idConsulta) {
           return { ...consulta, status: 'Cancelado' };
         }
         return consulta;
       });
-      console.log(newAppointmentList);
       setConsultas(newAppointmentList);
       fillAppointmentsData(newAppointmentList);
+      setAppointmentsData(ordenarConsultas(newAppointmentList));
       getLastAppointment();
       getNextAppointment();
     } catch (error) {
@@ -1059,7 +1012,7 @@ const Appointments = () => {
 
   useEffect(() => {
     obterDadosBanco();
-  }, [])
+  })
 
 
   return (
@@ -1189,13 +1142,13 @@ const Appointments = () => {
           show={showModal}
           onClose={handleCloseModal}
           title={`Marcar Consulta`}
-          content={renderContent()}  // Renderiza o conteúdo com base no passo
+          content={() => renderContent()} // Renderiza o conteúdo com base no passo
         />
         <Modal
           show={showEvaluationModal}
           onClose={handleCloseEvaluationModal}
           title={`Avaliar Consulta`}
-          content={renderEvaluationContent()}  // Renderiza o conteúdo com base no passo
+          content={() => renderEvaluationContent()}  // Renderiza o conteúdo com base no passo
         />
         <Modal
           show={showCancelModal}

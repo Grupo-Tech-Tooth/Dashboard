@@ -2,39 +2,36 @@ import React, { useState, useEffect } from "react";
 import style from "./Employees.module.css";
 import Navbar from "../../components/Navbar/Navbar";
 import Container from "../../components/Container/Container";
-import Button from "../../components/Botao/Botao";
 import Table from "../../components/Table/Table";
-import Add from "../../components/Form/User/Add/Add";
+import Add from "../../components/Form/Functional/Add/Add";
 import api from "../../api";
 // import { width } from '@fortawesome/free-solid-svg-icons/fa0';
 
 function Employees() {
   const [tableInformation, setTableInformation] = useState({
     columns: [
-      { name: "#" },
-      { name: "Nome" },
-      { name: "Email" },
-      { name: "Departamento" },
-      { name: "Especialização" },
-      { name: "Ações" },
+      { name: "#", key: '' },
+      { name: "Nome", key: 'fullName' },
+      { name: "Email", key: 'email' },
+      { name: "Departamento", key: 'department' },
+      { name: "Especialização", key: 'specialization' },
+      { name: "Ações", key: 'acoes' },
     ],
     data: [
-      {
-        id: 1,
-        name: "João",
-        surname: "da Silva",
-        email: "joao@example.com",
-        phone: "(11) 91234-5678",
-        department: "Recepção",
-        specialization: "-",
-        cpf: "12345678909",
-        dateBirth: "2005-05-03",
-        gender: "Masculino",
-      },
     ],
     dataNotFilter: [],
     tableId: "employeesTable",
     tbodyId: "employeesBody",
+    specialization: [
+      { key: "ORTODONTIA", label: "Ortodontia" },
+      { key: "PERIODONTIA", label: "Periodontia" },
+      { key: "ENDODONTIA", label: "Endodontia" },
+      { key: "CIRURGIA_BUCO_MAXILO", label: "Cirurgia Buco Maxilo" },
+      { key: "IMPLANTODONTIA", label: "Implantodontia" },
+      { key: "PROTESE_DENTARIA", label: "Protese Dentaria" },
+      { key: "ODONTOLOGIA_ESTETICA", label: "Odontologia Estética" },
+      { key: "ODONTO_PEDIATRIA", label: "Odonto Pediatria" }
+    ]
   });
 
   const [searchEmail, setSearchEmail] = useState("");
@@ -53,8 +50,11 @@ function Employees() {
       responseMedicos.data.forEach((medico) => {
         data.push({
           id: medico.id,
+          fullName: `${medico.nome} ${medico.sobrenome ? medico.sobrenome : ''}`,
           name: medico.nome,
+          surname: medico.sobrenome,
           email: medico.email,
+          crm: medico.crm,
           phone: medico.telefone,
           department: "Médico",
           specialization: medico.especializacao,
@@ -66,17 +66,20 @@ function Employees() {
 
     if (responseFuncionais.data.length !== 0) {
       responseFuncionais.data.forEach((funcional) => {
+        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
         data.push({
           id: funcional.id,
+          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
           name: funcional.nome,
           email: funcional.email,
           phone: funcional.telefone,
-          department: "Funcional",
+          department: funcional.departamento,
           specialization: "-",
           cpf: funcional.cpf,
           dateBirth: funcional.dataNascimento,
         });
       });
+      
     }
 
     setTableInformation((prevTableInformation) => ({
@@ -87,22 +90,23 @@ function Employees() {
 
   useEffect(() => {
     tableInformation.dataNotFilter = tableInformation.data;
-
     getData();
-  }, []);
+  });
 
   return (
     <>
       <Navbar />
-      <h2 className="text-primary text-center my-3">Gerenciar Funcionários</h2>
+      <h2 className="text-primary text-center my-3">
+        Funcionários
+      </h2>
       <Container>
         {viewFormAdd === "block" && (
-          <Add Display={viewFormAdd} close={closeForm} />
+          <Add Display={viewFormAdd} close={closeForm} listSpecialization={tableInformation.specialization} />
         )}
         <div className={style["card"]}>
           <div
-            className="row mb-4"
-            style={{ display: "flex", alignItems: "center" }}
+            className="row mb-2"
+            style={{ display: "flex", alignItems: "center", gap: '0%', margin: '0' }}
           >
             <div className="col-md-2 mx-auto">
               <label htmlFor="searchNome">Nome do Funcionário</label>
@@ -127,58 +131,52 @@ function Employees() {
               />
             </div>
             <div className="col-md-2 mx-auto">
-              <label htmlFor="searchCpf">Cpf do Funcionário</label>
+              <label htmlFor="searchCpf">CPF do Funcionário</label>
               <input
                 id="searchCpf"
                 className="form-control"
                 type="text"
-                placeholder="Cpf completo"
+                placeholder="Filtrar por CPF"
                 value={searchCpf}
                 onChange={(e) => setSearchCpf(e.target.value)}
               />
             </div>
             <div className="col-md-2 mx-auto">
-              <label htmlFor="searchDepartment">Departamento</label>
+              <label htmlFor="searchDepartment">Setor</label>
               <input
                 id="searchDepartment"
                 className="form-control"
                 type="text"
-                placeholder="Departamento"
+                placeholder="Filtrar por Setor"
                 value={searchDepartment}
                 onChange={(e) => setSearchDepartment(e.target.value)}
               />
             </div>
             <div className={`col-md-2 mx-auto ${style["lineButton"]}`}>
-              <Button
-                className={`${style["buttonSearch"]} btn btn-primary`}
-                id="searchButton"
-                onClick={buscar}
-                label="Buscar"
-                style={{ width: "fit-content" }}
-              />
+              <button className="btn btn-primary" type="submit" onClick={buscar}>
+                Filtrar
+              </button>
               <button
                 className={`${style["button-limpar"]} btn btn-secondary`}
                 type="button"
                 onClick={resetFields}
               >
-                Limpar
+                Limpar Filtro
               </button>
             </div>
           </div>
-          <Table tableInformation={tableInformation} />
+          <div className={style['table']}>
+            <Table tableInformation={tableInformation} setTableInformation={setTableInformation} />
+          </div>
         </div>
       </Container>
-      <div
-        className={`z-3 position-absolute p-5 rounded-3 ${style["boxButton"]}`}
+      <button
+        type="button"
+        onClick={() => abrirModalAdd()}
+        className={`${style['add']} btn btn-primary`}
       >
-        <button
-          type="button"
-          onClick={() => abrirModalAdd()}
-          className={style["add"]}
-        >
-          +
-        </button>
-      </div>
+        Cadastrar Funcionario
+      </button>
     </>
   );
 
@@ -187,14 +185,10 @@ function Employees() {
     setSearchEmail("");
     setSearchCpf("");
     setSearchDepartment("");
-    setTableInformation((prevTableInformation) => ({
-      ...prevTableInformation,
-      data: tableInformation.dataNotFilter,
-    }));
+    getData();
   }
 
   function buscar() {
-    debugger;
     let listName = [];
     let listEmail = [];
     let listCpf = [];

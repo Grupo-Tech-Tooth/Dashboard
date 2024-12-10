@@ -6,7 +6,7 @@ import { faAngleDoubleLeft, faAngleDoubleRight } from '@fortawesome/free-solid-s
 
 import Card from '../../../components/Card/Card'; // Ajuste conforme a localização do seu componente Card
 
-const Carousel = ({ appointmentsData = [], rescheduleAppointment, onCardClick, onEvaluationButtonClick, handleOpenCancelModal, doctors = [], treatments = [] }) => {
+const Carousel = ({ appointmentsData, rescheduleAppointment, onCardClick, onEvaluationButtonClick, handleOpenCancelModal, doctors = [], treatments = [] }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const cardsPerPage = 3; // Número de cards de consultas a serem exibidos por vez
 
@@ -166,20 +166,29 @@ const Carousel = ({ appointmentsData = [], rescheduleAppointment, onCardClick, o
                         estilos={{ height: '420px', maxWidth: '25%', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', justifyContent: 'space-between', textAlign: 'start', lineHeight: '3' }}
                         bodyEstilos={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
                     >
-                        <h4 className='text-primary mb-4' style={{ textAlign: 'center', opacity: isPast || consulta.status == "Cancelado" || consulta.status == "1" ? '0.5' : '1' }}>{parseDateBDtoSpace(consulta.dataHora)}</h4>
-                        <div className={`col-md-12 ${isPast || consulta.status == "Cancelado" || consulta.status == "1" ? 'border-bottom border-primary mb-2' : ''}`} style={{ opacity: isPast || consulta.status == "Cancelado" || consulta.status == "1" ? '0.5' : '1' }}>
+                        <h4 className='text-primary mb-4' style={{ textAlign: 'center', opacity: isPast || consulta.status === "Cancelado" || consulta.status === "1" ? '0.5' : '1' }}>{parseDateBDtoSpace(consulta.dataHora)}</h4>
+                        <div className={`col-md-12 ${isPast || consulta.status === "Cancelado" || consulta.status === "1" ? 'border-bottom border-primary mb-2' : ''}`} style={{ opacity: isPast || consulta.status === "Cancelado" || consulta.status === "1" ? '0.5' : '1' }}>
                             <h5 className='mb-3' style={{ fontWeight: 'normal' }}>Horário: <span>{parseDateBDtoDateTime(consulta.dataHora).time}</span></h5>
                             <h5 className='mb-3' style={{ fontWeight: 'normal' }}>Dentista: <span>Dr(a). {findDoctor(consulta.medicoId).nome}</span></h5>
                             <h5 className='mb-3' style={{ fontWeight: 'normal' }}>Tratamento: <span>{findTreatment(consulta.servicoId).nome}</span></h5>
                             <h5 className='mb-3' style={{ fontWeight: 'normal' }}>Paciente: <span>{nomeCliente}</span></h5>
                         </div>
-                        <div className="col-md-12" style={{ opacity: isPast ? '0.5' : '1', display: isPast && consulta.status !== "Cancelado" && consulta.status !== "1" ? 'show' : 'none' }}>
-                            <h5 className='mb-3' style={{ fontWeight: 'normal' }}>Avaliação: <span>{consulta.avaliacao}</span></h5>
-                            <h5 className='mb-3' style={{ fontWeight: 'normal' }}>Feedback: <span>{consulta.feedback}</span></h5>
-                        </div>
-                        <div className="col-md-12" style={{ opacity: isPast ? '0.5' : '1', display: consulta.status === "Cancelado" || consulta.status === "1" ? 'show' : 'none' }}>
-                            <h5 className='mb-3 text-danger' style={{ textAlign: 'center', fontWeight: 'bold', fontSize: '26px', letterSpacing: '6px', transform: 'rotate(-12deg)' }}> [CANCELADO] </h5>
-                        </div>
+
+                        {consulta.status === "Cancelado" || consulta.status === "1" ? (
+                            <div className="col-md-12">
+                                <h5 className='mb-3 text-danger' style={{ textAlign: 'center', fontWeight: 'bold', fontSize: '26px', letterSpacing: '6px', transform: 'rotate(-12deg)' }}> [CANCELADO] </h5>
+                            </div>
+                        ) : (
+                            <>
+                                {isPast && (
+                                    <div className="col-md-12" style={{ opacity: '0.5' }}>
+                                        <h5 className='mb-3' style={{ fontWeight: 'normal' }}>Avaliação: <span>{consulta.avaliacao}</span></h5>
+                                        <h5 className='mb-3' style={{ fontWeight: 'normal' }}>Feedback: <span>{consulta.feedback}</span></h5>
+                                    </div>
+                                )}
+                            </>
+                        )}
+                          
                         <div className="d-flex justify-content-between p-0 m-0">
                             <Botao label="Avaliar Consulta" className={`my-3 ${!isPast ? 'btn-outline-primary' : `${evaluated ? 'btn-secondary' : 'btn-primary'}`}`} hidden={!isPast} onClick={() => onEvaluationButtonClick(consulta.id)} disabled={consulta.status === "Cancelado" || consulta.status === "1"} />
 

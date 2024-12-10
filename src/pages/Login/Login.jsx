@@ -1,19 +1,24 @@
 import React from 'react';
 import Navbar from '../../components/Navbar/Navbar';
 import Container from '../../components/Container/Container';
-import Card from '../../components/Card/Card';
 import LoginForm from '../../components/LoginForm/LoginForm';
-import './Login.module.css'; // Verifique se você tem um CSS específico para a página de login
+import style from './Login.module.css'; // Verifique se você tem um CSS específico para a página de login
 
 const Login = () => {
   return (
     <>
-      <Navbar />
-      <Container classes="container d-flex justify-content-center align-items-center" estilos={{height: 'calc(100vh - 56px)'}}>
-        <Card titulo="Login" classes="card shadow-lg" estilos={{width: '350px'}}>
+      <Navbar/>
+        <div className={style.login}>
           <LoginForm />
-        </Card>
-      </Container>
+        </div>
+
+        <footer className={style.footer}>
+          <p>&copy; {new Date().getFullYear()} Minha Empresa. Todos os direitos reservados.</p>
+          <div className={style.footerLinks}>
+            {/* <a href="/termos" className="text-decoration-none text-primary">Termos de Serviço</a>
+            <a href="/privacidade" className="text-decoration-none text-primary">Política de Privacidade</a> */}
+          </div>
+      </footer>
     </>
   );
 };

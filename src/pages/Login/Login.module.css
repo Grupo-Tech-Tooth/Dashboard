@@ -1,0 +1,15 @@
+.login{
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    height: calc(100vh - 116px) !important;
+    padding: 0 50px;
+}
+
+.footer {
+    padding: 10px;
+    text-align: center;
+    width: 100%;
+    font-size: 1em;
+    color: #0d6efd; 
+}

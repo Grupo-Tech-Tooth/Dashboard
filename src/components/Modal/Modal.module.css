@@ -6,13 +6,15 @@
     height: 100%;
     background: rgba(0, 0, 0, 0.7);
     display: flex;
-    justify-content: center;
-    align-items: center;
+    /* justify-content: start; */
+    align-items: center;    
   }
   
   .modalDialog {
-    margin: 10vh auto;
-    max-width: 500px;
+    margin: auto 0vw;
+    width: 400px;
+    max-width: 400px;
+    height: fit-content;
   }
   
   .modalContent {
@@ -20,14 +22,14 @@
     background-color: #ffffff;
     border: none;
     border-top: 4px solid #0d6efd;
-    min-width: 400px;
+    min-width: 100%;
+    max-height: 100%;
   }
   
   .modalHeader {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem;
   }
   
   .modalTitle {
@@ -41,6 +43,5 @@
   }
   
   .modalBody {
-    padding: 1rem;
+    max-height: 75vh !important;
   }
-  

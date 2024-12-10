@@ -7,18 +7,18 @@ import Table from '../../components/Table/Table';
 import Add from '../../components/Form/Service/AddService/AddService';
 import axios from 'axios';
 import api from '../../api';
+import ServiceControl from './ServiceControl';
 
 function Services() {
   const [tableInformation, setTableInformation] = useState({
     'columns': [
-      { 'name': '#' },
-      { 'name': 'Nome do Serviço' },
-      { 'name': 'Duração (min)' },
-      { 'name': 'Preço (R$)' },
-      { 'name': 'Ações' }
+      { 'name': '#', key: '' },
+      { 'name': 'Nome do Serviço', key: 'nome' },
+      { 'name': 'Duração (min)', key: 'duracaoMinutos' },
+      { 'name': 'Preço (R$)', key: 'preco' },
+      { 'name': 'Ações', key: 'acoes' }
     ],
     'data': [
-      { id: 1, nome: 'Consulta', duracaoMinutos: 30, preco: 'R$ 100.00' }
     ],
     'dataNotFilter': [],
     'tableId': 'servicesTable',
@@ -33,14 +33,11 @@ function Services() {
 
   async function getData() {
     try {
-      const response = await api.get(`/servicos`);
-
-      console.log('Serviços:', response.data);
-
+      const response = await ServiceControl.buscar();
       setTableInformation((prevTableInformation) => ({
         ...prevTableInformation,
-        data: response.data,
-        dataNotFilter: response.data
+        data: response,
+        dataNotFilter: response
       }));
     } catch (error) {
       console.log('Erro ao obter serviços:', error);
@@ -58,7 +55,7 @@ function Services() {
   return (
     <>
       <Navbar />
-      <h2 className="text-primary text-center my-3">Gerenciar Serviços</h2>
+      <h2 className="text-primary text-center my-3">Serviços</h2>
       <Container>
         {viewFormAdd === 'block' && <Add Display={viewFormAdd} close={closeForm} />}
         <div className={style['card']}>
@@ -108,30 +105,40 @@ function Services() {
               />
             </div>
             <div className={`col-md-2 mx-auto ${style['lineButton']}`}>
-              <Button
-                className={`${style['buttonSearch']} btn btn-primary`}
-                id="searchButton"
-                onClick={buscar}
-                label="Buscar"
-                style={{ width: 'fit-content' }}
-              />
+              <button
+                className="btn btn-primary"
+                type="submit"
+                onClick={filtrar}>
+                Filtra
+              </button>
               <button
                 className={`${style['button-limpar']} btn btn-secondary`}
                 type="button"
                 onClick={resetFields}
               >
-                Limpar
+                Limpar Filtro
               </button>
+              <button type="button" onClick={() => abrirModalAdd()} className={style['add']}>Novo Serviço</button>
             </div>
           </div>
-          <Table tableInformation={tableInformation} />
+          <div className={style['table']}>
+            <Table tableInformation={tableInformation} setTableInformation={setTableInformation}/>
+          </div>
         </div>
       </Container>
-      <div className={`z-3 position-absolute p-5 rounded-3 ${style['boxButton']}`}>
-        <button type="button" onClick={() => abrirModalAdd()} className={style['add']}>+</button>
-      </div>
     </>
   );
+
+  async function filtrar() {
+    
+    let servicosFiltrados = await ServiceControl.filtrar(searchName, searchDuration, searchPrice);
+
+    setTableInformation((prev) => ({
+      ...prev,
+      data: servicosFiltrados
+    }));
+
+  }
 
   function resetFields() {
     setSearchName('');
