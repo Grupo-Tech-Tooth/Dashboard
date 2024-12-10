@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import style from "./EditFinance.module.css";
+import api from "../../../../api";
 
-const EditFinance = ({ display, financeData, listUsers, onSave, close }) => {
+const EditFinance = ({ display, financeData, listUsers, close }) => {
   const [formData, setFormData] = useState(financeData);
   const [inputValueCpf, setInputValueCpf] = useState("");
   const [inputValueName, setInputValueName] = useState("");
@@ -11,18 +12,67 @@ const EditFinance = ({ display, financeData, listUsers, onSave, close }) => {
     setFormData(financeData);
   }, [financeData]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    await updateFinance();
+    close();
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSave(formData);
-    close();
+  const updateFinance = async () => {
+    const [dia, mes, ano] = formData.dataPagamento.split("/");
+    const dataPagamentoISO = new Date(`${ano}-${mes}-${dia}`).toISOString();
+
+    const valorBruto = parseFloat(formData.valorBruto.replace("R$", "").replace(",", "."));
+
+    // Garantir que todos os campos necessários estejam presentes
+    console.log("Form data", formData);
+    const payload = {
+      idAgendamento: formData.agendamentoId || 0,
+      idPaciente: formData.pacienteId || 0,
+      idMedico: formData.medicoId || 0,
+      dataPagamento: dataPagamentoISO,
+      formaPagamento: formData.formaPagamento || "PIX",
+      parcelas: formData.parcelas || 1,
+      valorBruto: isNaN(valorBruto) ? 0 : valorBruto,
+      observacao: formData.observacao || "string",
+      taxas: formData.taxas || 0,
+    };
+
+    console.log("Payload enviado:", payload);
+
+    try {
+      const response = await api.put(`/financeiro/${formData.id}`, payload, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.status !== 200) {
+        throw new Error("Erro ao atualizar os dados financeiros");
+      }
+
+      console.log("Dados financeiros atualizados com sucesso:", response.data);
+    } catch (error) {
+      console.error("Erro ao atualizar os dados financeiros:", error);
+    }
+  };
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+
+    if (name === "dataPagamento") {
+      // Converte de yyyy-MM-dd para dd/MM/yyyy
+      const [ano, mes, dia] = value.split("-");
+      setFormData((prev) => ({
+        ...prev,
+        dataPagamento: `${dia}/${mes}/${ano}`,
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
 
   function userSelect(user) {
@@ -30,6 +80,7 @@ const EditFinance = ({ display, financeData, listUsers, onSave, close }) => {
     setInputValueName(user.name);
     setOptionsUsers({});
   }
+
   function searchCpf(event) {
     const valor = event.target.value;
     setInputValueCpf(valor);
@@ -78,7 +129,7 @@ const EditFinance = ({ display, financeData, listUsers, onSave, close }) => {
                 onClick={close}
               ></button>
             </div>
-            <div className="modal-body" style={{overflow: "hidden"}}>
+            <div className="modal-body" style={{ overflow: "hidden" }}>
               <form onSubmit={handleSubmit}>
                 <div className="row">
                   <div className="col-md-6 mb-3">
@@ -92,7 +143,7 @@ const EditFinance = ({ display, financeData, listUsers, onSave, close }) => {
                         id="cpf"
                         placeholder="CPF do Paciente"
                         maxLength="11"
-                        value={formData.cpf}
+                        value={formData.cpfCliente}
                         disabled
                       />
                     </div>
@@ -107,7 +158,7 @@ const EditFinance = ({ display, financeData, listUsers, onSave, close }) => {
                       className="form-control"
                       id="nomePaciente"
                       placeholder="Nome do Paciente"
-                      value={formData.name}
+                      value={formData.nomeCliente}
                       disabled
                     />
                   </div>
@@ -118,11 +169,11 @@ const EditFinance = ({ display, financeData, listUsers, onSave, close }) => {
                       Data da Consulta:
                     </label>
                     <input
-                      type="date"
+                      type="text"
                       id="consultationDate"
                       name="consultationDate"
                       className="form-control"
-                      value={formData.consultationDate}
+                      value={formData.agendamentoData}
                       disabled
                     />
                   </div>
@@ -136,7 +187,7 @@ const EditFinance = ({ display, financeData, listUsers, onSave, close }) => {
                       id="doctor"
                       name="doctor"
                       className="form-control"
-                      value={formData.doctor}
+                      value={formData.nomeMedico}
                       disabled
                     />
                   </div>
@@ -149,9 +200,17 @@ const EditFinance = ({ display, financeData, listUsers, onSave, close }) => {
                     <input
                       type="date"
                       id="paymentDate"
-                      name="paymentDate"
+                      name="dataPagamento"
                       className="form-control"
-                      value={formData.paymentDate}
+                      value={
+                        formData.dataPagamento
+                          ? (() => {
+                              const [dia, mes, ano] =
+                                formData.dataPagamento.split("/");
+                              return `${ano}-${mes}-${dia}`;
+                            })()
+                          : ""
+                      }
                       onChange={handleChange}
                     />
                   </div>
@@ -167,7 +226,8 @@ const EditFinance = ({ display, financeData, listUsers, onSave, close }) => {
                       <input
                         type="text"
                         className="form-control"
-                        value={formData.amount}
+                        name="valorBruto"
+                        value={formData.valorBruto}
                         onChange={handleChange}
                       />
                       <span className="input-group-text">,00</span>
@@ -180,10 +240,10 @@ const EditFinance = ({ display, financeData, listUsers, onSave, close }) => {
                     </label>
                     <select
                       id="paymentMethod"
-                      name="paymentMethod"
+                      name="formaPagamento"
                       className="form-select"
                       onChange={handleChange}
-                      defaultValue={formData.paymentMethod}
+                      value={formData.formaPagamento}
                     >
                       <option value="Dinheiro"> Dinheiro </option>
                       <option value="PIX"> PIX </option>
@@ -195,8 +255,8 @@ const EditFinance = ({ display, financeData, listUsers, onSave, close }) => {
                   </div>
                 </div>
 
-                {(formData.paymentMethod === "Cartão de Crédito" ||
-                  formData.paymentMethod === "Cartão de Débito") && (
+                {(formData.formaPagamento === "Cartão de Crédito" ||
+                  formData.formaPagamento === "Cartão de Débito") && (
                   <div className="row">
                     <div className="col-md-6 mb-3">
                       <label htmlFor="taxMachine" className="form-label">
@@ -224,15 +284,12 @@ const EditFinance = ({ display, financeData, listUsers, onSave, close }) => {
                         id="installments"
                         name="installments"
                         className="form-select"
-                        value={formData.installments}
+                        value={formData.installments || ''}
                         onChange={handleChange}
                         required
-                        disabled={formData.paymentMethod !== "Cartão de Crédito"}
+                        disabled={formData.formaPagamento !== "Cartão de Crédito"}
                       >
-                        <option value="1" selected>
-                          {" "}
-                          1 Parcela{" "}
-                        </option>
+                        <option value="1"> 1 Parcela </option>
                         <option value="2"> 2 Parcelas </option>
                         <option value="3"> 3 Parcelas </option>
                         <option value="4"> 4 Parcelas </option>

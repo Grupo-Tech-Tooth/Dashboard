@@ -190,19 +190,20 @@ function Table({ tableInformation, setTableInformation, pacientesDados, close })
               {paginatedData &&
                 paginatedData.map((item, index) => (
                   <tr key={item.id}>
-                    {tableInformation.columns.map((col, i) =>
+                    {tableInformation.columns.map((col) =>
                       col.key !== "acoes" ? (
-                        <td key={i}>
+                        <td key={`${item.id}-${col.key}`}>
                           {col.key === ""
                             ? index + 1 + (currentPage - 1) * pageSize
                             : col.key === "amount"
-                              ? "R$ " + item[col.key] + ",00"
-                              : col.key === "paymentMethod" && item[col.key] === "Cartão de Crédito"
-                                ? item[col.key] + " - " + item["installments"] + "x"
-                                : item[col.key]}
+                            ? "R$ " + item[col.key] + ",00"
+                            : col.key === "paymentMethod" &&
+                              item[col.key] === "Cartão de Crédito"
+                            ? item[col.key] + " - " + item["installments"] + "x"
+                            : item[col.key]}
                         </td>
                       ) : (
-                        <td style={{ gap: "5px" }}>
+                        <td style={{ gap: "5px" }} key={`${item.id}-acoes`}>
                           <Dropdown
                             menu={{
                               items: getMenuItems(
@@ -253,7 +254,8 @@ function Table({ tableInformation, setTableInformation, pacientesDados, close })
               display={formUser}
               userData={userEdit}
               listaClientes={pacientesDados}
-              close={closeForm} />
+              close={closeForm}
+            />
           )}
           {formConsultation !== "none" && (
             <FormConsultation
@@ -329,15 +331,6 @@ function Table({ tableInformation, setTableInformation, pacientesDados, close })
       setCount(count + 1);
       setFormService("none");
     } else if (tableInformation.tableId === "financesTable") {
-      const position = tableInformation.data.findIndex(
-        (item) => item.id === information.id
-      );
-      if (position >= 0) {
-        tableInformation.data[position] = {
-          ...tableInformation.data[position],
-          ...information,
-        };
-      }
       setCount(count + 1);
       setFormFinance("none");
     } else if (tableInformation.tableId === "employeesTable") {
