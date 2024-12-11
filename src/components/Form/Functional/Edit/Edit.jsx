@@ -54,7 +54,7 @@ function Edit({ userData, display, close, listSpecialization }) {
                         <h3>Editar Funcionário</h3>
                     </div>
                     <button type="button" className="btn-close"
-                        onClick={() => close(userUpdate)}></button>
+                        onClick={() => close(userEdit)}></button>
                 </div>
                 <div className="col-md-3">
                     <Input name={'firstName'} type={'text'} label={'Nome'} placeholder={'Nome do Funcionário'} required={'true'} disabled={disabled} value={userEdit?.name} />
