@@ -15,19 +15,17 @@ const Botao = ({ textAfter, noGrid, label, className, icon, onClick, ...props })
     return noGrid ? buttonElement : <div className="d-grid">{buttonElement}</div>;
 };
 
-// Define a classe padrão como `btn-outline-primary`
 Botao.defaultProps = {
     className: 'btn-outline-primary',
 };
 
-// Define as PropTypes para o componente Botao
 Botao.propTypes = {
     textAfter: PropTypes.string,
     noGrid: PropTypes.bool,
     label: PropTypes.string,
     className: PropTypes.string,
-    icon: PropTypes.object, // FontAwesomeIcon prop type
-    onClick: PropTypes.func,  // Nova prop para o clique
+    icon: PropTypes.object,
+    onClick: PropTypes.func,
     props: PropTypes.object,
 };
 

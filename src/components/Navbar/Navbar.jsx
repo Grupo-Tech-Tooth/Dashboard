@@ -10,10 +10,9 @@ const Navbar = ({ toggleArrivalModal, toggleStackModal }) => {
   const isLoginPage = location.pathname === "/";
   const isAppointmentsPage = location.pathname === "/consultas";
 
-  // Função para realizar o logout
   const handleLogout = () => {
-    sessionStorage.clear(); // Limpa o sessionStorage
-    navigate("/"); // Redireciona para a página de login
+    sessionStorage.clear();
+    navigate("/"); 
   };
 
   return (

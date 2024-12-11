@@ -23,7 +23,7 @@ const LoginForm = () => {
         email: email,
         senha: password,
       });
-      sessionStorage.clear(); // Limpa o sessionStorage
+      sessionStorage.clear(); 
       sessionStorage.setItem("token", response.data.token);
       sessionStorage.setItem("email", response.data.loginInfo.email);
       if (response.data.loginInfo.hierarquia) {

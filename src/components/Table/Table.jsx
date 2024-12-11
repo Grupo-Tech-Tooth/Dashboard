@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import style from "./Table.module.css";
-import { Button, Dropdown, Space, MenuProps } from "antd";
+import { Dropdown, Space } from "antd";
 import FormUser from "../Form/User/Edit/Edit";
 import FormConsultation from "../Form/Consultation/Edit/Edit";
 import FormFunctional from "../Form/Functional/Edit/Edit";
 import FormService from "../Form/Service/EditService/EditService";
-import FormFinance from "../Form/Finance/EditFinance/EditFinance"; // Importando o formulário de finanças
+import FormFinance from "../Form/Finance/EditFinance/EditFinance";
 import api from "../../api";
 import { Pagination } from "antd";
 import ModalFinalization from "../ModalFinalization/ModalFinalization";
@@ -20,15 +20,13 @@ function Table({ tableInformation, setTableInformation, pacientesDados, close })
   const [consultationEdit, setConsultationEdit] = useState([]);
   const [formService, setFormService] = useState("none");
   const [serviceEdit, setServiceEdit] = useState([]);
-  const [formFinance, setFormFinance] = useState("none"); // Estado para o formulário de finanças
-  const [financeEdit, setFinanceEdit] = useState([]); // Estado para armazenar os dados de finanças editados
+  const [formFinance, setFormFinance] = useState("none"); 
+  const [financeEdit, setFinanceEdit] = useState([]); 
   const [formFunctional, setFormFunctional] = useState(["none"]);
   const [modalFinalization, setModalFinalization] = useState("none");
   const [modalViewQuery, setModalViewQuery] = useState(false);
   const [viewQuery, setViewQuery] = useState([]);
-  const [carregando, setCarregando] = useState(true);
 
-  // Estado para paginação
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
@@ -38,16 +36,14 @@ function Table({ tableInformation, setTableInformation, pacientesDados, close })
     }
   }, [tableInformation]);
 
-  // Filtra os dados conforme a paginação
   const startIndex = (currentPage - 1) * pageSize;
   const endIndex = startIndex + pageSize;
   const paginatedData = tableInformation.data.slice(startIndex, endIndex);
 
-  // Manipuladores de paginação
   const onPageChange = (page) => setCurrentPage(page);
   const onShowSizeChange = (current, size) => {
     setPageSize(size);
-    setCurrentPage(1); // Reseta para a primeira página ao alterar o tamanho
+    setCurrentPage(1);
   };
 
   const getMenuItems = (item, tableId) => {
@@ -56,73 +52,73 @@ function Table({ tableInformation, setTableInformation, pacientesDados, close })
         {
           key: "1",
           label: (
-            <a
-              href="#"
+            <button
               className="text-decoration-none text-primary"
               onClick={() => editar(item)}
+              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
             >
               Editar
-            </a>
+            </button>
           ),
         },
         {
           key: "6",
           label: (
-            <a
-              href="#"
+            <button
               className="text-decoration-none text-primary"
               onClick={() => confirmar(item)}
+              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
             >
               Confirmar
-            </a>
+            </button>
           ),
         },
         {
           key: "2",
           label: (
-            <a
-              href="#"
+            <button
               className="text-decoration-none text-primary"
               onClick={() => cancelar(item.id)}
+              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
             >
               Cancelar
-            </a>
+            </button>
           ),
         },
         {
           key: "3",
           label: (
-            <a
-              href="#"
+            <button
               className="text-decoration-none text-primary"
               onClick={() => concluir(item)}
+              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
             >
               Finalizar
-            </a>
+            </button>
           ),
         },
         {
           key: "4",
           label: (
-            <a
-              href="#"
-              className="text-decoration-none   text-primary"
+            <button
+              className="text-decoration-none text-primary"
               onClick={() => visualizarConsulta(item)}
+              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
             >
               Visualizar
-            </a>
+            </button>
           ),
         },
         {
           key: "5",
           label: (
-            <a
-              href="#"
+            <button
               className="text-decoration-none text-primary"
               onClick={() => deletar(item.id)}
+              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
             >
               Deletar
-            </a>
+            </button>
           ),
         },
       ];
@@ -131,25 +127,25 @@ function Table({ tableInformation, setTableInformation, pacientesDados, close })
         {
           key: "1",
           label: (
-            <a
-              href="#"
+            <button
               className="text-decoration-none text-primary"
               onClick={() => editar(item)}
+              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
             >
               Editar
-            </a>
+            </button>
           ),
         },
         {
           key: "2",
           label: (
-            <a
-              href="#"
+            <button
               className="text-decoration-none text-primary"
               onClick={() => deletar(item)}
+              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
             >
               Deletar
-            </a>
+            </button>
           ),
         },
       ];
@@ -397,9 +393,10 @@ function Table({ tableInformation, setTableInformation, pacientesDados, close })
       }
 
       else {
-        let response = await ConsultationControl.deletar(item);
+        response = await ConsultationControl.deletar(item);
       }
 
+      
       if (response.status === 204) {
         const newData = tableInformation.data.filter(
           (element) => element.id !== item.id
@@ -410,14 +407,13 @@ function Table({ tableInformation, setTableInformation, pacientesDados, close })
       close();
 
     } catch (error) {
-      alert("Erro ao deletar Item.");
       console.error(error);
     }
   }
 
   async function cancelar(id) {
     try {
-      let response = await ConsultationControl.cancelar(id);
+      await ConsultationControl.cancelar(id);
       close();
     } catch (e) {
       console.error(e);
@@ -426,7 +422,7 @@ function Table({ tableInformation, setTableInformation, pacientesDados, close })
 
   async function confirmar(item) {
     try {
-      let response = await ConsultationControl.confirmar(item);
+      await ConsultationControl.confirmar(item);
       close();
     } catch (e) {
       console.error(e);

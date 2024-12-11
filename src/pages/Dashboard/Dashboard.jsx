@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Line, Bar, Pie } from "react-chartjs-2";
+import { Bar, Pie } from "react-chartjs-2";
 import style from "./Dashboard.module.css";
 import {
   Chart as ChartJS,
@@ -31,8 +31,6 @@ ChartJS.register(
 );
 
 const Dashboard = () => {
-  const [timeframe, setTimeframe] = useState("Mensal");
-  const [dashInformation, setDashInformation] = useState({ data: [] });
 
   const [filter, setFilter] = useState({
     year: "2024",
@@ -63,7 +61,7 @@ const Dashboard = () => {
           datasets: [
             {
               ...prevData.datasets[0],
-              data: fluxoMensal, // Popula o campo `data`
+              data: fluxoMensal, 
             },
           ],
         }));
@@ -103,7 +101,6 @@ const Dashboard = () => {
 
         
         
-        // Atualizando o gráfico com os dados retornados
         const updatedData = {
           labels: services.map((service) => service.nome),
           datasets: [
@@ -259,26 +256,23 @@ const Dashboard = () => {
       try {
   
         const response = await api.get(`/financeiro/semestral/${filter.specialty}`);
-        const data = response.data || []; // Garante que data seja um array
+        const data = response.data || []; 
   
-        // Inicializa os arrays para cada mês e tipo de pagamento
         const total = Array(6).fill(0);
         const creditCard = Array(6).fill(0);
         const debitCard = Array(6).fill(0);
         const cash = Array(6).fill(0);
         const pix = Array(6).fill(0);
   
-        // Mapeia os meses para índices
         const monthMap = {
-          6: 0, // Julho
-          7: 1, // Agosto
-          8: 2, // Setembro
-          9: 3, // Outubro
-          10: 4, // Novembro
-          11: 5, // Dezembro
+          6: 0,
+          7: 1,
+          8: 2,
+          9: 3,
+          10: 4,
+          11: 5,
         };
   
-        // Itera sobre os dados e popula os arrays
         data.forEach(item => {
           const month = new Date(item.dataPagamento).getMonth();
           const index = monthMap[month];
@@ -304,7 +298,6 @@ const Dashboard = () => {
           }
         });
   
-        // Filtra os valores zero
         const filterZeroValues = (arr) => arr.map((value, index) => value === 0 ? null : value);
   
         const updatedData = {
@@ -361,13 +354,13 @@ const Dashboard = () => {
   }, [filter.specialty]);
 
   function calculateGrowthRate(data) {
-    const growthRates = [0]; // Primeiro mês não tem crescimento, então começamos com 0
+    const growthRates = [0]; 
     for (let i = 1; i < data.length; i++) {
       if (data[i - 1] === 0) {
-        growthRates.push(0); // Evita divisão por zero
+        growthRates.push(0); 
       } else {
         const growth = ((data[i] - data[i - 1]) / data[i - 1]) * 100;
-        growthRates.push(Number(growth.toFixed(2))); // Arredondamento para 2 casas decimais e conversão para número
+        growthRates.push(Number(growth.toFixed(2))); 
       }
     }
     return growthRates;
@@ -391,7 +384,6 @@ const Dashboard = () => {
         position: "top",
       },
       datalabels: {
-        // Adiciona o plugin datalabels para exibir valores
         display: true,
         align: "left",
         formatter: (value, context) => {
@@ -443,7 +435,7 @@ const Dashboard = () => {
         suggestedMax: suggestedBarMax,
         title: {
           display: true,
-          text: "Receita (em Reais)", // Título do eixo y padrão
+          text: "Receita (em Reais)", 
         },
       },
       growth: {
@@ -452,14 +444,13 @@ const Dashboard = () => {
         position: "right",
         title: {
           display: true,
-          text: "Faturamento Total (em Reais)", // Título do eixo growth
+          text: "Faturamento Total (em Reais)", 
         },
         ticks: {
-          // Você pode ajustar o callback para formatar os valores, caso necessário
           callback: (value) => `R$ ${value.toLocaleString("pt-BR")}`,
         },
         grid: {
-          drawOnChartArea: false, // Evita sobreposição de grades entre os eixos
+          drawOnChartArea: false, 
         },
       },
     },
@@ -468,11 +459,10 @@ const Dashboard = () => {
         position: "top",
       },
       datalabels: {
-        // display: (context) => context.dataset.type === 'line', // Mostra apenas valores do tipo 'line'
-        backgroundColor: "#fffb", // Cor de fundo das etiquetas
+        backgroundColor: "#fffb",
         color: "#000",
         font: {
-          weight: "bold", // Define as etiquetas em negrito
+          weight: "bold",
         },
         anchor: "center",
         align: "end",
@@ -484,7 +474,7 @@ const Dashboard = () => {
     responsive: true,
     plugins: {
       legend: {
-        position: "left", // Alinhamento dos labels no lado esquerdo
+        position: "left",
       },
       tooltip: {
         callbacks: {
@@ -492,12 +482,11 @@ const Dashboard = () => {
         },
       },
       datalabels: {
-        // display: (context) => context.dataset.type === 'line', // Mostra apenas valores do tipo 'line'
         backgroundColor: "#fffa",
         color: "#000",
         font: {
           size: 14,
-          weight: "bold", // Define as etiquetas em negrito
+          weight: "bold", 
         },
       },
     },

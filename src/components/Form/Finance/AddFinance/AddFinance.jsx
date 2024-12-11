@@ -14,14 +14,12 @@ function AddFinance({ Display, close, listUsers }) {
     const [inputValueDescription, setInputValueDescription] = useState('');
     const [inputValueAmount, setInputValueAmount] = useState('');
 
-    const [step, setStep] = useState(0);
-    const [messageAlert, setMessageAlert] = useState(false);
+    const [messageAlert] = useState(false);
     const [AlertSuccess, setAlertSucess] = useState(false);
 
     const [optionsUsers, setOptionsUsers] = useState({});
 
     useEffect(() => {
-        // Any necessary initialization
     }, []);
 
     function userSelect(user) {

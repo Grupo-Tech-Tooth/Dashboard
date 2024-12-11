@@ -5,7 +5,7 @@ import style from './GenericModalError.module.css';
 import iconErro from '../../../assets/error.png';
 
 function GenericModalError({close, title, description, icon}) {
-    if(icon == "iconErro"){
+    if(icon === "iconErro"){
         icon = iconErro;
     }
     return (

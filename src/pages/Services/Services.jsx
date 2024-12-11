@@ -2,11 +2,8 @@ import React, { useState, useEffect } from 'react';
 import style from './Services.module.css';
 import Navbar from '../../components/Navbar/Navbar';
 import Container from '../../components/Container/Container';
-import Button from '../../components/Botao/Botao';
 import Table from '../../components/Table/Table';
 import Add from '../../components/Form/Service/AddService/AddService';
-import axios from 'axios';
-import api from '../../api';
 import ServiceControl from './ServiceControl';
 
 function Services() {
@@ -40,7 +37,7 @@ function Services() {
         dataNotFilter: response
       }));
     } catch (error) {
-      console.log('Erro ao obter serviços:', error);
+      console.error('Erro ao obter serviços:', error);
     }
   }
 
@@ -148,37 +145,6 @@ function Services() {
     setTableInformation((prev) => ({
       ...prev,
       data: prev.dataNotFilter
-    }));
-  }
-
-  function buscar() {
-    let filteredData = tableInformation.dataNotFilter;
-
-    if (searchName) {
-      const searchLower = searchName.toLowerCase();
-      filteredData = filteredData.filter((item) =>
-        item.nome.toLowerCase().includes(searchLower)
-      );
-    }
-    if (searchDuration) {
-      filteredData = filteredData.filter((item) =>
-        item.duracaoMinutos === parseInt(searchDuration, 10)
-      );
-    }
-    if (searchPrice) {
-      filteredData = filteredData.filter((item) =>
-        item.preco === `R$ ${parseFloat(searchPrice).toFixed(2)}`
-      );
-    }
-    if (searchId) {
-      filteredData = filteredData.filter((item) =>
-        item.id === parseInt(searchId, 10)
-      );
-    }
-
-    setTableInformation((prev) => ({
-      ...prev,
-      data: filteredData
     }));
   }
 

@@ -1,20 +1,16 @@
 import style from "./Edit.module.css";
-import React, { useState, useEffect } from "react";
+import React, { useState, } from "react";
 import Input from "../../../Input/Input";
 import InputMask from "react-input-mask";
 import "bootstrap/dist/css/bootstrap.min.css";
 import SuccessAlert from "../../../AlertSuccess/AlertSuccess";
 import EmployeesModel from "../../../../pages/Employee/EmployeesModel";
-import GenericModalError from "../../../GenericModal/GenericModalError/GenericModalError";
 
 function Edit({ userData, display, close, listSpecialization }) {
   const [error, setError] = useState("");
   const [disabled, setDisabled] = useState(true);
   const [AlertSuccess, setAlertSucess] = useState(false);
   const [userEdit, setUserEdit] = useState({});
-  const [genericModalError, setGenericModalError] = useState({
-    view: false,
-  });
 
   const validateDate = (inputDate) => {
     const [day, month, year] = inputDate.split("/").map(Number);
@@ -29,21 +25,6 @@ function Edit({ userData, display, close, listSpecialization }) {
       return "";
     }
   };
-
-  async function getData(id, crm) {
-    try {
-      let response = await EmployeesModel.buscarPorId(id, crm);
-      setUserEdit(response);
-    } catch (e) {
-      setGenericModalError((prev) => ({
-        view: true,
-        title: "Ops.... Tivemos um erro ao concluir a ação",
-        description: e.message,
-        icon: "iconErro",
-      }));
-    }
-    fetchAddress();
-  }
 
     return (
         <div className={style['bottom']} style={{ display: display }}>

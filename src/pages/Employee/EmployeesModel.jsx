@@ -1,4 +1,3 @@
-import { registry } from 'chart.js';
 import EmployeesControl from './EmployeesControl';
 
 class EmployeesModel {

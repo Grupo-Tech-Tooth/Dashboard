@@ -10,26 +10,24 @@ function Appointments() {
   const today = new Date();
 
   useEffect(() => {
+    const generateCalendar = () => {
+      const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).getDay();
+      const daysInCurrentMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+      const days = [];
+
+      for (let i = 0; i < firstDayOfMonth; i++) {
+        days.push(null);
+      }
+
+      for (let day = 1; day <= daysInCurrentMonth; day++) {
+        days.push(day);
+      }
+
+      setDaysInMonth(days);
+    };
+
     generateCalendar();
   }, [currentDate]);
-
-  const generateCalendar = () => {
-    const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).getDay();
-    const daysInCurrentMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
-    const days = [];
-
-    // Preenche os dias vazios antes do início do mês
-    for (let i = 0; i < firstDayOfMonth; i++) {
-      days.push(null);
-    }
-
-    // Preenche os dias do mês
-    for (let day = 1; day <= daysInCurrentMonth; day++) {
-      days.push(day);
-    }
-
-    setDaysInMonth(days);
-  };
 
   const handlePrevMonth = () => {
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
@@ -53,7 +51,6 @@ function Appointments() {
         return <div key={index} className="p-2 text-center" style={{ height: '30px' }}></div>;
       }
 
-      // Verifica se o dia está bloqueado (anterior ao dia atual)
       const isPastDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), day) < today.setHours(0, 0, 0, 0);
 
       return (
@@ -66,8 +63,8 @@ function Appointments() {
             margin: '5px',
             borderRadius: '50%',
             color: hoveredIndex === index ? '#fff' : '#0D6EFD',
-            backgroundColor: isPastDay ? '#e0e0e0' : hoveredIndex === index ? '#0D6EFD' : '#FFF', // Cor cinza para dias bloqueados
-            cursor: isPastDay ? 'not-allowed' : 'pointer', // Cursor bloqueado para dias anteriores
+            backgroundColor: isPastDay ? '#e0e0e0' : hoveredIndex === index ? '#0D6EFD' : '#FFF', 
+            cursor: isPastDay ? 'not-allowed' : 'pointer', 
             
           }}
           onMouseEnter={() => someHandler(index)}

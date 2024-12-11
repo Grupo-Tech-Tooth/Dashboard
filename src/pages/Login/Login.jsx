@@ -1,6 +1,5 @@
 import React from 'react';
 import Navbar from '../../components/Navbar/Navbar';
-import Container from '../../components/Container/Container';
 import LoginForm from '../../components/LoginForm/LoginForm';
 import style from './Login.module.css'; // Verifique se você tem um CSS específico para a página de login
 

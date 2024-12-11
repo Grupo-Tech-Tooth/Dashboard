@@ -1,5 +1,5 @@
 import style from './Add.module.css';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Input from '../../../Input/Input';
 import InputMask from 'react-input-mask';
 import 'bootstrap/dist/css/bootstrap.min.css';
