@@ -33,10 +33,6 @@ function Edit({
       ? consultationData.date.split("/").reverse().join("-")
       : ""
   );
-  const [inputValueTime, setInputValueTime] = useState(consultationData.time);
-  const [inputValueStatus, setInputValueStatus] = useState(
-    consultationData.status
-  );
   const [disabledInput, setDisabledInput] = useState(true);
 
   const [step, setStep] = useState(0);
@@ -47,9 +43,9 @@ function Edit({
   const [optionsDoctor, setOptionsDoctor] = useState({ doctors });
   const [optionsTreatment, setOptionsTreatment] = useState({ treatments });
 
-  const [agora, setAgora] = useState(new Date());
-  const [horas, setHoras] = useState(String(agora.getHours()).padStart(2, "0"));
-  const [minutos, setMinutos] = useState(
+  const [agora] = useState(new Date());
+  const [horas] = useState(String(agora.getHours()).padStart(2, "0"));
+  const [minutos] = useState(
     String(agora.getMinutes()).padStart(2, "0")
   );
   const horarioAtual = `${horas}:${minutos}`;
@@ -503,7 +499,7 @@ function Edit({
   async function dateConsultation(value) {
     if (value) {
       try {
-        let response = await ConsultationControl.buscarHorariosIndiponiveis(inputValueDoctor.id, value);
+        await ConsultationControl.buscarHorariosIndiponiveis(inputValueDoctor.id, value);
       } catch (e) {
         console.error(e);
       }
@@ -513,23 +509,12 @@ function Edit({
       }));
       setInputValueDate(value);
       setStep(step + 1);
-      console.log(
+      console.error(
         "Quando essa opção for selecionada precisa fazer uma requisição para os horarios disponiveis"
       );
     } else {
       setStep(step - 1);
     }
-  }
-  function updateStep(number) {
-    setStep(number);
-  }
-
-  function updateDate(date) {
-    if (date) {
-      const formattedDate = date.split("-").reverse().join("-");
-      setInputValueDate(formattedDate);
-    }
-    updateStep(1);
   }
 
   function timeConsultation(tipo, time) {
@@ -540,35 +525,12 @@ function Edit({
           time: time,
         }));
         setStep(step + 1);
-        const a = time;
-        setInputValueTime(time);
         setMessageAlert(false);
       } else {
         setMessageAlert(true);
       }
     } else {
       setStep(step - 1);
-    }
-  }
-
-  function searchCpf(event) {
-    const valor = event.target.value;
-    setInputValueCpf(valor);
-
-    if (valor.length > 2) {
-      const filteredPatients = [];
-      for (let patient of listUsers) {
-        if (patient.cpf && patient.cpf.includes(valor)) {
-          filteredPatients.push({
-            name: patient.nomePaciente,
-            cpf: patient.cpf,
-          });
-        }
-      }
-
-      setOptionsUsers(filteredPatients);
-    } else {
-      setOptionsUsers([]);
     }
   }
 
@@ -629,9 +591,9 @@ function Edit({
     value.preventDefault();
 
     try {
-      let response = await ConsultationControl.editar(consultationData.idPaciente, inputValueDoctor.id, inputValueTreatmentId, value.target.status.value, newConsultation)
+      await ConsultationControl.editar(consultationData.idPaciente, inputValueDoctor.id, inputValueTreatmentId, value.target.status.value, newConsultation)
     } catch (e) {
-      console.erro(e);
+      console.error(e);
     }
     editar();
     setAlertSucess(true);

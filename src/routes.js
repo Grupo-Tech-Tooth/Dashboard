@@ -1,14 +1,10 @@
-// routes.js
-import React, { useEffect } from "react";
+import React from "react";
 import {
-  BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
   useLocation,
 } from "react-router-dom";
-import Index from "./pages/Index/Index";
-import Appointments from "./pages/Appointments/Appointments";
 import Patients from "./pages/Patients/Patients";
 import Login from "./pages/Login/Login";
 import Consultation from "./pages/Consultation/Consultation";
@@ -23,7 +19,6 @@ function RequireAuth({ children }) {
   const location = useLocation();
 
   if (!token) {
-    // Redireciona para login caso não esteja autenticado
     return <Navigate to="/" state={{ from: location }} replace />;
   }
 

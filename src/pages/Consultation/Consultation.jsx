@@ -10,14 +10,12 @@ import api from "../../api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
 import ConsultationControl from "./ConsultationControl";
-//import { handleDesfazer } from './utils/desfazerUtils';
 
 function Consultation() {
   const [pacientes, setPacientes] = useState([]);
   const [pacientesAgendados, setPacientesAgendados] = useState([]);
   const [showStackModal, setShowStackModal] = useState(false);
   const [showArrivalList, setShowArrivalList] = useState(false);
-  const [showEvaluationModal] = useState(false);
   const [tableInformation, setTableInformation] = useState({
     columns: [
       { name: "#", key: "" },
@@ -71,7 +69,7 @@ function Consultation() {
         pacientes: clientes.data,
       }));
     } catch (error) {
-      console.log("Erro ao obter consultas:", error);
+      console.error("Erro ao obter consultas:", error);
     }
     setTimeout(() => {
       getData();
@@ -79,32 +77,26 @@ function Consultation() {
   }
 
   useEffect(() => {
-    //     // Busca a fila de chegada do backend
-    //     axios.get('/api/fila-chegada')  // Troque para o endpoint correto do seu backend
-    //         .then(response => setPacientes(response.data))
-    //         .catch(error => console.error('Erro ao buscar pacientes:', error));
-
-    // Mock de dados para a fila de chegada
     const mockPacientes = [
-      { horario: "09:00", nome: "Luiz Fernando" },
-      { horario: "10:00", nome: "Camila Silva" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
+      { horario: "09:00", nome: "Ana Souza" },
+      { horario: "09:30", nome: "Carlos Pereira" },
+      { horario: "10:00", nome: "Fernanda Lima" },
+      { horario: "10:30", nome: "João Silva" },
+      { horario: "11:00", nome: "Mariana Costa" },
+      { horario: "11:30", nome: "Pedro Santos" },
+      { horario: "12:00", nome: "Lucas Oliveira" },
+      { horario: "12:30", nome: "Juliana Almeida" },
+      { horario: "13:00", nome: "Ricardo Mendes" },
+      { horario: "13:30", nome: "Patrícia Ferreira" },
+      { horario: "14:00", nome: "Gabriel Rocha" },
+      { horario: "14:30", nome: "Beatriz Martins" },
+      { horario: "15:00", nome: "Rafael Gomes" },
+      { horario: "15:30", nome: "Larissa Barbosa" },
+      { horario: "16:00", nome: "Thiago Ribeiro" },
+      { horario: "16:30", nome: "Aline Dias" },
+      { horario: "17:00", nome: "Bruno Carvalho" },
+      { horario: "17:30", nome: "Camila Fernandes" },
+      { horario: "18:00", nome: "Eduardo Costa" },
     ];
 
     const pacientesPilha = [
@@ -370,78 +362,6 @@ function Consultation() {
 
   async function buscar(value) {
     value.preventDefault();
-    // if (
-    //   searchPatient ||
-    //   searchTreatment ||
-    //   searchDoctor ||
-    //   startDate ||
-    //   startDate
-    // ) {
-    //   let filtered = {};
-
-    //   if (searchPatient) {
-    //     filtered = {
-    //       ...filtered,
-    //       paciente: searchPatient,
-    //     };
-    //   }
-
-
-    //   if (searchTreatment) {
-    //     filtered = {
-    //       ...filtered,
-    //       tratamento: searchTreatment,
-    //     };
-    //   }
-
-    //   if (searchDoctor) {
-    //     filtered = {
-    //       ...filtered,
-    //       medico: searchDoctor,
-    //     };
-    //   }
-
-    //   if (startDate || startDate) {
-    //     const hoje = new Date();
-    //     const dia = String(hoje.getDate()).padStart(2, "0");
-    //     const mes = String(hoje.getMonth() + 1).padStart(2, "0");
-    //     const ano = hoje.getFullYear();
-    //     const dataFormatada = new Date(`${ano}-${mes}-${dia}`);
-
-    //     let startDateFormatted = null;
-    //     let endDateFormatted = null;
-
-    //     if (startDate) {
-    //       filtered = {
-    //         ...filtered,
-    //         dataInicio: startDate,
-    //       };
-    //     }
-    //     if (startDate) {
-    //       filtered = {
-    //         ...filtered,
-    //         dataFim: startDate,
-    //       };
-    //     }
-    //   }
-
-    //   try {
-    //     let response = await ConsultationControl.filtrar(filtered);
-    //     if (!response || response.length === 0) {
-    //       formatData([]); // Limpa a tabela se não encontrar resultados
-    //       console.warn('Nenhum cliente encontrado.');
-    //       return;
-    //     }
-    //     formatData(response)
-    //   } catch (e) {
-    //     console.error(e);
-    //   }
-    // } else {
-    //   setTableInformation((prevTableInformation) => ({
-    //     ...prevTableInformation,
-    //     data: tableInformation.dataNotFilter,
-    //   }));
-    // }
   }
 
   function abrirModalAdd() {
@@ -451,28 +371,25 @@ function Consultation() {
   async function exportCSVAppointments() {
     try {
       const response = await api.get(`/agendamentos/exportar-csv`, {
-        responseType: "blob", // Garante que a resposta será tratada como arquivo binário
+        responseType: "blob", 
       });
   
-      // Criação do blob com o arquivo CSV
       const blob = new Blob([response.data], { type: "text/csv" });
   
-      // Criação de um link temporário para download
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = "agendamentos.csv"; // Nome do arquivo
+      link.download = "agendamentos.csv";
       document.body.appendChild(link);
       link.click();
   
-      // Cleanup: Remove o link temporário
       link.remove();
       window.URL.revokeObjectURL(url);
   
       alert("Sucesso ao exportar CSV");
     } catch (error) {
       alert("Erro ao exportar CSV");
-      console.log("Erro ao exportar CSV:", error);
+      console.error("Erro ao exportar CSV:", error);
     }
   }
   
@@ -482,40 +399,6 @@ function Consultation() {
     getData();
   }
 
-  function formatData(item) {
-    debugger
-    if (item.length === 0) {
-      setTableInformation((prevTableInformation) => ({
-        ...prevTableInformation,
-        data: [],
-        dataNotFilter: [],
-      }));
-      return;
-    }
-
-    debugger
-
-      const data = item.map((i) => ({
-        id: i.id,
-        idPaciente: i.cliente.id,
-        nomePaciente: i.cliente.nome,
-        cpf: i.cliente.cpf,
-        date: '',
-        time: '',
-        status: i.status,
-        treatment: i.servico.nome,
-        idTratamento: i.servico.id,
-        doctor: i.medico.nome,
-        idDoctor: i.medico.id
-      }));
-      debugger
-
-    setTableInformation((prevTableInformation) => ({
-      ...prevTableInformation,
-      data: data,
-      dataNotFilter: data,
-    }));
-  }
 }
 
 export default Consultation;

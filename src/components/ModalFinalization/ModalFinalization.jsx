@@ -11,7 +11,6 @@ function ModalFinalization({
 }) {
   const [optionsTreatment, setOptionsTreatment] = useState(false);
 
-  const [agendamentoFinal, setAgendamentoFinal] = useState(agendamento);
 
   const [newTreatment, setNewTreatment] = useState("");
   const [price, setPrice] = useState(agendamento?.price || "");
@@ -28,12 +27,6 @@ function ModalFinalization({
   const [rightValueErro, setRightValueErro] = useState("-25");
   const [rightValueSucess, setRightValueSucess] = useState("-25");
 
-  const paymentMethods = [
-    { id: 1, label: "Pix" },
-    { id: 2, label: "Dinheiro" },
-    { id: 3, label: "Cartão De Débito" },
-    { id: 4, label: "Cartão De Crédito" },
-  ];
 
   const listTreatments = treatments.filter(
     (item) => item.name !== agendamento.treatment
@@ -223,17 +216,9 @@ function ModalFinalization({
       setNewTreatment("");
     }
     if (price && selectedPaymentMethod) {
-      setAgendamentoFinal((prevAgendamento) => ({
-        ...prevAgendamento,
-        treatments: [agendamento.treatment, newTreatment],
-        preco: price,
-        paymentMethod: selectedPaymentMethod,
-        observacao: observation,
-        status: "Finalizado",
-      }));
 
       try {
-        let response = await ConsultationControl.finalizar(agendamento, newTreatment, price, selectedPaymentMethod, observation, taxMachine, installments);
+        await ConsultationControl.finalizar(agendamento, newTreatment, price, selectedPaymentMethod, observation, taxMachine, installments);
         
         setRightValueSucess(5);
         setTimeout(() => {

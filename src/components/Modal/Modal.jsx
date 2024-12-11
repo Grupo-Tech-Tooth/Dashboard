@@ -3,7 +3,7 @@ import styles from "./Modal.module.css";
 import Botao from "../Botao/Botao";
 
 const Modal = ({ show = true, onClose, title, content }) => {
-  if (!show) return null; // Caso o modal não deva ser exibido
+  if (!show) return null;
 
   return (
     <div className={`${styles.modal} z-2`} tabIndex="2" style={title === 'Desfazer consulta' ? { justifyContent: 'start' } : { justifyContent: 'end' }}>

@@ -4,7 +4,6 @@ import Calendario from "../../../Calendario/Calendario";
 import { Alert } from "antd";
 import SuccessAlert from "../../../AlertSuccess/AlertSuccess";
 import ConsultationControl from "../../../../pages/Consultation/ConsultationControl";
-import { use } from "react";
 
 function Add({ Display, close, listUsers, doctors, treatments }) {
   const [newConsultation, setNewConsultation] = useState({
@@ -23,10 +22,8 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
   const [AlertSuccess, setAlertSucess] = useState(false);
 
   const [agora, setAgora] = useState(new Date());
-  const [horas, setHoras] = useState(String(agora.getHours()).padStart(2, "0"));
-  const [minutos, setMinutos] = useState(
-    String(agora.getMinutes()).padStart(2, "0")
-  );
+  const [horas] = useState(String(agora.getHours()).padStart(2, "0"));
+  const [minutos] = useState(String(agora.getMinutes()).padStart(2, "0"));
   const horarioAtual = `${horas}:${minutos}`;
 
   const hoje = new Date();
@@ -477,7 +474,7 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
   async function dateConsultation(value) {
     if (value) {
       try {
-        let response = await ConsultationControl.buscarHorariosIndiponiveis(inputValueDoctor.id, value);
+        await ConsultationControl.buscarHorariosIndiponiveis(inputValueDoctor.id, value);
       } catch (e) {
         console.error(e);
       }
@@ -592,7 +589,7 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
     }
 
     try {
-      let response = await ConsultationControl.cadastrar(inputValueId, inputValueDoctor.id, inputValueTreatmentId, value.target.status.value, newConsultation);
+      await ConsultationControl.cadastrar(inputValueId, inputValueDoctor.id, inputValueTreatmentId, value.target.status.value, newConsultation);
 
       setAlertSucess(true);
       setTimeout(() => {
@@ -606,7 +603,5 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
     }
   }
 }
-
-// Trocar o icone do site com a nossa foto
 
 export default Add;

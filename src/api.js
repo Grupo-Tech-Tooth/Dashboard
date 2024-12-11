@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'https://back-end-teth-tooth.azurewebsites.net', // URL base da sua API
+    baseURL: 'https://back-end-teth-tooth.azurewebsites.net',
 });
 
 api.interceptors.request.use(
@@ -15,9 +15,7 @@ api.interceptors.request.use(
     (error) => Promise.reject(error)
 );
 
-//Início dos endpoints para Patients
 
-// Função para criar cliente
 export async function criarCliente(clienteData) {
     try {
         const response = await api.post('/clientes', clienteData, {
@@ -26,7 +24,7 @@ export async function criarCliente(clienteData) {
             },
         });
         if (response.status === 201) {
-            return await response.data; // Retorna o novo cliente
+            return await response.data;
         } else {
             throw new Error('Erro ao criar cliente');
         }
@@ -36,12 +34,11 @@ export async function criarCliente(clienteData) {
     }
 }
 
-// Função para buscar clientes e seus últimos agendamentos
 export async function buscarClientesComUltimosAgendamentos() {
     try {
         const response = await fetch('/clientes/agendamentos');
         if (response.ok) {
-            return await response.json(); // Retorna a lista de clientes com agendamentos
+            return await response.json();
         } else {
             throw new Error('Erro ao buscar clientes com agendamentos');
         }
@@ -51,7 +48,6 @@ export async function buscarClientesComUltimosAgendamentos() {
     }
 }
 
-// Função para atualizar cliente
 export async function atualizarCliente(id, clienteData) {
     try {
         const response = await api.put(`/clientes/${id}`, clienteData, {
@@ -60,7 +56,7 @@ export async function atualizarCliente(id, clienteData) {
             },
         });
         if (response.status === 200) {
-            return await response.data; // Retorna o cliente atualizado
+            return await response.data;
         } else {
             throw new Error('Erro ao atualizar cliente');
         }
@@ -70,12 +66,11 @@ export async function atualizarCliente(id, clienteData) {
     }
 }
 
-// Função para deletar cliente
 export async function deletarCliente(id) {
     try {
         const response = await api.delete(`/clientes/${id}`);
         if (response.status === 204) {
-            return true; // Retorna true se deletado com sucesso
+            return true;
         } else {
             throw new Error('Erro ao deletar cliente');
         }
@@ -85,20 +80,17 @@ export async function deletarCliente(id) {
     }
 }
 
-// Função para filtrar clientes
 export async function filtrarClientes(filtros) {
     try {
         const params = new URLSearchParams(filtros).toString();
         const response = await api.get(`/clientes/filtrar?${params}`);
-        console.log(response)
-        return response.data; // axios já processa a resposta como JSON
+        return response.data;
     } catch (error) {
         console.error('Erro ao filtrar clientes:', error);
         throw error;
     }
 }
 
-//Inicio das Buscas extras de Medicos que envolve Patients
 export async function listarMedicos() {
     try {
         const response = await api.get(`/medicos`);
@@ -112,14 +104,11 @@ export async function listarMedicos() {
 export async function buscarIdMedicoPorCpf(cpf) {
     try {
       const response = await api.get(`medicos/cpf/identification?cpf=${cpf}`);
-      return response.data; // Retorna o ID do médico
+      return response.data;
     } catch (error) {
       console.error('Erro ao buscar ID do médico pelo CPF:', error);
       throw error;
     }
   };
-//Fim das Buscas extras de Medicos que envolve Patients
-
-//Fim dos endpoints para Patients
 
 export default api;

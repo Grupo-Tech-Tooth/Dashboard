@@ -136,10 +136,6 @@ class ConsultationControl {
 
     static async finalizar(agendamento, newTreatment, price, selectedPaymentMethod, observation, taxMachine, installments) {
         try {
-            const [day, month, year] = agendamento.date.split("/");
-            const [hour, minute] = agendamento.time.split(":");
-            const formattedDate = new Date(Date.UTC(year, month - 1, day, hour, minute, 0, 0));
-
             const dataAtual = this.formatDateToISO();
             let parcelas = 1;
             let taxas = 0;

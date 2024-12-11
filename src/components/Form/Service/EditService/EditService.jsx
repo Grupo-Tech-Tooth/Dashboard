@@ -1,5 +1,5 @@
 import style from "./EditService.module.css";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import SuccessAlert from "../../../AlertSuccess/AlertSuccess";
 import api from "../../../../api";
@@ -9,14 +9,8 @@ const EditService = ({ serviceData, display, close }) => {
   const [AlertSuccess, setAlertSucess] = useState(false);
   const [disabled, setDisabled] = useState(true);
 
-  const [dtoServico, setDtoServico] = useState({
-    nome: "",
-    descricao: "",
-    preco: 0,
-    duracaoMinutos: 0,
-  });
 
-  const [listaCategorias, setListaCategorias] = useState([
+  const [listaCategorias] = useState([
     { key: "CONSULTAS_GERAIS", name: "Consultas Gerais" },
     { key: "PREVENCAO", name: "Prevenção" },
     { key: "ODONTOPEDIATRIA", name: "Odontopediatria" },
@@ -205,7 +199,6 @@ const EditService = ({ serviceData, display, close }) => {
     e.preventDefault();
     setAlertSucess(true);
 
-    // Crie um objeto local com os valores atualizados
     const dtoServicoAtualizado = {
       nome: serviceEdit?.nome,
       descricao: serviceEdit?.descricao,
@@ -214,7 +207,6 @@ const EditService = ({ serviceData, display, close }) => {
       categoria: serviceEdit?.categoria,
     };
 
-    console.log("dtoServicoAtualizado", dtoServicoAtualizado);
 
     try {
       const response = await api.put(

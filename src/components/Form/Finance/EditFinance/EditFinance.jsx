@@ -4,9 +4,6 @@ import api from "../../../../api";
 
 const EditFinance = ({ display, financeData, listUsers, close }) => {
   const [formData, setFormData] = useState(financeData);
-  const [inputValueCpf, setInputValueCpf] = useState("");
-  const [inputValueName, setInputValueName] = useState("");
-  const [optionsUsers, setOptionsUsers] = useState({});
 
   useEffect(() => {
     setFormData(financeData);
@@ -24,8 +21,6 @@ const EditFinance = ({ display, financeData, listUsers, close }) => {
 
     const valorBruto = parseFloat(formData.valorBruto.replace("R$", "").replace(",", "."));
 
-    // Garantir que todos os campos necessários estejam presentes
-    console.log("Form data", formData);
     const payload = {
       idAgendamento: formData.agendamentoId || 0,
       idPaciente: formData.pacienteId || 0,
@@ -38,7 +33,6 @@ const EditFinance = ({ display, financeData, listUsers, close }) => {
       taxas: formData.taxas || 0,
     };
 
-    console.log("Payload enviado:", payload);
 
     try {
       const response = await api.put(`/financeiro/${formData.id}`, payload, {
@@ -51,7 +45,6 @@ const EditFinance = ({ display, financeData, listUsers, close }) => {
         throw new Error("Erro ao atualizar os dados financeiros");
       }
 
-      console.log("Dados financeiros atualizados com sucesso:", response.data);
     } catch (error) {
       console.error("Erro ao atualizar os dados financeiros:", error);
     }
@@ -61,7 +54,6 @@ const EditFinance = ({ display, financeData, listUsers, close }) => {
     const { name, value } = event.target;
 
     if (name === "dataPagamento") {
-      // Converte de yyyy-MM-dd para dd/MM/yyyy
       const [ano, mes, dia] = value.split("-");
       setFormData((prev) => ({
         ...prev,
@@ -74,33 +66,6 @@ const EditFinance = ({ display, financeData, listUsers, close }) => {
       }));
     }
   };
-
-  function userSelect(user) {
-    setInputValueCpf(user.cpf);
-    setInputValueName(user.name);
-    setOptionsUsers({});
-  }
-
-  function searchCpf(event) {
-    const valor = event.target.value;
-    setInputValueCpf(valor);
-
-    if (valor.length > 2) {
-      const filteredPatients = [];
-      for (let patient of listUsers) {
-        if (patient.cpf && patient.cpf.includes(valor)) {
-          filteredPatients.push({
-            name: patient.name,
-            cpf: patient.cpf,
-          });
-        }
-      }
-
-      setOptionsUsers(filteredPatients);
-    } else {
-      setOptionsUsers([]);
-    }
-  }
 
   return (
     <>
