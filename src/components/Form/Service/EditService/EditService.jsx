@@ -125,7 +125,7 @@ const EditService = ({ serviceData, display, close }) => {
                     onChange={(e) =>
                       setServiceEdit({
                         ...serviceEdit,
-                        price: parseFloat(e.target.value),
+                        preco: parseFloat(e.target.value),
                       })
                     }
                   />
@@ -144,7 +144,7 @@ const EditService = ({ serviceData, display, close }) => {
                     onChange={(e) =>
                       setServiceEdit({
                         ...serviceEdit,
-                        duration: parseInt(e.target.value),
+                        duracaoMinutos: parseInt(e.target.value),
                       })
                     }
                   />

@@ -100,6 +100,7 @@ const AddService = ({ Display, close }) => {
             setAlertSuccess(true);
             setTimeout(() => {
                 close(newService);
+                window.location.reload();
             }, 2000);
         }).catch((error) => {
             setError(error.message);

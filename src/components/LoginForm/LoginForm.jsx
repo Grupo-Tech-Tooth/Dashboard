@@ -19,7 +19,7 @@ const LoginForm = () => {
     setCarregando(true)
 
     try {
-      const response = await axios.post("https://back-end-teth-tooth.azurewebsites.net/login", {
+      const response = await axios.post("http://localhost:8080/login", {
         email: email,
         senha: password,
       });

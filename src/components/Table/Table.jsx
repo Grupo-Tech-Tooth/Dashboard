@@ -144,9 +144,8 @@ const Table = ({ tableInformation, setTableInformation, pacientesDados }) => {
 
       {tableInformation.data.length > 0 && (
         <div
-          className={`${style["table"]} table-responsive ${
-            pageSize === 10 ? "overflow-hidden" : ""
-          }`}
+          className={`${style["table"]} table-responsive ${pageSize === 10 ? "overflow-hidden" : ""
+            }`}
         >
           <table
             className="table table-hover mb-2"
@@ -172,10 +171,10 @@ const Table = ({ tableInformation, setTableInformation, pacientesDados }) => {
                           {col.key === ""
                             ? index + 1 + (currentPage - 1) * pageSize
                             : col.key === "amount"
-                            ? "R$ " + item[col.key] + ",00"
-                            : col.key === "paymentMethod" && item[col.key] === "Cartão de Crédito"
-                            ? item[col.key] + " - " + item["installments"] + "x"
-                            : item[col.key]}
+                              ? "R$ " + item[col.key] + ",00"
+                              : col.key === "paymentMethod" && item[col.key] === "Cartão de Crédito"
+                                ? item[col.key] + " - " + item["installments"] + "x"
+                                : item[col.key]}
                         </td>
                       ) : (
                         <td style={{ gap: "5px" }}>
@@ -224,46 +223,46 @@ const Table = ({ tableInformation, setTableInformation, pacientesDados }) => {
             />
           </div>
 
-                {formUser !== "none" && (
-                    <FormUser
-                        display={formUser}
-                        userData={userEdit}
-                        listaClientes={pacientesDados}
-                        close={closeForm} />
-                )}
-                {formConsultation !== "none" && (
-                    <FormConsultation
-                        display={formConsultation}
-                        consultationData={consultationEdit}
-                        listUsers={tableInformation.data}
-                        doctors={tableInformation.doctor}
-                        treatments={tableInformation.treatment}
-                        close={closeForm}
-                    />
-                )}
-                {formService !== "none" && (
-                    <FormService
-                        display={formService}
-                        serviceData={serviceEdit}
-                        close={closeForm}
-                    />
-                )}
-                {formFinance !== "none" && (
-                    <FormFinance
-                        display={formFinance}
-                        financeData={financeEdit}
-                        listUsers={tableInformation.data}
-                        close={closeForm}
-                    />
-                )}
-                {formFunctional !== "none" && (
-                    <FormFunctional
-                        display={formFunctional}
-                        userData={userEdit}
-                        close={closeForm}
-                        listSpecialization={tableInformation.specialization}
-                    />
-                )}
+          {formUser !== "none" && (
+            <FormUser
+              display={formUser}
+              userData={userEdit}
+              listaClientes={pacientesDados}
+              close={closeForm} />
+          )}
+          {formConsultation !== "none" && (
+            <FormConsultation
+              display={formConsultation}
+              consultationData={consultationEdit}
+              listUsers={tableInformation.data}
+              doctors={tableInformation.doctor}
+              treatments={tableInformation.treatment}
+              close={closeForm}
+            />
+          )}
+          {formService !== "none" && (
+            <FormService
+              display={formService}
+              serviceData={serviceEdit}
+              close={closeForm}
+            />
+          )}
+          {formFinance !== "none" && (
+            <FormFinance
+              display={formFinance}
+              financeData={financeEdit}
+              listUsers={tableInformation.data}
+              close={closeForm}
+            />
+          )}
+          {formFunctional !== "none" && (
+            <FormFunctional
+              display={formFunctional}
+              userData={userEdit}
+              close={closeForm}
+              listSpecialization={tableInformation.specialization}
+            />
+          )}
 
           {modalViewQuery && (
             <ViewQuery queryData={viewQuery} close={closeForm} />
@@ -272,8 +271,9 @@ const Table = ({ tableInformation, setTableInformation, pacientesDados }) => {
       )}
 
       {!tableInformation.data.length > 0 && (
-        <div className={style.carregamento} id="carregamento">
+        <div className={style.carregamento}>
           <div className={style.loader}></div>
+          <span className={style.texto}>Nenhum resultado encontrado</span>
         </div>
       )}
     </>
@@ -365,48 +365,48 @@ const Table = ({ tableInformation, setTableInformation, pacientesDados }) => {
     }
   }
 
-    async function deletar(item) {
-        if (!window.confirm("Deseja realmente excluir este registro?")) {
-           return;
+  async function deletar(item) {
+    if (!window.confirm("Deseja realmente excluir este registro?")) {
+      return;
+    }
+    try {
+
+      let response;
+
+      if (tableInformation.tableId === "patientsTable") {
+        response = await api.delete(`/clientes/${item.id}`);
+      } else if (tableInformation.tableId === "servicesTable") {
+        response = await api.delete(`/servicos/${item.id}`);
+      }
+      else if (tableInformation.tableId === "financesTable") {
+        response = await api.delete(`/financas/${item.id}`);
+      }
+      else if (tableInformation.tableId === "employeesTable") {
+
+        if (item.crm) {
+          response = await api.delete(`/medicos/${item.id}`);
+        } else {
+          response = await api.delete(`/funcionais/${item.id}`);
         }
-        try {
 
-          let response;
+      }
+      else {
+        response = await api.delete(`/consultas/${item.id}`);
+      }
 
-          if (tableInformation.tableId === "patientsTable") {
-            response = await api.delete(`/clientes/${item.id}`);
-          } else if (tableInformation.tableId === "servicesTable") {
-            response = await api.delete(`/servicos/${item.id}`);
-          }
-          else if (tableInformation.tableId === "financesTable") {
-            response = await api.delete(`/financas/${item.id}`);
-          }
-          else if (tableInformation.tableId === "employeesTable") {
-            
-            if(item.crm){
-              response = await api.delete(`/medicos/${item.id}`);
-            }else{
-              response = await api.delete(`/funcionais/${item.id}`);
-            }
+      if (response.status === 204) {
+        const newData = tableInformation.data.filter(
+          (element) => element.id !== item.id
+        );
+        setTableInformation({ ...tableInformation, data: newData });
+        alert("Item deletado com sucesso.");
+      }
 
-          }
-          else {
-            response = await api.delete(`/consultas/${item.id}`);
-          }
-
-          if (response.status === 204) {
-            const newData = tableInformation.data.filter(
-              (element) => element.id !== item.id
-            );
-            setTableInformation({ ...tableInformation, data: newData });
-            alert("Item deletado com sucesso.");
-          }
-
-        } catch (error) {
-          alert("Erro ao deletar Item.");
-          console.error(error);
-        }
-      }      
+    } catch (error) {
+      alert("Erro ao deletar Item.");
+      console.error(error);
+    }
+  }
 
   function concluir(item) {
     modalFinalization === "block"
