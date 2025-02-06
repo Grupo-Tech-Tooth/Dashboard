@@ -6,17 +6,17 @@ import Button from "../../components/Botao/Botao";
 import Table from "../../components/Table/Table";
 import Add from "../../components/Form/User/Add/Add";
 import api from "../../api";
-import { filtrarClientes, criarCliente } from '../../api';
+import { filtrarClientes, criarCliente } from "../../api";
 
 function Patients() {
   const [tableInformation, setTableInformation] = useState({
     columns: [
-      { name: "#", key: 'id' },
-      { name: "Nome", key: 'fullName' },
-      { name: "Email", key: 'email' },
-      { name: "Telefone", key: 'phone' },
-      { name: "Última Consulta", key: 'lastVisit' },
-      { name: "Ações", key: 'acoes' },
+      { name: "#", key: "id" },
+      { name: "Nome", key: "fullName" },
+      { name: "Email", key: "email" },
+      { name: "Telefone", key: "phone" },
+      { name: "Última Consulta", key: "lastVisit" },
+      { name: "Ações", key: "acoes" },
     ],
     data: [],
     dataNotFilter: [],
@@ -32,20 +32,17 @@ function Patients() {
 
   const [viewFormAdd, setViewFormAdd] = useState("none");
 
-  // Função para pegar os dados dos pacientes
   async function getData() {
     try {
       const response = await api.get(`/clientes/agendamentos`);
-      console.log(response.data);
       resetFields();
       setPacientesData(response.data);
-      formatData(response.data); // Passa os dados diretamente
+      formatData(response.data); 
     } catch (error) {
-      console.log("Erro ao obter consultas:", error);
+      console.error("Erro ao obter consultas:", error);
     }
   }
 
-  // Função para formatar os dados dos pacientes
   function formatData(pacientes) {
     if (!Array.isArray(pacientes) || pacientes.length === 0) {
       setTableInformation((prevTableInformation) => ({
@@ -58,12 +55,14 @@ function Patients() {
 
     const data = pacientes.map((paciente) => ({
       id: paciente.id,
-      fullName: `${paciente.nome} ${paciente.sobrenome || ''}`,
+      fullName: `${paciente.nome} ${paciente.sobrenome || ""}`,
       email: paciente.email,
       phone: paciente.telefone,
       lastVisit: paciente.ultimoAgendamento
-        ? new Date(paciente.ultimoAgendamento.dataHora).toISOString().split('T')[0] // Apenas a data
-        : 'Não agendado',
+        ? new Date(paciente.ultimoAgendamento.dataHora)
+            .toISOString()
+            .split("T")[0] 
+        : "Não agendado",
     }));
 
     setTableInformation((prevTableInformation) => ({
@@ -75,9 +74,8 @@ function Patients() {
 
   useEffect(() => {
     getData();
-  }, []); // Chama getData ao montar o componente
+  }, []);
 
-  // Função para limpar os filtros
   function resetFields() {
     setSearchName("");
     setSearchEmail("");
@@ -85,7 +83,6 @@ function Patients() {
     setSearchPhone("");
   }
 
-  // Função de busca para filtrar os pacientes
   async function buscar() {
     try {
       const filtros = {
@@ -102,43 +99,37 @@ function Patients() {
       const response = await filtrarClientes(filtrosValidos);
 
       if (!response || response.length === 0) {
-        formatData([]); // Limpa a tabela se não encontrar resultados
-        console.warn('Nenhum cliente encontrado.');
+        formatData([]); 
+        console.warn("Nenhum cliente encontrado.");
         return;
       }
 
-      formatData(response); // Atualiza a tabela com os resultados
+      formatData(response); 
     } catch (error) {
-      console.error('Erro ao filtrar clientes:', error);
+      console.error("Erro ao filtrar clientes:", error);
     }
   }
 
-  // Função para abrir o modal de adicionar paciente
   function abrirModalAdd() {
     setViewFormAdd("block");
   }
 
-  // Função para fechar o formulário de adicionar paciente e salvar
   function closeForm(newUser) {
     setViewFormAdd("none");
     saveFields(newUser);
     setTimeout(() => getData(), 1500);
   }
 
-  // Função assíncrona para salvar o paciente
   async function saveFields(newUser) {
     if (newUser?.name) {
       try {
-
-        // Definir o atributo hierarquia como "CLIENTE"
         newUser.hierarquia = "CLIENTE";
 
-        const response = await criarCliente(newUser); // Envia o novo paciente para a API
-        const savedPatient = response.data; // Recebe o paciente recém-criado
+        const response = await criarCliente(newUser); 
+        const savedPatient = response.data; 
 
         alert("Paciente adicionado com sucesso!");
 
-        // Atualiza a tabela com o novo paciente
         setTableInformation((prevTableInformation) => ({
           ...prevTableInformation,
           data: [...prevTableInformation.data, savedPatient],
@@ -160,7 +151,10 @@ function Patients() {
           <Add Display={viewFormAdd} close={closeForm} />
         )}
         <div className={style["card"]}>
-          <div className="row mb-4" style={{ display: "flex", alignItems: "center", gap: '0%', margin: '0' }}>
+          <div
+            className="row mb-4"
+            style={{ display: "flex", alignItems: "center" }}
+          >
             <div className="col-md-2 mx-auto">
               <label htmlFor="searchNome">Nome do Paciente</label>
               <input
@@ -222,13 +216,23 @@ function Patients() {
               </button>
             </div>
           </div>
-          <div className={style['table']}>
-            <Table tableInformation={tableInformation} pacientesDados={pacientesData} setTableInformation={setTableInformation}/>
+          <div className={style["table"]}>
+            <Table
+              tableInformation={tableInformation}
+              pacientesDados={pacientesData}
+              setTableInformation={setTableInformation}
+            />
           </div>
         </div>
       </Container>
-      <div className={`position-absolute p-5 rounded-3 ${style['boxButton']}`}>
-        <button type="button" onClick={() => abrirModalAdd()} className={`${style['add']} btn btn-primary`}>Cadastrar Paciente</button>
+      <div className={`position-absolute p-5 rounded-3 ${style["boxButton"]}`}>
+        <button
+          type="button"
+          onClick={() => abrirModalAdd()}
+          className={`${style["add"]} btn btn-primary`}
+        >
+          Cadastrar Paciente
+        </button>
       </div>
     </>
   );

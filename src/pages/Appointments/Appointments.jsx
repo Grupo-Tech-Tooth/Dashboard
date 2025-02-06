@@ -12,22 +12,15 @@ import style from './Appointments.module.css';
 
 
 const Appointments = () => {
-  //
-  // Dados do modal de marcar/remarcar consultasx
   const [showModal, setShowModal] = useState(false);
-  // Dados do modal de avaliar consultas
   const [showEvaluationModal, setShowEvaluationModal] = useState(false);
-  // Dados do modal de cancelar consultas
   const [showCancelModal, setShowCancelModal] = useState(true);
-  // Passo atual do modal de marcar/remarcar consultas
   const [step, setStep] = useState(0);
 
-  // Dados que serão exibidos nos cards de consultas 
   const [appointmentsData, setAppointmentsData] = useState([]);
   const [lastAppointment, setLastAppointment] = useState({});
   const [nextAppointment, setNextAppointment] = useState({});
 
-  // Dados do modal de marcar/remarcar consultas 
   const [schedulementId, setSchedulementId] = useState('');
   const [selectedTreatment, setSelectedTreatment] = useState('');
   const [selectedDoctor, setSelectedDoctor] = useState('');
@@ -36,86 +29,29 @@ const Appointments = () => {
   const [selectedNote, setSelectedNote] = useState('');
   const [filledFeedback, setFilledFeedback] = useState('');
 
-  //Filtros
-  // const [searchPatient, setSearchPatient] = useState('');
   const [searchTreatment, setSearchTreatment] = useState('');
   const [searchDoctor, setSearchDoctor] = useState('');
   const [searchInitialDate, setSearchInitialDate] = useState('');
   const [searchFinalDate, setSearchFinalDate] = useState('');
 
-  //Logica dos Inuts dos filtros
   const [optionsTreatments] = useState([]);
   const [inputValueTreatment] = useState(searchTreatment);
   const [optionsDoctors] = useState([]);
   const [inputValueDoctor] = useState(searchDoctor);
 
 
-  //consultas
   const [consultas, setConsultas] = useState([]);
 
-  //tratamentos
   const [treatments, setTreatments] = useState([]);
 
-  //médicos
   const [doctors, setDoctors] = useState([]);
 
   const [doctorAvailableDates, setDoctorAvailableDates] = useState([]);
 
-  //datas disponíveis
   const [availableDates, setAvailableDates] = useState([]);
 
-  //horários disponíveis
   const [availableTimes, setAvailableTimes] = useState([]);
 
-
-  // function searchTreatmentFunction(value) {
-  //   const valor = value;
-  //   setInputValueTreatment(valor);
-  //   console.log('valor', valor);
-
-  //   if (valor.length > 2) {
-  //     const filteredTreatments = treatments.filter(treatment =>
-  //       removerAcentos(treatment.nome.toLowerCase()).includes(removerAcentos(valor.toLowerCase()))
-  //     );
-  //     console.log('filteredTreatments', filteredTreatments);
-  //     setOptionsTreatments(filteredTreatments);
-  //   } else {
-  //     setOptionsTreatments([]);
-  //   }
-  // }
-
-  // function treatmentSelect(index) {
-  //   setInputValueTreatment(optionsTreatments[index]);
-  //   setSearchTreatment(optionsTreatments[index]);
-  //   setOptionsTreatments([]);
-  // }
-
-  // function searchDoctorFunction(value) {
-  //   const valor = value;
-  //   setInputValueDoctor(valor);
-  //   console.log('Valor digitado:', valor);
-
-  //   if (valor.length > 2) {
-  //     const filteredDoctors = doctors.filter(doctor => {
-  //       const doctorName = removerAcentos(doctor.nome.toLowerCase());
-  //       const searchValue = removerAcentos(valor.toLowerCase());
-  //       return doctorName.includes(searchValue);
-  //     });
-
-  //     console.log('Médicos filtrados:', filteredDoctors);
-  //     setOptionsDoctors(filteredDoctors);
-  //   } else {
-  //     setOptionsDoctors([]);
-  //   }
-  // }
-
-  // function doctorSelect(index) {
-  //   setInputValueDoctor(optionsDoctors[index]);
-  //   setSearchDoctor(optionsDoctors[index]);
-  //   setOptionsDoctors([]);
-  // }
-
-  // Função para remover acentos de uma string
   const removerAcentos = (str) => {
     return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   };
@@ -125,13 +61,12 @@ const Appointments = () => {
     let newHours = hours - hoursToSubtract;
 
     if (newHours < 0) {
-      newHours += 24; // Ajusta para o dia anterior se necessário
+      newHours += 24;
     }
 
     return `${String(newHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
   };
 
-  // Função para capitalizar a primeira letra de uma string
   const capitalizeFirstLetter = (string) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
@@ -139,7 +74,7 @@ const Appointments = () => {
   const parseDateBDtoDateTime = (dateString) => {
     const date = new Date(dateString);
     const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // getMonth() retorna 0-11, então adicionamos 1
+    const month = String(date.getMonth() + 1).padStart(2, '0');
     const year = date.getFullYear();
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
@@ -151,17 +86,15 @@ const Appointments = () => {
   };
 
 
-  // Função para converter a data para o formato dd-mm-yyyy
   const parseDateBDtoDash = (dateString) => {
     const date = new Date(dateString);
     const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // getMonth() retorna 0-11, então adicionamos 1
+    const month = String(date.getMonth() + 1).padStart(2, '0');
     const year = date.getFullYear();
 
     return `${day}-${month}-${year}`;
   };
 
-  // Função para reverter a data para o formato original
   const parseDateBDtoSpace = (dateString) => {
     const months = [
       'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
@@ -179,7 +112,7 @@ const Appointments = () => {
   const parseDateDateTimetoBD = (date, time) => {
     const parts = date.split('-');
     const day = parseInt(parts[0], 10);
-    const month = parseInt(parts[1], 10) - 1; // getMonth() retorna 0-11, então subtraímos 1
+    const month = parseInt(parts[1], 10) - 1; 
     const year = parseInt(parts[2], 10);
 
     const timeParts = time.split(':');
@@ -194,7 +127,6 @@ const Appointments = () => {
   const findAppointment = (id) => {
     return consultas.find(appointment => appointment.id === id);
   };
-  //popula os dados no modal para reagendar consultas
   const rescheduleAppointment = async (id) => {
     const consulta = findAppointment(id);
     if (consulta) {
@@ -209,12 +141,10 @@ const Appointments = () => {
     }
   }
 
-  //função para abrir o modal de marcar/remarcar consultas
   const handleOpenModal = () => {
     setShowModal(true);
     setStep(0);
   };
-  //função para fechar o modal de marcar/remarcar consultas
   const handleCloseModal = () => {
     setShowModal(false);
     setStep(0);
@@ -225,7 +155,6 @@ const Appointments = () => {
     setSelectedTime('');
   };
 
-  //função para avançar os passos do modal de marcar/remarcar consultas
   const handleNextStep = async () => {
     if (step === 1) {
       await obterDatasDisponiveis(selectedDoctor, selectedTreatment);
@@ -242,10 +171,8 @@ const Appointments = () => {
   };
 
 
-  //função para abrir o modal de avaliar consultas
   const handleOpenEvaluationModal = (id) => {
     const consulta = consultas.find(consulta => consulta.id === id);
-    console.log('Consulta:', consulta);
     if (consulta) {
       setSchedulementId(consulta.id);
       setSelectedTreatment(consulta.tratamento);
@@ -254,24 +181,21 @@ const Appointments = () => {
       setSelectedTime(consulta.horario);
 
       if (consulta.avaliacao !== '' && consulta.avaliação !== null) {
-        console.log('entrei no if');
         setSelectedNote(consulta.avaliacao);
         setFilledFeedback(consulta.feedback);
-        setStep(2); // Passo para exibir que já foi avaliada
+        setStep(2); 
       } else {
-        console.log('entrei no else');
         setSelectedNote('');
         setFilledFeedback('');
-        setStep(0); // Passo inicial para avaliação
+        setStep(0); 
       }
 
       setShowEvaluationModal(true);
     } else {
-      console.log('Consulta não encontrada');
+      console.error('Consulta não encontrada');
     }
   };
 
-  //função para fechar o modal de avaliar consultas
   const handleCloseEvaluationModal = () => {
     setShowEvaluationModal(false);
     setSchedulementId('');
@@ -284,7 +208,6 @@ const Appointments = () => {
     setStep(0);
   };
 
-  //função para avançar os passos do modal de avaliar consultas
   const handleEvaluationNextStep = () => {
     const consulta = consultas.find(consulta => consulta.id === schedulementId);
     if (consulta) {
@@ -299,11 +222,10 @@ const Appointments = () => {
       }
     }
     else {
-      console.log('Consulta não encontrada');
+      console.error('Consulta não encontrada');
     }
   };
 
-  //função para abrir o modal de cancelar consultas
   const handleOpenCancelModal = (id) => {
     setSchedulementId(id);
     setShowCancelModal(true);
@@ -315,15 +237,13 @@ const Appointments = () => {
     setSchedulementId('');
   };
 
-  //notas disponíveis
   const availableNotes = [
     '1 - Péssimo', '2 - Ruim', '3 - Regular', '4 - Bom', '5 - Excelente'
   ];
 
-  //popula o modal de marcar/remarcar consultas
   const renderContent = () => {
     switch (step) {
-      case 0: // Selecionar Tipo de Tratamento
+      case 0: 
         return (
           <div>
             <div className='px-2'>
@@ -357,7 +277,7 @@ const Appointments = () => {
             </div>
           </div >
         );
-      case 1: // Selecionar Médico
+      case 1: 
         return (
           <div>
             <div className='px-2'>
@@ -375,8 +295,8 @@ const Appointments = () => {
                       value={doctor.id}
                       onChange={() => setSelectedDoctor(doctor.id)}
                       checked={selectedDoctor === doctor.id}
-                      className="form-check-input w-100" // Classe do Bootstrap para o input
-                      style={{ display: 'none' }} // Oculta o radio button padrão
+                      className="form-check-input w-100" 
+                      style={{ display: 'none' }} 
                     />
                     <label
                       htmlFor={`doctor-${index}`}
@@ -395,7 +315,7 @@ const Appointments = () => {
             </div>
           </div >
         );
-      case 2: // Selecionar Data  
+      case 2: 
         return (
           <div>
             <div className='px-2'>
@@ -436,7 +356,7 @@ const Appointments = () => {
             </div>
           </div>
         );
-      case 3: // Selecionar Hora
+      case 3: 
         return (
           <div>
             <div className='px-2'>
@@ -478,7 +398,7 @@ const Appointments = () => {
             </div>
           </div>
         );
-      case 4: // Consulta Marcada
+      case 4:
         return (
           <div>
             <div className='px-2'>
@@ -502,7 +422,6 @@ const Appointments = () => {
     }
   };
 
-  //popula o modal de avaliar consultas
   const renderEvaluationContent = () => {
     switch (step) {
       case 0:
@@ -631,7 +550,6 @@ const Appointments = () => {
     setNextAppointment(comingAppointment);
   };
 
-  //popula os dados de consultas para renderizar nos cards
   const fillAppointmentsData = (listaConsultas = null) => {
     getLastAppointment();
     getNextAppointment();
@@ -640,7 +558,6 @@ const Appointments = () => {
 
   }
 
-  //atualiza as consultas com os novos dados
   const atualizarConsulta = (consultaAtualizada) => {
     const existeConsulta = consultas.some((consulta) => consulta.id === consultaAtualizada.id);
 
@@ -648,13 +565,12 @@ const Appointments = () => {
       ? consultas.map((consulta) =>
         consulta.id === consultaAtualizada.id ? consultaAtualizada : consulta
       )
-      : [...consultas, consultaAtualizada]; // Se não existir, adiciona a nova consulta ao final da lista
+      : [...consultas, consultaAtualizada]; 
 
     setConsultas(novasConsultas);
     fillAppointmentsData(novasConsultas);
   };
 
-  //função para ordenar as consultas
   const ordenarConsultas = (listaConsultas = null) => {
     if (listaConsultas === null || listaConsultas === '' || listaConsultas.length === 0) return [];
 
@@ -667,14 +583,12 @@ const Appointments = () => {
     }
   }
 
-  //função para filtrar as consultas
   const filtrarConsultas = () => {
     if (!consultas || consultas.length === 0) return;
 
     if (consultas.length === 1) {
       const dataConsulta = new Date(consultas[0].dataHora);
 
-      // const matchesPatient = searchPatient ? removerAcentos(consultas[0].paciente).toLowerCase().includes(removerAcentos(searchPatient).toLowerCase().trim()) : true;
       const matchesTreatment = searchTreatment ? (
         treatments.find(treatment => treatment.id === consultas[0].servicoId)
           ?
@@ -699,7 +613,6 @@ const Appointments = () => {
       const consultasFiltradas = consultas.filter((consulta) => {
         const dataConsulta = new Date(consulta.dataHora);
 
-        // const matchesPatient = searchPatient ? removerAcentos(consulta.paciente).toLowerCase().includes(removerAcentos(searchPatient).toLowerCase().trim()) : true;
         const matchesTreatment = searchTreatment ? (
           treatments.some(treatment => treatment.id === consulta.servicoId) ? removerAcentos((treatments.find(treatment => treatment.id === consulta.servicoId)).nome).toLowerCase().includes(removerAcentos(searchTreatment).toLowerCase().trim()) : true
         ) : true;
@@ -720,9 +633,7 @@ const Appointments = () => {
 
   };
 
-  //função para limpar os filtros
   const limparFiltros = () => {
-    // setSearchPatient('');
     setSearchTreatment('');
     setSearchDoctor('');
     setSearchInitialDate('');
@@ -730,7 +641,6 @@ const Appointments = () => {
     fillAppointmentsData();
   };
 
-  //função para obter os dados do banco de dados(medicos, tratamentos, consultas)
   const obterDadosBanco = async () => {
     await obterMedicos();
     await obterServicos();
@@ -738,7 +648,6 @@ const Appointments = () => {
   };
 
 
-  //função para obter os médicos do banco de dados
   const obterMedicos = async () => {
     try {
       const token = sessionStorage.getItem('token');
@@ -759,7 +668,6 @@ const Appointments = () => {
     }
   };
 
-  //função para obter os serviços oferecidos do banco de dados
   const obterServicos = async () => {
     try {
       const token = sessionStorage.getItem('token');
@@ -780,7 +688,6 @@ const Appointments = () => {
     }
   };
 
-  //função para obter as consultas do banco de dados
   const obterConsultas = async () => {
     const clienteId = sessionStorage.getItem('id');
     try {
@@ -801,15 +708,11 @@ const Appointments = () => {
       getLastAppointment(data);
       getNextAppointment(data);
 
-      // setTimeout(() => {
-      //   obterConsultas(clienteId);
-      // }, 5000);
     } catch (error) {
       console.error('Erro ao obter consultas:', error);
     }
   };
 
-  //função para obter as consultas do banco de dados
   const criarConsulta = async () => {
     const clienteId = sessionStorage.getItem('id');
     try {
@@ -822,7 +725,6 @@ const Appointments = () => {
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
-          // clienteId: sessionStorage.getItem('id'),
           clienteId: clienteId,
           medicoId: selectedDoctor,
           servicoId: selectedTreatment,
@@ -847,9 +749,7 @@ const Appointments = () => {
   };
 
   const remarcarConsulta = async (id) => {
-    const consulta = findAppointment(id);
     const clienteId = sessionStorage.getItem('id');
-    console.log('consulta', consulta);
     try {
       const token = sessionStorage.getItem('token');
       const adjustedTime = subtractHours(selectedTime, 3);
@@ -890,7 +790,6 @@ const Appointments = () => {
   };
 
 
-  //função para obter as consultas do banco de dados
   const cancelarConsulta = async (idConsulta) => {
     try {
       const token = sessionStorage.getItem('token');
@@ -937,21 +836,19 @@ const Appointments = () => {
       }
       const compromissos = await response.json();
 
-      // Gerar lista de datas e horários nos próximos 45 dias
       const availableDates = [];
       const now = new Date();
       for (let i = 0; i < 45; i++) {
         const date = new Date(now);
         date.setDate(now.getDate() + i);
 
-        // Verificar se é um dia útil (segunda a sexta) ou sábado
         const dayOfWeek = date.getDay();
         if (dayOfWeek === 0) {
-          continue; // Pular domingos
+          continue; 
         }
 
         const startHour = 8;
-        const endHour = dayOfWeek === 6 ? 13 : 18; // Sábado até 13h, outros dias até 18h
+        const endHour = dayOfWeek === 6 ? 13 : 18; 
 
         for (let hour = startHour; hour < endHour; hour++) {
           for (let minute = 0; minute < 60; minute += 15) {
@@ -1032,7 +929,6 @@ const Appointments = () => {
                     <div
                       key={index}
                       className={style['suggestion-item']}
-                    // onClick={() => treatmentSelect(index)}
                     >
                       {treatment.nome}
                     </div>
@@ -1046,7 +942,6 @@ const Appointments = () => {
                     <div
                       key={index}
                       className={style['suggestion-item']}
-                    // onClick={() => doctorSelect(index)}
                     >
                       {doctor.nome}
                     </div>
@@ -1142,13 +1037,13 @@ const Appointments = () => {
           show={showModal}
           onClose={handleCloseModal}
           title={`Marcar Consulta`}
-          content={() => renderContent()} // Renderiza o conteúdo com base no passo
+          content={() => renderContent()} 
         />
         <Modal
           show={showEvaluationModal}
           onClose={handleCloseEvaluationModal}
           title={`Avaliar Consulta`}
-          content={() => renderEvaluationContent()}  // Renderiza o conteúdo com base no passo
+          content={() => renderEvaluationContent()}  
         />
         <Modal
           show={showCancelModal}

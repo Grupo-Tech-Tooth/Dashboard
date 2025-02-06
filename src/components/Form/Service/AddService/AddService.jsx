@@ -1,14 +1,13 @@
 import style from './AddService.module.css';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import SuccessAlert from '../../../AlertSuccess/AlertSuccess';
 import ServiceControl from '../../../../pages/Services/ServiceControl';
 
 const AddService = ({ Display, close }) => {
     const [newService, setNewService] = useState({});
-    const [error, setError] = useState('');
     const [AlertSuccess, setAlertSuccess] = useState(false);
-    const [listaCategorias, setListaCategorias] = useState([
+    const [listaCategorias] = useState([
         { key: 'CONSULTAS_GERAIS', name: 'Consultas Gerais' },
         { key: 'PREVENCAO', name: 'Prevenção' },
         { key: 'ODONTOPEDIATRIA', name: 'Odontopediatria' },
@@ -95,7 +94,7 @@ const AddService = ({ Display, close }) => {
             categoria: e.target.serviceCategory.value
         };
 
-        let servicoCriado = ServiceControl.adicionar(service).then((response) => {
+        ServiceControl.adicionar(service).then((response) => {
             setNewService(response);
             setAlertSuccess(true);
             setTimeout(() => {
@@ -103,7 +102,7 @@ const AddService = ({ Display, close }) => {
                 window.location.reload();
             }, 2000);
         }).catch((error) => {
-            setError(error.message);
+            console.log(error);
         });
 
     }

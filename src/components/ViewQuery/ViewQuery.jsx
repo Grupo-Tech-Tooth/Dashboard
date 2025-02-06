@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import style from "./ViewQuery.module.css";
 
 function ViewQuery({ queryData, close }) {
-  const [paciente, setPaciente] = useState({
+  const [paciente] = useState({
     id: 1,
     name: "João",
     surname: "da Silva",
