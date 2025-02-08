@@ -46,6 +46,7 @@
     justify-content: center;
     align-items: center;
 }
+/* Loader inicial */
 .loader {
     width: 100px;
     padding: 12px;
@@ -59,7 +60,31 @@
             mask: var(--_m);
     -webkit-mask-composite: source-out;
             mask-composite: subtract;
-    animation: l3 1s infinite linear;
-  }
-  @keyframes l3 {to{transform: rotate(1turn)}
+    animation: l3 1s linear;
+}
+
+/* Esconde a animação depois de 1 segundo */
+@keyframes l3 { to { transform: rotate(1turn) } }
+
+.loader {
+    animation: l3 1s linear, fadeOut 1s forwards 1s;
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        visibility: hidden;
+    }
+}
+
+/* Texto aparece após 1s */
+.texto {
+    opacity: 0;
+    animation: fadeIn 0.5s forwards 1s;
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
 }

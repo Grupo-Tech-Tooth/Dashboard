@@ -25,7 +25,6 @@ function Services() {
   const [searchName, setSearchName] = useState('');
   const [searchDuration, setSearchDuration] = useState('');
   const [searchPrice, setSearchPrice] = useState('');
-  const [searchId, setSearchId] = useState('');
   const [viewFormAdd, setViewFormAdd] = useState("none");
 
   async function getData() {
@@ -90,17 +89,6 @@ function Services() {
                 onChange={(e) => setSearchPrice(e.target.value)}
               />
             </div>
-            <div className="col-md-2 mx-auto">
-              <label htmlFor="searchId">ID do Serviço</label>
-              <input
-                id="searchId"
-                className="form-control"
-                type="text"
-                placeholder="Filtrar por ID"
-                value={searchId}
-                onChange={(e) => setSearchId(e.target.value)}
-              />
-            </div>
             <div className={`col-md-2 mx-auto ${style['lineButton']}`}>
               <button
                 className="btn btn-primary"
@@ -141,10 +129,35 @@ function Services() {
     setSearchName('');
     setSearchDuration('');
     setSearchPrice('');
-    setSearchId('');
     setTableInformation((prev) => ({
       ...prev,
       data: prev.dataNotFilter
+    }));
+  }
+
+  function buscar() {
+    let filteredData = tableInformation.dataNotFilter;
+
+    if (searchName) {
+      const searchLower = searchName.toLowerCase();
+      filteredData = filteredData.filter((item) =>
+        item.nome.toLowerCase().includes(searchLower)
+      );
+    }
+    if (searchDuration) {
+      filteredData = filteredData.filter((item) =>
+        item.duracaoMinutos === parseInt(searchDuration, 10)
+      );
+    }
+    if (searchPrice) {
+      filteredData = filteredData.filter((item) =>
+        item.preco === `R$ ${parseFloat(searchPrice).toFixed(2)}`
+      );
+    }
+
+    setTableInformation((prev) => ({
+      ...prev,
+      data: filteredData
     }));
   }
 

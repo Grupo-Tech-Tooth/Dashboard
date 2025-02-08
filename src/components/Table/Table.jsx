@@ -294,8 +294,9 @@ function Table({ tableInformation, setTableInformation, pacientesDados, close })
       )}
 
       {!tableInformation.data.length > 0 && (
-        <div className={style.carregamento} id="carregamento">
+        <div className={style.carregamento}>
           <div className={style.loader}></div>
+          <span className={style.texto}>Nenhum resultado encontrado</span>
         </div>
       )}
     </>
