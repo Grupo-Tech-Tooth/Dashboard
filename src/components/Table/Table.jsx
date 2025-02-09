@@ -12,7 +12,7 @@ import ModalFinalization from "../ModalFinalization/ModalFinalization";
 import ViewQuery from "../ViewQuery/ViewQuery";
 import ConsultationControl from "../../pages/Consultation/ConsultationControl";
 
-function Table({ tableInformation, setTableInformation, pacientesDados, close }) {
+function Table({ tableInformation, setTableInformation, pacientesDados, close, statusCarregando = false}) {
   const [count, setCount] = useState(0);
   const [formUser, setFormUser] = useState("none");
   const [userEdit, setUserEdit] = useState([]);
@@ -163,7 +163,7 @@ function Table({ tableInformation, setTableInformation, pacientesDados, close })
         />
       )}
 
-      {tableInformation.data.length > 0 && (
+      {!statusCarregando && tableInformation.data.length > 0 && (
         <div
           className={`${style["table"]} table-responsive ${pageSize === 10 ? "overflow-hidden" : ""
             }`}
@@ -293,12 +293,18 @@ function Table({ tableInformation, setTableInformation, pacientesDados, close })
         </div>
       )}
 
-      {!tableInformation.data.length > 0 && (
-        <div className={style.carregamento}>
-          <div className={style.loader}></div>
+      {!statusCarregando && !tableInformation.data.length > 0 && (
+        <div className={style.noContent}>
           <span className={style.texto}>Nenhum resultado encontrado</span>
         </div>
       )}
+      
+      {statusCarregando && !tableInformation.data.length > 0 && (
+        <div className={style.carregamento}>
+          <div className={style.loader}></div>
+        </div>
+      )}
+      
     </>
   );
 
