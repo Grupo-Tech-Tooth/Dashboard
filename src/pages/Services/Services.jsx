@@ -58,7 +58,7 @@ function Services() {
       <Container>
         {viewFormAdd === 'block' && <Add Display={viewFormAdd} close={closeForm} />}
         <div className={style['card']}>
-          <div className="row mb-4" style={{ display: 'flex', alignItems: 'center' }}>
+          <div className="row mb-2" style={{ display: 'flex', alignItems: 'center' }}>
             <div className="col-md-2 mx-auto">
               <label htmlFor="searchNome">Nome do Serviço</label>
               <input
