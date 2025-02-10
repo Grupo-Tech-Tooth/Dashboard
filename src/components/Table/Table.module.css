@@ -82,7 +82,7 @@
     opacity: 0;
     position: absolute;
     z-index: 1; /* Garante que fica acima do loader */
-    animation: fadeIn 0.5s forwards 1s;
+    animation: fadeIn 0.5s forwards 0.5s;
 }
 
 @keyframes fadeIn {
