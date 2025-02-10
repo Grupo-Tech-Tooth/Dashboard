@@ -321,7 +321,6 @@ function Consultation() {
           }
         />
       </Container>
-      <div className={`position-absolute p-5 rounded-3 ${style["boxButton"]}`}>
         <button
           type="button"
           onClick={() => abrirModalAdd()}
@@ -329,7 +328,6 @@ function Consultation() {
         >
           Marcar Nova Consulta
         </button>
-      </div><div className={`position-absolute p-5 rounded-3 ${style["boxButton"]}`}>
         <button
           type="button"
           onClick={() => exportCSVAppointments()}
@@ -337,7 +335,6 @@ function Consultation() {
         >
           Exportar Lista de Consultas
         </button>
-      </div>
     </>
   );
 

@@ -27,8 +27,10 @@ function Services() {
   const [searchPrice, setSearchPrice] = useState('');
   const [searchCategory, setSearchCategory] = useState('');
   const [viewFormAdd, setViewFormAdd] = useState("none");
+  const [carregando, setCarregando] = useState(false);
 
   async function getData() {
+    setCarregando(true);
     try {
       const response = await ServiceControl.buscar();
       setTableInformation((prevTableInformation) => ({
@@ -39,6 +41,7 @@ function Services() {
     } catch (error) {
       console.error('Erro ao obter serviços:', error);
     }
+    setCarregando(false);
   }
 
   useEffect(() => {
@@ -56,7 +59,7 @@ function Services() {
       <Container>
         {viewFormAdd === 'block' && <Add Display={viewFormAdd} close={closeForm} />}
         <div className={style['card']}>
-          <div className="row mb-4" style={{ display: 'flex', alignItems: 'center' }}>
+          <div className="row mb-2" style={{ display: 'flex', alignItems: 'center' }}>
             <div className="col-md-2 mx-auto">
               <label htmlFor="searchNome">Nome do Serviço</label>
               <input
@@ -152,7 +155,8 @@ function Services() {
       ...prev,
       data: servicosFiltrados
     }));
-
+    
+    setCarregando(false);
   }
 
   function resetFields() {
@@ -167,6 +171,7 @@ function Services() {
   }
 
   function buscar() {
+    setCarregando(true);
     let filteredData = tableInformation.dataNotFilter;
 
     if (searchName) {
@@ -196,6 +201,8 @@ function Services() {
       ...prev,
       data: filteredData
     }));
+    
+    setCarregando(false);
   }
 
   function abrirModalAdd() {

@@ -152,7 +152,7 @@ function Patients() {
         )}
         <div className={style["card"]}>
           <div
-            className="row mb-4"
+            className="row mb-2"
             style={{ display: "flex", alignItems: "center" }}
           >
             <div className="col-md-2 mx-auto">
@@ -225,7 +225,6 @@ function Patients() {
           </div>
         </div>
       </Container>
-      <div className={`position-absolute p-5 rounded-3 ${style["boxButton"]}`}>
         <button
           type="button"
           onClick={() => abrirModalAdd()}
@@ -233,7 +232,6 @@ function Patients() {
         >
           Cadastrar Paciente
         </button>
-      </div>
     </>
   );
 }
