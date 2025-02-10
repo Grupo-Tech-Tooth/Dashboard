@@ -12,21 +12,19 @@ const Add = ({ Display, close }) => {
     const [AlertSuccess, setAlertSucess] = useState(false);
     const [medicos, setMedicos] = useState([]);
 
-     // Carrega os médicos assim que o componente é montado
      useEffect(() => {
         async function fetchMedicos() {
             try {
                 const medicosData = await listarMedicos();
-                setMedicos(medicosData); // Atribui os médicos ao estado
+                setMedicos(medicosData);
             } catch (error) {
                 console.error("Erro ao buscar médicos:", error);
             }
         }
 
         fetchMedicos();
-    }, []); // Este useEffect roda apenas uma vez na montagem do componente
+    }, []); 
 
-    //Trata a data de aniversário
     const validateDate = (inputDate) => {
         const [day, month, year] = inputDate.split('/').map(Number);
         const inputDateObject = new Date(year, month - 1, day);
@@ -41,7 +39,6 @@ const Add = ({ Display, close }) => {
             return '';
         }
     };
-    //Trata a data de aniversário
     const handleChangeDate = (e) => {
         const inputValue = e.target.value;
         setDate(inputValue);
@@ -172,10 +169,6 @@ const Add = ({ Display, close }) => {
                                         <input type="text" className="form-control" id="patientDentist"
                                             placeholder="Dentista responsável pelo paciente" />
                                     </div>
-                                    {/* <div className="col-md-4 mb-3">
-                                        <label htmlFor="patientLastVisit" className="form-label">Data da Última Consulta</label>
-                                        <input type="date" className="form-control" id="patientLastVisit" />
-                                    </div> */}
                                     <div className="col-12 mb-3">
                                         <label htmlFor="patientNotes" className="form-label">Observações</label>
                                         <textarea className="form-control" id="patientNotes" rows="3"
@@ -193,12 +186,10 @@ const Add = ({ Display, close }) => {
     );
 
     function formatDateToISO(dateString) {
-        // Verifica se a data está no formato ISO e retorna sem modificar
         if (/\d{4}-\d{2}-\d{2}/.test(dateString)) {
             return dateString;
         }
     
-        // Verifica se a data está no formato dd/MM/yyyy
         if (dateString && dateString.includes('/')) {
             const [day, month, year] = dateString.split('/');
     
@@ -211,9 +202,8 @@ const Add = ({ Display, close }) => {
         return null;
     }    
 
-    // Função para salvar os campos
     async function saveFields(event) {
-        event.preventDefault(); // Previne o comportamento padrão do formulário
+        event.preventDefault(); 
     
         try {
             const formattedBirthDate = formatDateToISO(event.target.date.value);
@@ -234,7 +224,6 @@ const Add = ({ Display, close }) => {
                 return;
             }
     
-            // Busca o ID do médico
             const medicoId = await buscarIdMedicoPorCpf(medicoEncontrado.cpf);
     
             const user = {
@@ -254,21 +243,16 @@ const Add = ({ Display, close }) => {
                 hierarquia: "CLIENTE"
             };
     
-            console.log("Dados enviados ao backend:", user);
     
-            // Cria o cliente no backend
             const novoUsuario = await criarCliente(user);
     
-            // Verifica se houve sucesso
             if (!novoUsuario || !novoUsuario.id) {
                 throw new Error("Erro ao criar cliente: resposta inválida do servidor");
             }
     
-            console.log("Usuário criado com sucesso:", novoUsuario);
             setNewUser(novoUsuario);
             setAlertSucess(true);
     
-            // Fecha o formulário após sucesso
             setTimeout(() => {
                 setAlertSucess(false);
                 close(novoUsuario);
@@ -276,12 +260,10 @@ const Add = ({ Display, close }) => {
         } catch (error) {
             console.error("Erro ao processar solicitação:", error);
     
-            // Exibe a mensagem detalhada
             alert(`Erro ao processar a solicitação: ${error.message || "Erro desconhecido"}`);
         }
     }        
 
-    // Função para buscar endereço pelo CEP (exemplo)
     function fetchAddress() {
         const cep = document.getElementById('patientCep').value.replace(/\D/g, '');
 

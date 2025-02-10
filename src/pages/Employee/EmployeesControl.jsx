@@ -2,7 +2,6 @@ import api from "../../api";
 
 class EmployeesControl {
 
-    //Medico
 
     static async buscarMedicos(){
         try{
@@ -71,7 +70,6 @@ class EmployeesControl {
         }
     }
 
-    //Funcional
 
     static async buscarFuncionais(){
         try{

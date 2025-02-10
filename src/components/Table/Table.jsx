@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from "react";
 import style from "./Table.module.css";
-import { Button, Dropdown, Space, MenuProps } from "antd";
+import { Dropdown, Space } from "antd";
 import FormUser from "../Form/User/Edit/Edit";
 import FormConsultation from "../Form/Consultation/Edit/Edit";
 import FormFunctional from "../Form/Functional/Edit/Edit";
 import FormService from "../Form/Service/EditService/EditService";
-import FormFinance from "../Form/Finance/EditFinance/EditFinance"; // Importando o formulário de finanças
+import FormFinance from "../Form/Finance/EditFinance/EditFinance";
 import api from "../../api";
 import { Pagination } from "antd";
 import ModalFinalization from "../ModalFinalization/ModalFinalization";
 import ViewQuery from "../ViewQuery/ViewQuery";
+import ConsultationControl from "../../pages/Consultation/ConsultationControl";
 
-const Table = ({ tableInformation, setTableInformation, pacientesDados }) => {
+function Table({ tableInformation, setTableInformation, pacientesDados, close }) {
   const [count, setCount] = useState(0);
   const [formUser, setFormUser] = useState("none");
   const [userEdit, setUserEdit] = useState([]);
@@ -19,15 +20,13 @@ const Table = ({ tableInformation, setTableInformation, pacientesDados }) => {
   const [consultationEdit, setConsultationEdit] = useState([]);
   const [formService, setFormService] = useState("none");
   const [serviceEdit, setServiceEdit] = useState([]);
-  const [formFinance, setFormFinance] = useState("none"); // Estado para o formulário de finanças
-  const [financeEdit, setFinanceEdit] = useState([]); // Estado para armazenar os dados de finanças editados
+  const [formFinance, setFormFinance] = useState("none"); 
+  const [financeEdit, setFinanceEdit] = useState([]); 
   const [formFunctional, setFormFunctional] = useState(["none"]);
   const [modalFinalization, setModalFinalization] = useState("none");
   const [modalViewQuery, setModalViewQuery] = useState(false);
   const [viewQuery, setViewQuery] = useState([]);
-  const [carregando, setCarregando] = useState(true);
 
-  // Estado para paginação
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
@@ -37,16 +36,14 @@ const Table = ({ tableInformation, setTableInformation, pacientesDados }) => {
     }
   }, [tableInformation]);
 
-  // Filtra os dados conforme a paginação
   const startIndex = (currentPage - 1) * pageSize;
   const endIndex = startIndex + pageSize;
   const paginatedData = tableInformation.data.slice(startIndex, endIndex);
 
-  // Manipuladores de paginação
   const onPageChange = (page) => setCurrentPage(page);
   const onShowSizeChange = (current, size) => {
     setPageSize(size);
-    setCurrentPage(1); // Reseta para a primeira página ao alterar o tamanho
+    setCurrentPage(1);
   };
 
   const getMenuItems = (item, tableId) => {
@@ -55,49 +52,73 @@ const Table = ({ tableInformation, setTableInformation, pacientesDados }) => {
         {
           key: "1",
           label: (
-            <a
-              href="#"
+            <button
               className="text-decoration-none text-primary"
               onClick={() => editar(item)}
+              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
             >
               Editar
-            </a>
+            </button>
+          ),
+        },
+        {
+          key: "6",
+          label: (
+            <button
+              className="text-decoration-none text-primary"
+              onClick={() => confirmar(item)}
+              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+            >
+              Confirmar
+            </button>
           ),
         },
         {
           key: "2",
           label: (
-            <a
-              href="#"
+            <button
               className="text-decoration-none text-primary"
-              onClick={() => deletar(item.id)}
+              onClick={() => cancelar(item.id)}
+              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
             >
               Cancelar
-            </a>
+            </button>
           ),
         },
         {
           key: "3",
           label: (
-            <a
-              href="#"
+            <button
               className="text-decoration-none text-primary"
               onClick={() => concluir(item)}
+              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
             >
               Finalizar
-            </a>
+            </button>
           ),
         },
         {
           key: "4",
           label: (
-            <a
-              href="#"
-              className="text-decoration-none   text-primary"
+            <button
+              className="text-decoration-none text-primary"
               onClick={() => visualizarConsulta(item)}
+              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
             >
               Visualizar
-            </a>
+            </button>
+          ),
+        },
+        {
+          key: "5",
+          label: (
+            <button
+              className="text-decoration-none text-primary"
+              onClick={() => deletar(item.id)}
+              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+            >
+              Deletar
+            </button>
           ),
         },
       ];
@@ -106,25 +127,25 @@ const Table = ({ tableInformation, setTableInformation, pacientesDados }) => {
         {
           key: "1",
           label: (
-            <a
-              href="#"
+            <button
               className="text-decoration-none text-primary"
               onClick={() => editar(item)}
+              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
             >
               Editar
-            </a>
+            </button>
           ),
         },
         {
           key: "2",
           label: (
-            <a
-              href="#"
+            <button
               className="text-decoration-none text-primary"
               onClick={() => deletar(item)}
+              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
             >
               Deletar
-            </a>
+            </button>
           ),
         },
       ];
@@ -165,19 +186,20 @@ const Table = ({ tableInformation, setTableInformation, pacientesDados }) => {
               {paginatedData &&
                 paginatedData.map((item, index) => (
                   <tr key={item.id}>
-                    {tableInformation.columns.map((col, i) =>
+                    {tableInformation.columns.map((col) =>
                       col.key !== "acoes" ? (
-                        <td key={i}>
+                        <td key={`${item.id}-${col.key}`}>
                           {col.key === ""
                             ? index + 1 + (currentPage - 1) * pageSize
                             : col.key === "amount"
-                              ? "R$ " + item[col.key] + ",00"
-                              : col.key === "paymentMethod" && item[col.key] === "Cartão de Crédito"
-                                ? item[col.key] + " - " + item["installments"] + "x"
-                                : item[col.key]}
+                            ? "R$ " + item[col.key] + ",00"
+                            : col.key === "paymentMethod" &&
+                              item[col.key] === "Cartão de Crédito"
+                            ? item[col.key] + " - " + item["installments"] + "x"
+                            : item[col.key]}
                         </td>
                       ) : (
-                        <td style={{ gap: "5px" }}>
+                        <td style={{ gap: "5px" }} key={`${item.id}-acoes`}>
                           <Dropdown
                             menu={{
                               items: getMenuItems(
@@ -228,13 +250,14 @@ const Table = ({ tableInformation, setTableInformation, pacientesDados }) => {
               display={formUser}
               userData={userEdit}
               listaClientes={pacientesDados}
-              close={closeForm} />
+              close={closeForm}
+            />
           )}
           {formConsultation !== "none" && (
             <FormConsultation
               display={formConsultation}
               consultationData={consultationEdit}
-              listUsers={tableInformation.data}
+              listUsers={tableInformation.pacientes}
               doctors={tableInformation.doctor}
               treatments={tableInformation.treatment}
               close={closeForm}
@@ -305,15 +328,6 @@ const Table = ({ tableInformation, setTableInformation, pacientesDados }) => {
       setCount(count + 1);
       setFormService("none");
     } else if (tableInformation.tableId === "financesTable") {
-      const position = tableInformation.data.findIndex(
-        (item) => item.id === information.id
-      );
-      if (position >= 0) {
-        tableInformation.data[position] = {
-          ...tableInformation.data[position],
-          ...information,
-        };
-      }
       setCount(count + 1);
       setFormFinance("none");
     } else if (tableInformation.tableId === "employeesTable") {
@@ -329,20 +343,10 @@ const Table = ({ tableInformation, setTableInformation, pacientesDados }) => {
       setCount(count + 1);
       setFormFunctional("none");
     } else if (tableInformation.tableId === "consultationTable") {
-      if (information?.id) {
-        const position = tableInformation.data.findIndex(
-          (item) => item.id === information.id
-        );
-        if (position >= 0) {
-          tableInformation.data[position] = {
-            ...tableInformation.data[position],
-            ...information,
-          };
-        }
-      }
       setCount(count + 1);
       setFormConsultation("none");
       setModalViewQuery(false);
+      close();
     }
   }
 
@@ -370,7 +374,6 @@ const Table = ({ tableInformation, setTableInformation, pacientesDados }) => {
       return;
     }
     try {
-
       let response;
 
       if (tableInformation.tableId === "patientsTable") {
@@ -388,12 +391,13 @@ const Table = ({ tableInformation, setTableInformation, pacientesDados }) => {
         } else {
           response = await api.delete(`/funcionais/${item.id}`);
         }
-
       }
+
       else {
-        response = await api.delete(`/consultas/${item.id}`);
+        response = await ConsultationControl.deletar(item);
       }
 
+      
       if (response.status === 204) {
         const newData = tableInformation.data.filter(
           (element) => element.id !== item.id
@@ -401,10 +405,28 @@ const Table = ({ tableInformation, setTableInformation, pacientesDados }) => {
         setTableInformation({ ...tableInformation, data: newData });
         alert("Item deletado com sucesso.");
       }
+      close();
 
     } catch (error) {
-      alert("Erro ao deletar Item.");
       console.error(error);
+    }
+  }
+
+  async function cancelar(id) {
+    try {
+      await ConsultationControl.cancelar(id);
+      close();
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  async function confirmar(item) {
+    try {
+      await ConsultationControl.confirmar(item);
+      close();
+    } catch (e) {
+      console.error(e);
     }
   }
 
@@ -413,6 +435,7 @@ const Table = ({ tableInformation, setTableInformation, pacientesDados }) => {
       ? setModalFinalization("none")
       : setModalFinalization("block");
     setUserEdit(item);
+    close();
   }
 
   function visualizarConsulta(item) {

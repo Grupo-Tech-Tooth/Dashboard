@@ -2,11 +2,8 @@ import React, { useState, useEffect } from 'react';
 import style from './Services.module.css';
 import Navbar from '../../components/Navbar/Navbar';
 import Container from '../../components/Container/Container';
-import Button from '../../components/Botao/Botao';
 import Table from '../../components/Table/Table';
 import Add from '../../components/Form/Service/AddService/AddService';
-import axios from 'axios';
-import api from '../../api';
 import ServiceControl from './ServiceControl';
 
 function Services() {
@@ -40,7 +37,7 @@ function Services() {
         dataNotFilter: response
       }));
     } catch (error) {
-      console.log('Erro ao obter serviços:', error);
+      console.error('Erro ao obter serviços:', error);
     }
   }
 
@@ -136,7 +133,7 @@ function Services() {
               >
                 Limpar Filtro
               </button>
-              <button type="button" onClick={() => abrirModalAdd()} className={style['add']}>Novo Serviço</button>
+              <button type="button" onClick={() => abrirModalAdd()} className={`${style["add"]} btn btn-primary`}>Novo Serviço</button>
             </div>
           </div>
           <div className={style['table']}>

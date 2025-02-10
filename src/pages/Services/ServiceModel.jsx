@@ -17,7 +17,7 @@ class ServiceModel{
             const response = await api.post("/servicos", service);  
             return response.data;
         } catch (e) {
-            console.log("error", e);
+            console.error("error", e);
             
             throw new Error(e);
         }

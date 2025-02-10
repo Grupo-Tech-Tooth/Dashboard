@@ -9,14 +9,13 @@ import api from "../../api";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
-//import { handleDesfazer } from './utils/desfazerUtils';
+import ConsultationControl from "./ConsultationControl";
 
 function Consultation() {
   const [pacientes, setPacientes] = useState([]);
   const [pacientesAgendados, setPacientesAgendados] = useState([]);
   const [showStackModal, setShowStackModal] = useState(false);
   const [showArrivalList, setShowArrivalList] = useState(false);
-  const [showEvaluationModal] = useState(false);
   const [tableInformation, setTableInformation] = useState({
     columns: [
       { name: "#", key: "" },
@@ -28,15 +27,12 @@ function Consultation() {
       { name: "Status", key: "status" },
       { name: "Ações", key: "acoes" },
     ],
-    data: [
-    ],
+    data: [],
     dataNotFilter: [],
     tableId: "consultationTable",
     tbodyId: "consultationBody",
-    treatment: [
-    ],
-    doctor: [
-    ],
+    treatment: [],
+    doctor: [],
   });
   const [viewFormAdd, setViewFormAdd] = useState("none");
   const [searchPatient, setSearchPatient] = useState("");
@@ -47,8 +43,13 @@ function Consultation() {
 
   async function getData() {
     try {
-      const agendamentos = await api.get(`/agendamentos`);
-      formatData(agendamentos.data);
+      const agendamentos = await ConsultationControl.buscar();
+
+      setTableInformation((prevTableInformation) => ({
+        ...prevTableInformation,
+        data: agendamentos,
+        dataNotFilter: agendamentos,
+      }));
 
       const medicos = await api.get(`/medicos`);
       setTableInformation((prevTableInformation) => ({
@@ -68,79 +69,34 @@ function Consultation() {
         pacientes: clientes.data,
       }));
     } catch (error) {
-      console.log("Erro ao obter consultas:", error);
+      console.error("Erro ao obter consultas:", error);
     }
     setTimeout(() => {
       getData();
     }, 50000);
   }
 
-  function formatData(consultas) {
-    const data = [];
-    //Pedir para alterarem o endPoint para trazer o telefone e a data da ultima visita
-    consultas.forEach((consulta) => {
-      let date = new Date(consulta.dataHora);
-      let day = date.getDate().toString().padStart(2, "0");
-      let month = (date.getMonth() + 1).toString().padStart(2, "0");
-      let year = date.getFullYear();
-      let hour = date.getHours().toString().padStart(2, "0");
-      let minutes = date.getMinutes().toString().padStart(2, "0");
-      let formattedDate = `${day}/${month}/${year}`;
-      let formattedTime = `${hour}:${minutes}`;
-
-      data.push({
-        id: consulta.id,
-        nomePaciente: consulta.cliente.nome,
-        date: formattedDate,
-        time: formattedTime,
-        status: consulta.status,
-        treatment: consulta.servico.nome,
-        doctor: consulta.medico.nome,
-      });
-    });
-    setTableInformation((prevTableInformation) => ({
-      ...prevTableInformation,
-      data: data,
-      dataNotFilter: data,
-    }));
-  }
-
   useEffect(() => {
-    setTableInformation((prevTableInformation) => ({
-      ...prevTableInformation,
-      dataNotFilter: prevTableInformation.data,
-    }));
-  }, []);
-
-  // useEffect(() => {
-  //     // Busca a fila de chegada do backend
-  //     axios.get('/api/fila-chegada')  // Troque para o endpoint correto do seu backend
-  //         .then(response => setPacientes(response.data))
-  //         .catch(error => console.error('Erro ao buscar pacientes:', error));
-  // }, []);
-
-  useEffect(() => {
-    // Mock de dados para a fila de chegada
     const mockPacientes = [
-      { horario: "09:00", nome: "Luiz Fernando" },
-      { horario: "10:00", nome: "Camila Silva" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
+      { horario: "09:00", nome: "Ana Souza" },
+      { horario: "09:30", nome: "Carlos Pereira" },
+      { horario: "10:00", nome: "Fernanda Lima" },
+      { horario: "10:30", nome: "João Silva" },
+      { horario: "11:00", nome: "Mariana Costa" },
+      { horario: "11:30", nome: "Pedro Santos" },
+      { horario: "12:00", nome: "Lucas Oliveira" },
+      { horario: "12:30", nome: "Juliana Almeida" },
+      { horario: "13:00", nome: "Ricardo Mendes" },
+      { horario: "13:30", nome: "Patrícia Ferreira" },
+      { horario: "14:00", nome: "Gabriel Rocha" },
+      { horario: "14:30", nome: "Beatriz Martins" },
+      { horario: "15:00", nome: "Rafael Gomes" },
+      { horario: "15:30", nome: "Larissa Barbosa" },
+      { horario: "16:00", nome: "Thiago Ribeiro" },
+      { horario: "16:30", nome: "Aline Dias" },
+      { horario: "17:00", nome: "Bruno Carvalho" },
+      { horario: "17:30", nome: "Camila Fernandes" },
+      { horario: "18:00", nome: "Eduardo Costa" },
     ];
 
     const pacientesPilha = [
@@ -170,6 +126,7 @@ function Consultation() {
 
     setPacientes(mockPacientes);
     setPacientesAgendados(pacientesPilha);
+    getData();
   }, []);
 
   return (
@@ -184,7 +141,7 @@ function Consultation() {
           <Add
             Display={viewFormAdd}
             close={closeForm}
-            listUsers={tableInformation.data}
+            listUsers={tableInformation.pacientes}
             doctors={tableInformation.doctor}
             treatments={tableInformation.treatment}
           />
@@ -285,7 +242,7 @@ function Consultation() {
             </div>
           </div>
           <div className={style["table"]}>
-            <Table tableInformation={tableInformation} setTableInformation={setTableInformation}/>
+            <Table tableInformation={tableInformation} setTableInformation={setTableInformation} close={closeForm}/>
           </div>
         </div>
         <Modal
@@ -403,89 +360,8 @@ function Consultation() {
     }));
   }
 
-  function buscar(value) {
+  async function buscar(value) {
     value.preventDefault();
-    if (
-      value.target.searchPatient.value ||
-      value.target.searchTreatment.value !== "Escolher tratamento" ||
-      value.target.searchDoctor.value !== "Escolher médico" ||
-      value.target.startDate.value ||
-      value.target.endDate.value
-    ) {
-      let filtered = tableInformation.dataNotFilter;
-
-      if (value.target.searchPatient.value) {
-        filtered = filtered.filter((item) =>
-          item.nomePaciente
-            .toLowerCase()
-            .includes(value.target.searchPatient.value.toLowerCase())
-        );
-      }
-
-      if (value.target.searchTreatment.value !== "Escolher tratamento") {
-        filtered = filtered.filter(
-          (item) => item.treatment === value.target.searchTreatment.value
-        );
-      }
-
-      if (value.target.searchDoctor.value !== "Escolher médico") {
-        filtered = filtered.filter(
-          (item) => item.doctor === value.target.searchDoctor.value
-        );
-      }
-
-      if (value.target.startDate.value || value.target.endDate.value) {
-        const hoje = new Date();
-        const dia = String(hoje.getDate()).padStart(2, "0");
-        const mes = String(hoje.getMonth() + 1).padStart(2, "0");
-        const ano = hoje.getFullYear();
-        const dataFormatada = new Date(`${ano}-${mes}-${dia}`);
-
-        let startDateFormatted = null;
-        let endDateFormatted = null;
-
-        if (value.target.startDate.value) {
-          const startDateParts = value.target.startDate.value.split("-");
-          startDateFormatted = new Date(
-            `${startDateParts[0]}-${startDateParts[1]}-${startDateParts[2]}`
-          );
-        }
-        if (value.target.endDate.value) {
-          const endDateParts = value.target.endDate.value.split("-");
-          endDateFormatted = new Date(
-            `${endDateParts[0]}-${endDateParts[1]}-${endDateParts[2]}`
-          );
-        }
-
-        filtered = filtered.filter((item) => {
-          const itemDateParts = item.date.split("/");
-          const itemDate = new Date(
-            `${itemDateParts[2]}-${itemDateParts[1]}-${itemDateParts[0]}`
-          );
-
-          if (startDateFormatted && endDateFormatted) {
-            return (
-              itemDate >= startDateFormatted && itemDate <= endDateFormatted
-            );
-          } else if (startDateFormatted) {
-            return itemDate >= startDateFormatted && itemDate <= dataFormatada;
-          } else if (endDateFormatted) {
-            return itemDate >= dataFormatada && itemDate <= endDateFormatted;
-          }
-          return true;
-        });
-      }
-
-      setTableInformation((prevTableInformation) => ({
-        ...prevTableInformation,
-        data: filtered,
-      }));
-    } else {
-      setTableInformation((prevTableInformation) => ({
-        ...prevTableInformation,
-        data: tableInformation.dataNotFilter,
-      }));
-    }
   }
 
   function abrirModalAdd() {
@@ -495,42 +371,34 @@ function Consultation() {
   async function exportCSVAppointments() {
     try {
       const response = await api.get(`/agendamentos/exportar-csv`, {
-        responseType: "blob", // Garante que a resposta será tratada como arquivo binário
+        responseType: "blob", 
       });
   
-      // Criação do blob com o arquivo CSV
       const blob = new Blob([response.data], { type: "text/csv" });
   
-      // Criação de um link temporário para download
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = "agendamentos.csv"; // Nome do arquivo
+      link.download = "agendamentos.csv";
       document.body.appendChild(link);
       link.click();
   
-      // Cleanup: Remove o link temporário
       link.remove();
       window.URL.revokeObjectURL(url);
   
       alert("Sucesso ao exportar CSV");
     } catch (error) {
       alert("Erro ao exportar CSV");
-      console.log("Erro ao exportar CSV:", error);
+      console.error("Erro ao exportar CSV:", error);
     }
   }
   
 
   function closeForm(newConsultation) {
     setViewFormAdd("none");
-    if (newConsultation?.nomePaciente) {
-      newConsultation.id =
-        tableInformation.dataNotFilter[
-          tableInformation.dataNotFilter.length - 1
-        ].id + 1;
-      tableInformation.data.push(newConsultation);
-    }
+    getData();
   }
+
 }
 
 export default Consultation;

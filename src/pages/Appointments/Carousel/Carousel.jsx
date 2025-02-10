@@ -1,19 +1,15 @@
 import React, { useState } from 'react';
-import Botao from '../../../components/Botao/Botao'; // Ajuste conforme a localização do seu componente Botao
+import Botao from '../../../components/Botao/Botao'; 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight, faChevronLeft, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { faAngleDoubleLeft, faAngleDoubleRight } from '@fortawesome/free-solid-svg-icons';
 
-import Card from '../../../components/Card/Card'; // Ajuste conforme a localização do seu componente Card
+import Card from '../../../components/Card/Card'; 
 
 const Carousel = ({ appointmentsData, rescheduleAppointment, onCardClick, onEvaluationButtonClick, handleOpenCancelModal, doctors = [], treatments = [] }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
-    const cardsPerPage = 3; // Número de cards de consultas a serem exibidos por vez
+    const cardsPerPage = 3; 
 
-    // Função para capitalizar a primeira letra de uma string
-    const capitalizeFirstLetter = (string) => {
-        return string.charAt(0).toUpperCase() + string.slice(1);
-    }
     const findDoctor = (doctorId = null) => {
         if (!doctorId) return null;
         const doctor = doctors.find((doctor) => doctor.id === doctorId);
@@ -23,7 +19,6 @@ const Carousel = ({ appointmentsData, rescheduleAppointment, onCardClick, onEval
     const findTreatment = (treatmentId = null) => {
         if (!treatmentId) return null;
         const treatment = treatments.find((treatment) => treatment.id === treatmentId);
-        console.log(treatment);
         return treatment;
     };
 
@@ -44,7 +39,7 @@ const Carousel = ({ appointmentsData, rescheduleAppointment, onCardClick, onEval
     const parseDateBDtoDateTime = (dateString) => {
         const date = new Date(dateString);
         const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0'); // getMonth() retorna 0-11, então adicionamos 1
+        const month = String(date.getMonth() + 1).padStart(2, '0');
         const year = date.getFullYear();
         const hours = String(date.getHours()).padStart(2, '0');
         const minutes = String(date.getMinutes()).padStart(2, '0');
@@ -55,7 +50,6 @@ const Carousel = ({ appointmentsData, rescheduleAppointment, onCardClick, onEval
         };
     };
 
-    // Ordenar as consultas por data em ordem crescente
     const sortedConsultas = [{ data: '11 de Maio de 1993', tratamento: 'Marcar Consulta' }];
 
 
@@ -90,16 +84,11 @@ const Carousel = ({ appointmentsData, rescheduleAppointment, onCardClick, onEval
     const renderCards = () => {
         const cardsToRender = [];
 
-
-
-        // Renderizar as consultas de acordo com o índice atual
-
-        // Renderizar as consultas de acordo com o índice atual
         for (let i = 0; i < cardsPerPage; i++) {
             let index = currentIndex + i;
             if (sortedConsultas.length > 2 && index >= sortedConsultas.length) {
                 index = index - sortedConsultas.length;
-            }; // Se não houver mais consultas
+            }; 
 
             const consulta = sortedConsultas[index];
             if (sortedConsultas.length < cardsPerPage && !consulta) {
@@ -154,13 +143,13 @@ const Carousel = ({ appointmentsData, rescheduleAppointment, onCardClick, onEval
             }
             else {
 
-                const isPast = new Date(consulta.dataHora) < new Date(); // Verifica se a consulta já passou
-                const evaluated = consulta.avaliacao === '' ? false : true; // Verifica se a consulta já foi avaliada
+                const isPast = new Date(consulta.dataHora) < new Date();
+                const evaluated = consulta.avaliacao === '' ? false : true; 
                 const nomeCliente = sessionStorage.getItem('nome');
 
                 cardsToRender.push(
                     <Card
-                        key={consulta.id} // Certifique-se de que cada consulta tenha um identificador único
+                        key={consulta.id} 
                         id={consulta.id}
                         classes="container m-0 mx-2 px-1 py-2 card"
                         estilos={{ height: '420px', maxWidth: '25%', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', justifyContent: 'space-between', textAlign: 'start', lineHeight: '3' }}

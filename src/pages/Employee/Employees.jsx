@@ -5,7 +5,6 @@ import Container from "../../components/Container/Container";
 import Table from "../../components/Table/Table";
 import Add from "../../components/Form/Functional/Add/Add";
 import api from "../../api";
-// import { width } from '@fortawesome/free-solid-svg-icons/fa0';
 
 function Employees() {
   const [tableInformation, setTableInformation] = useState({
@@ -66,7 +65,6 @@ function Employees() {
 
     if (responseFuncionais.data.length !== 0) {
       responseFuncionais.data.forEach((funcional) => {
-        // O funcional precisa trazer o telefone do funcionario e a data de aniversario dele  
         data.push({
           id: funcional.id,
           fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
@@ -207,7 +205,6 @@ function Employees() {
       );
     }
     if (searchCpf) {
-      // Entregavel Pesquisa Binária
       const listOrdenada = tableInformation.dataNotFilter.sort((a, b) =>
         a.cpf.localeCompare(b.cpf)
       );
