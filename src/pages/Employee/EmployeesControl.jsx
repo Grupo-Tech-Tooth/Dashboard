@@ -2,7 +2,6 @@ import api from "../../api";
 
 class EmployeesControl {
 
-
     static async buscarMedicos(){
         try{
             const response = await api.get("/medicos");
@@ -135,6 +134,35 @@ class EmployeesControl {
             } else {
                 throw new Error("Erro interno, tente novamente mais tarde");
             }
+        }
+    }
+
+    static async filtrarMedicos(nome, email, cpf){
+        try {
+            const params = new URLSearchParams();
+            if (nome) params.append('nome', nome);
+            if (email) params.append('email', email);  
+            if (cpf) params.append('cpf', cpf); 
+
+            const response = await api.get(`/medicos/medicos/filtrar?${params.toString()}`);
+            return response.data;
+        } catch (e) {
+            throw new Error("Erro ao filtrar os médicos.");
+        }
+    }
+
+    static async filtrarFuncionais(nome, email, cpf, departamento){
+        try {
+            const params = new URLSearchParams();
+            if (nome) params.append('nome', nome);
+            if (email) params.append('email', email);
+            if (cpf) params.append('cpf', cpf);
+            if (departamento) params.append('departamento', departamento);
+
+            const response = await api.get(`/funcionais/funcionais/filtrar?${params.toString()}`);
+            return response.data;
+        } catch (e) {
+            throw new Error("Erro ao filtrar os funcionais.");
         }
     }
 }
