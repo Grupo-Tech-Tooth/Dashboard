@@ -5,6 +5,10 @@ import Table from "../../components/Table/Table";
 import React, { useState, useEffect } from "react";
 import Add from "../../components/Form/Consultation/Add/Add";
 import Modal from "../../components/Modal/Modal";
+import EmployeesControl from "../Employee/EmployeesControl";
+import ServiceControl from "../Services/ServiceControl";
+import SuccessAlert from "../../components/AlertSuccess/AlertSuccess";
+import GenericModalError from "../../components/GenericModal/GenericModalError/GenericModalError";
 import api from "../../api";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -12,6 +16,14 @@ import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
 import ConsultationControl from "./ConsultationControl";
 
 function Consultation() {
+  const [AlertSuccess, setAlertSucess] = useState(false);
+  const [genericModalError, setGenericModalError] = useState({
+    view: false,
+    title: '',
+    description: '',
+    icon: ''
+  });
+
   const [pacientes, setPacientes] = useState([]);
   const [pacientesAgendados, setPacientesAgendados] = useState([]);
   const [showStackModal, setShowStackModal] = useState(false);
@@ -19,7 +31,7 @@ function Consultation() {
   const [tableInformation, setTableInformation] = useState({
     columns: [
       { name: "#", key: "" },
-      { name: "Nome", key: "nomePaciente" },
+      { name: "Paciente", key: "nomePaciente" },
       { name: "Data", key: "date" },
       { name: "Hora", key: "time" },
       { name: "Médico", key: "doctor" },
@@ -28,7 +40,6 @@ function Consultation() {
       { name: "Ações", key: "acoes" },
     ],
     data: [],
-    dataNotFilter: [],
     tableId: "consultationTable",
     tbodyId: "consultationBody",
     treatment: [],
@@ -41,92 +52,112 @@ function Consultation() {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
-  async function getData() {
+  const mockPacientes = [
+    { horario: "09:00", nome: "Ana Souza" },
+    { horario: "09:30", nome: "Carlos Pereira" },
+    { horario: "10:00", nome: "Fernanda Lima" },
+    { horario: "10:30", nome: "João Silva" },
+    { horario: "11:00", nome: "Mariana Costa" },
+    { horario: "11:30", nome: "Pedro Santos" },
+    { horario: "12:00", nome: "Lucas Oliveira" },
+    { horario: "12:30", nome: "Juliana Almeida" },
+    { horario: "13:00", nome: "Ricardo Mendes" },
+    { horario: "13:30", nome: "Patrícia Ferreira" },
+    { horario: "14:00", nome: "Gabriel Rocha" },
+    { horario: "14:30", nome: "Beatriz Martins" },
+    { horario: "15:00", nome: "Rafael Gomes" },
+    { horario: "15:30", nome: "Larissa Barbosa" },
+    { horario: "16:00", nome: "Thiago Ribeiro" },
+    { horario: "16:30", nome: "Aline Dias" },
+    { horario: "17:00", nome: "Bruno Carvalho" },
+    { horario: "17:30", nome: "Camila Fernandes" },
+    { horario: "18:00", nome: "Eduardo Costa" },
+  ];
+  const pacientesPilha = [
+    { data: "2024-11-29", horario: "09:00", nome: "Luiz Fernando" },
+    { data: "2024-11-29", horario: "10:00", nome: "Camila Silva" },
+    { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
+    { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
+    { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
+    { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
+    { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
+    { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
+    { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
+    { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
+    { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
+    { data: "2024-11-29", horario: "09:00", nome: "Luiz Fernando" },
+    { data: "2024-11-29", horario: "10:00", nome: "Camila Silva" },
+    { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
+    { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
+    { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
+    { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
+    { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
+    { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
+    { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
+    { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
+    { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
+  ];
+
+
+  async function getDataAppointement() {
     try {
       const agendamentos = await ConsultationControl.buscar();
-
       setTableInformation((prevTableInformation) => ({
         ...prevTableInformation,
         data: agendamentos,
-        dataNotFilter: agendamentos,
       }));
 
-      const medicos = await api.get(`/medicos`);
+    } catch (e) {
+      console.error("Erro ao obter consultas:", e);
+    }
+    setTimeout(() => {
+      getDataAppointement();
+    }, 50000);
+  }
+
+  async function getMedicos() {
+    try {
+      const medicos = await EmployeesControl.buscarMedicos();
       setTableInformation((prevTableInformation) => ({
         ...prevTableInformation,
-        doctor: medicos.data,
+        doctor: medicos,
       }));
+    } catch (e) {
+      console.error("Erro ao buscar medicos:", e);
+    }
+  }
 
-      const servicos = await api.get(`/servicos`);
-      setTableInformation((prevTableInformation) => ({
-        ...prevTableInformation,
-        treatment: servicos.data,
-      }));
-
+  async function getPacientes() {
+    try {
       const clientes = await api.get(`/clientes`);
       setTableInformation((prevTableInformation) => ({
         ...prevTableInformation,
         pacientes: clientes.data,
       }));
-    } catch (error) {
-      console.error("Erro ao obter consultas:", error);
+    } catch (e) {
+      console.error("Erro ao buscar pacientes:", e);
     }
-    setTimeout(() => {
-      getData();
-    }, 50000);
+  }
+
+  async function getServicos() {
+    try {
+      const servicos = await ServiceControl.buscar();
+      setTableInformation((prevTableInformation) => ({
+        ...prevTableInformation,
+        treatment: servicos,
+      }));
+    } catch (e) {
+      console.error("Erro ao buscar serviços:", e);
+    }
   }
 
   useEffect(() => {
-    const mockPacientes = [
-      { horario: "09:00", nome: "Ana Souza" },
-      { horario: "09:30", nome: "Carlos Pereira" },
-      { horario: "10:00", nome: "Fernanda Lima" },
-      { horario: "10:30", nome: "João Silva" },
-      { horario: "11:00", nome: "Mariana Costa" },
-      { horario: "11:30", nome: "Pedro Santos" },
-      { horario: "12:00", nome: "Lucas Oliveira" },
-      { horario: "12:30", nome: "Juliana Almeida" },
-      { horario: "13:00", nome: "Ricardo Mendes" },
-      { horario: "13:30", nome: "Patrícia Ferreira" },
-      { horario: "14:00", nome: "Gabriel Rocha" },
-      { horario: "14:30", nome: "Beatriz Martins" },
-      { horario: "15:00", nome: "Rafael Gomes" },
-      { horario: "15:30", nome: "Larissa Barbosa" },
-      { horario: "16:00", nome: "Thiago Ribeiro" },
-      { horario: "16:30", nome: "Aline Dias" },
-      { horario: "17:00", nome: "Bruno Carvalho" },
-      { horario: "17:30", nome: "Camila Fernandes" },
-      { horario: "18:00", nome: "Eduardo Costa" },
-    ];
-
-    const pacientesPilha = [
-      { data: "2024-11-29", horario: "09:00", nome: "Luiz Fernando" },
-      { data: "2024-11-29", horario: "10:00", nome: "Camila Silva" },
-      { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-      { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-      { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-      { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-      { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-      { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-      { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-      { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-      { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-      { data: "2024-11-29", horario: "09:00", nome: "Luiz Fernando" },
-      { data: "2024-11-29", horario: "10:00", nome: "Camila Silva" },
-      { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-      { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-      { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-      { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-      { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-      { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-      { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-      { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-      { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-    ];
-
     setPacientes(mockPacientes);
     setPacientesAgendados(pacientesPilha);
-    getData();
+    getDataAppointement();
+    getMedicos();
+    getPacientes();
+    getServicos();
   }, []);
 
   return (
@@ -135,6 +166,12 @@ function Consultation() {
         toggleArrivalModal={toggleArrivalModal}
         toggleStackModal={toggleStackModal}
       />
+      {AlertSuccess && <SuccessAlert text={'Sucesso ao exportar CSV!'} />}
+      {genericModalError.view && <GenericModalError
+        close={() => setGenericModalError((prev) => ({ ...prev, view: false }))}
+        title={genericModalError.title}
+        description={genericModalError.description}
+        icon={genericModalError.icon} />}
       <h2 className="text-primary text-center my-3">Consultas</h2>
       <Container>
         {viewFormAdd === "block" && (
@@ -180,8 +217,8 @@ function Consultation() {
                 <option value={undefined}>Escolher tratamento</option>
                 {tableInformation.treatment &&
                   tableInformation.treatment.map((item) => (
-                    <option key={item.name} value={item.name}>
-                      {item.name}
+                    <option key={item.nome} value={item.nome}>
+                      {item.nome}
                     </option>
                   ))}
               </select>
@@ -198,8 +235,8 @@ function Consultation() {
                 <option value={undefined}>Selecionar médico</option>
                 {tableInformation.doctor &&
                   tableInformation.doctor.map((item) => (
-                    <option key={item.name} value={item.name}>
-                      {item.name}
+                    <option key={item.nome} value={item.nome}>
+                      {item.nome}
                     </option>
                   ))}
               </select>
@@ -242,7 +279,7 @@ function Consultation() {
             </div>
           </div>
           <div className={style["table"]}>
-            <Table tableInformation={tableInformation} setTableInformation={setTableInformation} close={closeForm}/>
+            <Table tableInformation={tableInformation} setTableInformation={setTableInformation} close={closeForm} />
           </div>
         </div>
         <Modal
@@ -321,20 +358,20 @@ function Consultation() {
           }
         />
       </Container>
-        <button
-          type="button"
-          onClick={() => abrirModalAdd()}
-          className={`${style["add"]} btn btn-primary`}
-        >
-          Marcar Nova Consulta
-        </button>
-        <button
-          type="button"
-          onClick={() => exportCSVAppointments()}
-          className={`${style["csv"]} btn btn-primary`}
-        >
-          Exportar Lista de Consultas
-        </button>
+      <button
+        type="button"
+        onClick={() => abrirModalAdd()}
+        className={`${style["add"]} btn btn-primary`}
+      >
+        Marcar Nova Consulta
+      </button>
+      <button
+        type="button"
+        onClick={() => exportCSVAppointments()}
+        className={`${style["csv"]} btn btn-primary`}
+      >
+        Exportar Lista de Consultas
+      </button>
     </>
   );
 
@@ -351,14 +388,33 @@ function Consultation() {
     setSearchDoctor(undefined);
     setStartDate("");
     setEndDate("");
-    setTableInformation((prevTableInformation) => ({
-      ...prevTableInformation,
-      data: tableInformation.dataNotFilter,
-    }));
+    getDataAppointement();
   }
 
   async function buscar(value) {
     value.preventDefault();
+    try {
+      const data = {
+        paciente: searchPatient,
+        tratamento: searchTreatment,
+        medico: searchDoctor,
+        dataInicio: startDate,
+        dataFim: endDate
+      }
+      const response = await ConsultationControl.filtrar(data);
+      setTableInformation((prev) => ({
+        ...prev,
+        data: [...response]
+      }));
+      
+    } catch (e) {
+      setGenericModalError((prev) => ({
+        view: true,
+        title: 'Ops.... Tivemos um erro ao concluir a ação',
+        description: e.message,
+        icon: 'iconErro'
+      }));
+    }
   }
 
   function abrirModalAdd() {
@@ -367,11 +423,9 @@ function Consultation() {
 
   async function exportCSVAppointments() {
     try {
-      const response = await api.get(`/agendamentos/exportar-csv`, {
-        responseType: "blob", 
-      });
-  
-      const blob = new Blob([response.data], { type: "text/csv" });
+      const response = ConsultationControl.exportarCsv();
+
+      const blob = new Blob([response], { type: "text/csv" });
   
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -379,21 +433,26 @@ function Consultation() {
       link.download = "agendamentos.csv";
       document.body.appendChild(link);
       link.click();
-  
+
       link.remove();
       window.URL.revokeObjectURL(url);
-  
-      alert("Sucesso ao exportar CSV");
-    } catch (error) {
-      alert("Erro ao exportar CSV");
-      console.error("Erro ao exportar CSV:", error);
+
+      setAlertSucess(true);
+      setTimeout(() => setAlertSucess(false), 1500);
+    } catch (e) {
+      setGenericModalError((prev) => ({
+        view: true,
+        title: 'Erro ao exportar CSV',
+        description: e,
+        icon: 'iconErro'
+      }));
     }
   }
-  
 
-  function closeForm(newConsultation) {
+
+  function closeForm() {
     setViewFormAdd("none");
-    getData();
+    getDataAppointement();
   }
 
 }

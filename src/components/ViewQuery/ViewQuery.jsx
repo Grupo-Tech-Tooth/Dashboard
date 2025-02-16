@@ -101,7 +101,7 @@ function ViewQuery({ queryData, close }) {
               </div>
               <div className="col-md-4 mb-3">
                 <label className="form-label">
-                  Dentista Resposável pelo Paciente:
+                  Dentista Responsável:
                 </label>
                 <input
                   type="text"

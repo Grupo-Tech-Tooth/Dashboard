@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import style from "./ModalFinalization.module.css";
 import Alert from "../AlertSuccess/AlertSuccess";
 import ConsultationControl from "../../pages/Consultation/ConsultationControl";
@@ -11,14 +11,12 @@ function ModalFinalization({
 }) {
   const [optionsTreatment, setOptionsTreatment] = useState(false);
 
-
   const [newTreatment, setNewTreatment] = useState("");
-  const [price, setPrice] = useState(agendamento?.price || "");
+  const [price, setPrice] = useState(agendamento?.price || 0);
   const [taxMachine, setTaxMachine] = useState(agendamento?.taxMachine || "");
   const [installments, setInstallments] = useState(
     agendamento?.installments || ""
   );
-
   const [observation, setObservation] = useState(agendamento?.observacao || "");
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(
     agendamento?.paymentMethod || "DINHEIRO"
@@ -27,10 +25,26 @@ function ModalFinalization({
   const [rightValueErro, setRightValueErro] = useState("-25");
   const [rightValueSucess, setRightValueSucess] = useState("-25");
 
-
   const listTreatments = treatments.filter(
     (item) => item.name !== agendamento.treatment
   );
+
+  function getPrecoServico(id) {
+    let total = listTreatments.find((servico) => servico.id == agendamento.idTratamento);
+    total = total.preco;
+    if (id) {
+      let tratamento2 = listTreatments.find((servico) => servico.id == id);
+      total += tratamento2.preco;
+    }
+    setPrice(total);
+  }
+
+  useEffect(() => {
+    if(price == 0){
+      getPrecoServico();
+    }
+  }, []);
+
 
   return (
     <div
@@ -90,7 +104,10 @@ function ModalFinalization({
                 </div>
                 <select
                   className="form-select"
-                  onChange={(e) => setNewTreatment(e.target.value)}
+                  onChange={(e) => {
+                    setNewTreatment(e.target.value)
+                    getPrecoServico(e.target.value)
+                  }}
                   disabled={!optionsTreatment}
                   defaultValue=""
                 >
@@ -219,7 +236,7 @@ function ModalFinalization({
 
       try {
         await ConsultationControl.finalizar(agendamento, newTreatment, price, selectedPaymentMethod, observation, taxMachine, installments);
-        
+
         setRightValueSucess(5);
         setTimeout(() => {
           fecharModal();

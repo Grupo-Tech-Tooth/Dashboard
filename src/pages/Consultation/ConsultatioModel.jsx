@@ -88,11 +88,28 @@ class ConsultationModel {
         }
     }
 
-    static async filtrar(value) {
+    static async filtrar(paciente, servico, medico, dataInicio, dataFim) {
         try {
-            const params = new URLSearchParams(value).toString();
-            let response = await api.get(`/agendamentos/filtrar?${params}`);
+            const params = new URLSearchParams();
+            if(paciente) params.append('paciente', paciente);
+            if(servico) params.append('servico', servico);
+            if(medico) params.append('medico', medico);
+            if(dataInicio) params.append('dataInicio', dataInicio);
+            if(dataFim) params.append('dataFim', dataFim);
+
+            const response = await api.get(`/agendamentos/filtrar?${params.toString()}`);
             return response.data;
+        } catch (e) {
+            throw new Error((e.message));
+        }
+    }
+
+    static async exportarCsv() {
+        try {
+            const response = await api.get(`/agendamentos/exportar-csv`, {
+                responseType: "blob",
+            });
+            return response;
         } catch (e) {
             throw new Error((e.message));
         }

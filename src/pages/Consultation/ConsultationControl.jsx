@@ -173,18 +173,17 @@ class ConsultationControl {
 
     static async filtrar(value) {
         try {
-            let data = {
-                nomeCliente: value.paciente || undefined,
-                nomeServico: value.servico || undefined,
-                nomeMedico: value.medico || undefined,
-                dataInicio: value.dataInicio || undefined,
-                dataFim: value.dataFim || undefined
-            };
-            const filtrosValidos = Object.fromEntries(
-                Object.entries(data).filter(([_, v]) => v != null)
-              );
-            let response = await ConsultationModel.filtrar(filtrosValidos);
+            let response = await ConsultationModel.filtrar(value.paciente || '', value.servico || '', value.medico || '', value.dataInicio || '', value.dataFim || '');
             return response;
+        } catch (e) {
+            throw new Error((e.message));
+        }
+    }
+
+    static async exportarCsv(){
+        try {
+            const response = await ConsultationModel.exportarCsv();
+            return response.data;
         } catch (e) {
             throw new Error((e.message));
         }
