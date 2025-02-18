@@ -2,7 +2,7 @@ import style from "./Consultation.module.css";
 import Navbar from "../../components/Navbar/Navbar";
 import Container from "../../components/Container/Container";
 import Table from "../../components/Table/Table";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Add from "../../components/Form/Consultation/Add/Add";
 import Modal from "../../components/Modal/Modal";
 import EmployeesControl from "../Employee/EmployeesControl";
@@ -23,6 +23,9 @@ function Consultation() {
     description: '',
     icon: ''
   });
+
+  const timeoutRef = useRef(null);
+  const isMounted = useRef(true);
 
   const [pacientes, setPacientes] = useState([]);
   const [pacientesAgendados, setPacientesAgendados] = useState([]);
@@ -102,17 +105,21 @@ function Consultation() {
   async function getDataAppointement() {
     try {
       const agendamentos = await ConsultationControl.buscar();
-      setTableInformation((prevTableInformation) => ({
-        ...prevTableInformation,
-        data: agendamentos,
-      }));
-
+      if (isMounted.current) {
+        setTableInformation((prevTableInformation) => ({
+          ...prevTableInformation,
+          data: agendamentos,
+        }));
+      }
     } catch (e) {
       console.error("Erro ao obter consultas:", e);
     }
-    setTimeout(() => {
-      getDataAppointement();
-    }, 50000);
+
+    if (isMounted.current) {
+      timeoutRef.current = setTimeout(() => {
+        getDataAppointement();
+      }, 50000);
+    }
   }
 
   async function getMedicos() {
@@ -158,6 +165,15 @@ function Consultation() {
     getMedicos();
     getPacientes();
     getServicos();
+    isMounted.current = true; 
+
+
+    return () => {
+      isMounted.current = false; 
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    }
   }, []);
 
   return (
