@@ -25,6 +25,7 @@ function Services() {
   const [searchName, setSearchName] = useState('');
   const [searchDuration, setSearchDuration] = useState('');
   const [searchPrice, setSearchPrice] = useState('');
+  const [searchCategory, setSearchCategory] = useState('');
   const [viewFormAdd, setViewFormAdd] = useState("none");
   const [carregando, setCarregando] = useState(false);
 
@@ -92,6 +93,35 @@ function Services() {
                 onChange={(e) => setSearchPrice(e.target.value)}
               />
             </div>
+            <div className="col-md-2 mx-auto">
+              <label htmlFor="searchCategory">Categoria</label>
+              <select
+                id="searchCategory"
+                className="form-control"
+                value={searchCategory}
+                onChange={(e) => setSearchCategory(e.target.value)}
+              >
+                <option value="">Selecione</option>
+                <option value="CONSULTAS_GERAIS">Consultas Gerais</option>
+                <option value="PREVENCAO">Prevenção</option>
+                <option value="ODONTOPEDIATRIA">Odontopediatria</option>
+                <option value="ORTODONTIA">Ortodontia</option>
+                <option value="PERIODONTIA">Periodontia</option>
+                <option value="ENDODONTIA">Endodontia</option>
+                <option value="CIRURGIAS_ODONTOLOGICAS">Cirurgias Odontológicas</option>
+                <option value="IMPLANTODONTIA">Implantodontia</option>
+                <option value="PROTESE_DENTARIA">Prótese Dentária</option>
+                <option value="ESTETICA_DENTAL">Estética Dental</option>
+                <option value="ODONTOGERIATRIA">Odontogeriatria</option>
+                <option value="RADIOLOGIA_ODONTOLOGICA">Radiologia Odontológica</option>
+                <option value="ODONTOLOGIA_DE_URGENCIA">Odontologia de Urgência</option>
+                <option value="DISFUNCAO_TEMPOROMANDIBULAR">Disfunção Temporomandibular</option>
+                <option value="ODONTOLOGIA_DO_SONO">Odontologia do Sono</option>
+                <option value="ODONTOLOGIA_HOSPITALAR">Odontologia Hospitalar</option>
+                <option value="ODONTOLOGIA_LEGAL">Odontologia Legal</option>
+                <option value="LASERTERAPIA">Laserterapia</option>
+              </select>
+            </div>
             <div className={`col-md-2 mx-auto ${style['lineButton']}`}>
               <button
                 className="btn btn-primary"
@@ -110,7 +140,7 @@ function Services() {
             </div>
           </div>
           <div className={style['table']}>
-            <Table tableInformation={tableInformation} setTableInformation={setTableInformation} statusCarregando={carregando}/>
+            <Table tableInformation={tableInformation} setTableInformation={setTableInformation} />
           </div>
         </div>
       </Container>
@@ -118,9 +148,8 @@ function Services() {
   );
 
   async function filtrar() {
-    
-    setCarregando(true);
-    let servicosFiltrados = await ServiceControl.filtrar(searchName, searchDuration, searchPrice);
+
+    let servicosFiltrados = await ServiceControl.filtrar(searchName, searchDuration, searchPrice, searchCategory);
 
     setTableInformation((prev) => ({
       ...prev,
@@ -134,6 +163,7 @@ function Services() {
     setSearchName('');
     setSearchDuration('');
     setSearchPrice('');
+    setSearchCategory('');
     setTableInformation((prev) => ({
       ...prev,
       data: prev.dataNotFilter
@@ -158,6 +188,12 @@ function Services() {
     if (searchPrice) {
       filteredData = filteredData.filter((item) =>
         item.preco === `R$ ${parseFloat(searchPrice).toFixed(2)}`
+      );
+    }
+    if (searchCategory) {
+      const searchLower = searchCategory.toLowerCase();
+      filteredData = filteredData.filter((item) =>
+        item.categoria.toLowerCase().includes(searchLower)
       );
     }
 

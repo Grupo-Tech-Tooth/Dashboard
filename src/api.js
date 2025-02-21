@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'https://back-end-teth-tooth.azurewebsites.net',
+    baseURL: 'http://localhost:8080',
 });
 
 api.interceptors.request.use(
