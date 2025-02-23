@@ -4,7 +4,7 @@ import Alert from "../AlertSuccess/AlertSuccess";
 import ConsultationControl from "../../pages/Consultation/ConsultationControl";
 
 function ModalFinalization({
-  display,
+  display = "block",
   fecharModal,
   agendamento,
   treatments,
@@ -26,14 +26,14 @@ function ModalFinalization({
   const [rightValueSucess, setRightValueSucess] = useState("-25");
 
   const listTreatments = treatments.filter(
-    (item) => item.name !== agendamento.treatment
+    (item) => item.nome !== agendamento.treatment
   );
 
   function getPrecoServico(id) {
-    let total = listTreatments.find((servico) => servico.id == agendamento.idTratamento);
-    total = total.preco;
+    let total = treatments.find((servico) => servico.id == agendamento?.idTratamento);
+    total = total?.preco || 0;
     if (id) {
-      let tratamento2 = listTreatments.find((servico) => servico.id == id);
+      let tratamento2 = treatments.find((servico) => servico.id == id);
       total += tratamento2.preco;
     }
     setPrice(total);

@@ -10,6 +10,15 @@ class ConsultationModel {
         }
     }
 
+    static async buscarPorId(id) {
+        try {
+            let response = await api.get(`/agendamentos/${id}`);
+            return response.data;
+        } catch (e) {
+            throw new Error((e.message));
+        }
+    }
+
     static async buscarDiasIndiponiveis(medicoId) {
         try {
             let response = await api.get(`/medicos/${medicoId}/agenda/dias-indisponiveis`);
@@ -35,7 +44,7 @@ class ConsultationModel {
             });
             return response.data;
         } catch (e) {
-            throw new Error((e.message));
+            throw new Error((e?.response?.data || e.message));
         }
     }
 
@@ -91,11 +100,11 @@ class ConsultationModel {
     static async filtrar(paciente, servico, medico, dataInicio, dataFim) {
         try {
             const params = new URLSearchParams();
-            if(paciente) params.append('paciente', paciente);
-            if(servico) params.append('servico', servico);
-            if(medico) params.append('medico', medico);
-            if(dataInicio) params.append('dataInicio', dataInicio);
-            if(dataFim) params.append('dataFim', dataFim);
+            if (paciente) params.append('paciente', paciente);
+            if (servico) params.append('servico', servico);
+            if (medico) params.append('medico', medico);
+            if (dataInicio) params.append('dataInicio', dataInicio);
+            if (dataFim) params.append('dataFim', dataFim);
 
             const response = await api.get(`/agendamentos/filtrar?${params.toString()}`);
             return response.data;
@@ -110,6 +119,33 @@ class ConsultationModel {
                 responseType: "blob",
             });
             return response;
+        } catch (e) {
+            throw new Error((e.message));
+        }
+    }
+
+    static async buscarFila() {
+        try {
+            const response = await api.get(`/agendamentos/fila`);
+            return response.data;
+        } catch (e) {
+            throw new Error((e.message));
+        }
+    }
+
+    static async buscarPilha() {
+        try {
+            const response = await api.get(`/agendamentos/pilha`);
+            return response.data;
+        } catch (e) {
+            throw new Error((e.message));
+        }
+    }
+
+    static async desfazer(id) {
+        try {
+            const response = await api.delete(`/agendamentos/desfazer/${id}`);
+            return response.data;
         } catch (e) {
             throw new Error((e.message));
         }

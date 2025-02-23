@@ -35,6 +35,40 @@ class ConsultationControl {
             throw new Error((e.message));
         }
     }
+    
+    static async buscarPorId(id){
+        try {
+            let data = []
+            let response = await ConsultationModel.buscarPorId(id);
+            if (response) {
+                let date = new Date(response.dataHora);
+                let day = date.getDate().toString().padStart(2, "0");
+                let month = (date.getMonth() + 1).toString().padStart(2, "0");
+                let year = date.getFullYear();
+                let hour = date.getHours().toString().padStart(2, "0");
+                let minutes = date.getMinutes().toString().padStart(2, "0");
+                let formattedDate = `${day}/${month}/${year}`;
+                let formattedTime = `${hour}:${minutes}`;
+
+                data.push({
+                    id: response.id,
+                    idPaciente: response.cliente.id,
+                    nomePaciente: response.cliente.nome,
+                    cpf: response.cliente.cpf,
+                    date: formattedDate,
+                    time: formattedTime,
+                    status: response.status,
+                    treatment: response.servico.nome,
+                    idTratamento: response.servico.id,
+                    doctor: response.medico.nome,
+                    idDoctor: response.medico.id
+                });
+            }
+            return data;
+        } catch (e) {
+            throw new Error((e.message));
+        }
+    }
 
     static async buscarDiasIndiponiveis(medicoId) {
         try {
@@ -180,7 +214,7 @@ class ConsultationControl {
         }
     }
 
-    static async exportarCsv(){
+    static async exportarCsv() {
         try {
             const response = await ConsultationModel.exportarCsv();
             return response.data;
@@ -189,6 +223,61 @@ class ConsultationControl {
         }
     }
 
+    static async buscarFila() {
+        try {
+            const response = await ConsultationModel.buscarFila();
+            for (let i = 0; i < response.length; i++) {
+                const dataObj = new Date(response[i]?.dataHora);
+                const dataFormatada = dataObj.toLocaleDateString("pt-BR");
+                const horaFormatada = dataObj.toLocaleTimeString("pt-BR", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                });
+
+                response[i] = {
+                    ...response[i],
+                    data: dataFormatada,
+                    hora: horaFormatada
+                }
+            }
+            return response;
+        } catch (e) {
+            throw new Error((e.message));
+        }
+    }
+
+    static async buscarPilha() {
+        try {
+            const response = await ConsultationModel.buscarPilha();
+
+            for (let i = 0; i < response.length; i++) {
+                const dataObj = new Date(response[i]?.dataHora);
+                const dataFormatada = dataObj.toLocaleDateString("pt-BR");
+                const horaFormatada = dataObj.toLocaleTimeString("pt-BR", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                });
+
+                response[i] = {
+                    ...response[i],
+                    data: dataFormatada,
+                    hora: horaFormatada
+                }
+            }
+            return response;
+        } catch (e) {
+            throw new Error((e.message));
+        }
+    }
+
+    static async desfazer(id) {
+        try {
+            let response = await ConsultationModel.desfazer(id);
+            return response;
+        } catch (e) {
+            throw new Error((e.message));
+        }
+    }
 
     static formatDateToISO() {
         const now = new Date();

@@ -9,6 +9,7 @@ import EmployeesControl from "../Employee/EmployeesControl";
 import ServiceControl from "../Services/ServiceControl";
 import SuccessAlert from "../../components/AlertSuccess/AlertSuccess";
 import GenericModalError from "../../components/GenericModal/GenericModalError/GenericModalError";
+import ModalFinalization from "../../components/ModalFinalization/ModalFinalization";
 import api from "../../api";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -22,6 +23,10 @@ function Consultation() {
     title: '',
     description: '',
     icon: ''
+  });
+  const [modalFinalization, setModalFinalization] = useState({
+    view: false,
+    userEdit: null
   });
 
   const timeoutRef = useRef(null);
@@ -55,52 +60,6 @@ function Consultation() {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
-  const mockPacientes = [
-    { horario: "09:00", nome: "Ana Souza" },
-    { horario: "09:30", nome: "Carlos Pereira" },
-    { horario: "10:00", nome: "Fernanda Lima" },
-    { horario: "10:30", nome: "João Silva" },
-    { horario: "11:00", nome: "Mariana Costa" },
-    { horario: "11:30", nome: "Pedro Santos" },
-    { horario: "12:00", nome: "Lucas Oliveira" },
-    { horario: "12:30", nome: "Juliana Almeida" },
-    { horario: "13:00", nome: "Ricardo Mendes" },
-    { horario: "13:30", nome: "Patrícia Ferreira" },
-    { horario: "14:00", nome: "Gabriel Rocha" },
-    { horario: "14:30", nome: "Beatriz Martins" },
-    { horario: "15:00", nome: "Rafael Gomes" },
-    { horario: "15:30", nome: "Larissa Barbosa" },
-    { horario: "16:00", nome: "Thiago Ribeiro" },
-    { horario: "16:30", nome: "Aline Dias" },
-    { horario: "17:00", nome: "Bruno Carvalho" },
-    { horario: "17:30", nome: "Camila Fernandes" },
-    { horario: "18:00", nome: "Eduardo Costa" },
-  ];
-  const pacientesPilha = [
-    { data: "2024-11-29", horario: "09:00", nome: "Luiz Fernando" },
-    { data: "2024-11-29", horario: "10:00", nome: "Camila Silva" },
-    { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-    { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-    { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-    { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-    { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-    { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-    { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-    { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-    { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-    { data: "2024-11-29", horario: "09:00", nome: "Luiz Fernando" },
-    { data: "2024-11-29", horario: "10:00", nome: "Camila Silva" },
-    { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-    { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-    { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-    { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-    { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-    { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-    { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-    { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-    { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-  ];
-
 
   async function getDataAppointement() {
     try {
@@ -115,9 +74,14 @@ function Consultation() {
       console.error("Erro ao obter consultas:", e);
     }
 
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
     if (isMounted.current) {
       timeoutRef.current = setTimeout(() => {
         getDataAppointement();
+        getFila();
+        getPilha();
       }, 50000);
     }
   }
@@ -158,18 +122,38 @@ function Consultation() {
     }
   }
 
+  async function getFila() {
+    try {
+      const listPessoas = await ConsultationControl.buscarFila();
+      setPacientes(listPessoas);
+    } catch (e) {
+      console.error("Erro ao buscar a fila:", e);
+    }
+  }
+
+  async function getPilha() {
+    try {
+      const response = await ConsultationControl.buscarPilha();
+      setPacientesAgendados(response);
+    } catch (e) {
+      console.error("Erro ao buscar pilha:", e);
+    }
+  }
+
   useEffect(() => {
-    setPacientes(mockPacientes);
-    setPacientesAgendados(pacientesPilha);
     getDataAppointement();
+    getFila();
+    getPilha();
     getMedicos();
     getPacientes();
     getServicos();
-    isMounted.current = true; 
-
+    isMounted.current = true;
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
 
     return () => {
-      isMounted.current = false; 
+      isMounted.current = false;
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
@@ -188,6 +172,16 @@ function Consultation() {
         title={genericModalError.title}
         description={genericModalError.description}
         icon={genericModalError.icon} />}
+      {modalFinalization.view && (
+        <ModalFinalization
+          fecharModal={() => setModalFinalization((prev) => ({
+            ...prev,
+            view: false
+          }))}
+          agendamento={modalFinalization.agendamento}
+          treatments={tableInformation.treatment}
+        />
+      )}
       <h2 className="text-primary text-center my-3">Consultas</h2>
       <Container>
         {viewFormAdd === "block" && (
@@ -317,28 +311,37 @@ function Consultation() {
                     }}
                   >
                     <p>
-                      {paciente.horario} - {paciente.nome}
+                      {paciente.hora} - {paciente?.cliente.nome}
                     </p>
-                    <div>
-                      <button
-                        style={{
-                          background: "none",
-                          border: "none",
-                          color: "green",
-                        }}
-                      >
-                        <FontAwesomeIcon icon={faCheck} />
-                      </button>
-                      <button
-                        style={{
-                          background: "none",
-                          border: "none",
-                          color: "red",
-                        }}
-                      >
-                        <FontAwesomeIcon icon={faTimes} />
-                      </button>
-                    </div>
+                    {index === 0 ? (
+                      <div>
+                        <button
+                          style={{
+                            background: "none",
+                            border: "none",
+                            color: "green",
+                          }}
+                          onClick={() => {
+                            setModalFinalization((prev) => ({
+                              userEdit: paciente.cliente
+                            })); buscarAgendamento(paciente.id)
+                          }}
+                        >
+                          <FontAwesomeIcon icon={faCheck} />
+                        </button>
+                        <button
+                          style={{
+                            background: "none",
+                            border: "none",
+                            color: "red",
+                          }}
+                          onClick={() => cancelAppointment(paciente.id)}
+                        >
+                          <FontAwesomeIcon icon={faTimes} />
+                        </button>
+                      </div>
+                    ) : <></>
+                    }
                   </div>
                 ))
               ) : (
@@ -351,18 +354,21 @@ function Consultation() {
           show={showStackModal}
           onClose={() => toggleStackModal()}
           title="Desfazer consulta"
+          click={() => desfazer()}
           content={
-            <div className={style.modalContainer}>
+            <div className={style.modalContainer} style={{ height: "65vh", overflowY: "scroll" }}>
               <div className={style.stackModalBody}>
                 {pacientesAgendados.length > 0 ? (
                   <>
                     {pacientesAgendados.map((paciente, index) => (
                       <div key={index} className={style.pacienteItem}>
-                        <span className={style.data}>{paciente.data}</span>
-                        <span className={style.horario}>
-                          {paciente.horario}
+                        <span className={style.data}>
+                          {paciente.data}
                         </span>
-                        <span className={style.nome}>{paciente.nome}</span>
+                        <span className={style.horario}>
+                          {paciente.hora}
+                        </span>
+                        <span className={style.nome}>{paciente?.cliente?.nome}</span>
                       </div>
                     ))}
                   </>
@@ -393,9 +399,19 @@ function Consultation() {
 
   function toggleArrivalModal() {
     setShowArrivalList(!showArrivalList);
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    getFila();
+    getDataAppointement();
   }
+
   function toggleStackModal() {
     setShowStackModal(!showStackModal);
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    getDataAppointement();
   }
 
   function resetFields() {
@@ -404,6 +420,9 @@ function Consultation() {
     setSearchDoctor(undefined);
     setStartDate("");
     setEndDate("");
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
     getDataAppointement();
   }
 
@@ -422,7 +441,7 @@ function Consultation() {
         ...prev,
         data: [...response]
       }));
-      
+
     } catch (e) {
       setGenericModalError((prev) => ({
         view: true,
@@ -437,12 +456,26 @@ function Consultation() {
     setViewFormAdd("block");
   }
 
+  async function desfazer() {
+    try {
+      await ConsultationControl.desfazer(pacientesAgendados[0]?.id);
+      getPilha()
+    } catch (e) {
+      setGenericModalError((prev) => ({
+        view: true,
+        title: 'Erro ao Concluir Ação',
+        description: e.message,
+        icon: 'iconErro'
+      }));
+    }
+  }
+
   async function exportCSVAppointments() {
     try {
       const response = ConsultationControl.exportarCsv();
 
       const blob = new Blob([response], { type: "text/csv" });
-  
+
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
@@ -465,10 +498,53 @@ function Consultation() {
     }
   }
 
-
   function closeForm() {
     setViewFormAdd("none");
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    getFila();
+    getPilha();
     getDataAppointement();
+  }
+
+  async function buscarAgendamento(id) {
+    let response;
+    try {
+      response = await ConsultationControl.buscarPorId(id);
+    } catch (e) {
+      setGenericModalError((prev) => ({
+        view: true,
+        title: 'Erro ao buscar informações do agendamento',
+        description: e,
+        icon: 'iconErro'
+      }));
+    } finally {
+      if (response) {
+        setModalFinalization((prev) => ({
+          ...prev,
+          view: true,
+          agendamento: response[0]
+        }));
+      }
+    }
+  }
+
+  async function cancelAppointment(id) {
+    try {
+      await ConsultationControl.cancelar(id);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      getFila();
+    } catch (e) {
+      setGenericModalError((prev) => ({
+        view: true,
+        title: 'Erro ao Concluir Ação',
+        description: e,
+        icon: 'iconErro'
+      }));
+    }
   }
 
 }
