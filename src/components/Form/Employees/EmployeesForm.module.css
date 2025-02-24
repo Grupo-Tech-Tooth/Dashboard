@@ -1,0 +1,67 @@
+.bottom {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100vh;
+    z-index: 3;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.tabCard{
+    width: 80%;
+    height: 80vh;
+}
+
+.lineTitle{
+    color: #007bff;
+}
+
+.button {
+    color: #339FBE;
+    background-color: #ffffff;
+    padding: 0% 2%;
+    border-radius: 5px;
+    font-size: 1.5rem;
+    font-weight: 600;
+    transition: 0.5s;
+    border: 2px solid transparent;
+}
+
+.lineButton {
+    width: 100%;
+    display: flex;
+    gap: 1%;
+    justify-content: end;
+}
+
+.button:hover {
+    border: 2px solid #339FBE;
+    transition: 0.5s;
+}
+
+.btnSecund {
+    background-color: #ffffff;
+    border-radius: 5px;
+    border: 1px solid #007bff;
+    color: #007bff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 1%;
+}
+
+.invalid-feedback{
+    background-color: red;
+}
+
+input:focus {
+    outline: none;
+    box-shadow: none;
+}

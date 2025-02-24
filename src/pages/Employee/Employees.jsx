@@ -3,8 +3,9 @@ import style from "./Employees.module.css";
 import Navbar from "../../components/Navbar/Navbar";
 import Container from "../../components/Container/Container";
 import Table from "../../components/Table/Table";
-import Add from "../../components/Form/Functional/Add/Add";
-import api from "../../api";
+import EmployeeForm from "../../components/Form/Employees/EmployeeForm";
+import EmployeesModel from "./EmployeesModel";
+import GenericModalError from "../../components/GenericModal/GenericModalError/GenericModalError";
 
 function Employees() {
   const [tableInformation, setTableInformation] = useState({
@@ -12,8 +13,8 @@ function Employees() {
       { name: "#", key: '' },
       { name: "Nome", key: 'fullName' },
       { name: "Email", key: 'email' },
-      { name: "Departamento", key: 'department' },
-      { name: "Especialização", key: 'specialization' },
+      { name: "Departamento", key: 'departamento' },
+      { name: "Especialização", key: 'especializacao' },
       { name: "Ações", key: 'acoes' },
     ],
     data: [
@@ -30,76 +31,62 @@ function Employees() {
       { key: "PROTESE_DENTARIA", label: "Protese Dentaria" },
       { key: "ODONTOLOGIA_ESTETICA", label: "Odontologia Estética" },
       { key: "ODONTO_PEDIATRIA", label: "Odonto Pediatria" }
-    ]
+    ],
+    isEmpty: false
   });
 
   const [searchEmail, setSearchEmail] = useState("");
   const [searchName, setSearchName] = useState("");
   const [searchCpf, setSearchCpf] = useState("");
   const [searchDepartment, setSearchDepartment] = useState("");
-  const [viewFormAdd, setViewFormAdd] = useState("none");
+  const [viewFormAdd, setViewFormAdd] = useState(false);
+
+  const [genericModalError, setGenericModalError] = useState({
+          view: false,
+          title: '',
+          description: '',
+          icon: ''
+      });
 
   async function getData() {
-    const responseMedicos = await api.get("/medicos");
-    const responseFuncionais = await api.get("/funcionais");
-
-    const data = [];
-
-    if (responseMedicos.data.length !== 0) {
-      responseMedicos.data.forEach((medico) => {
-        data.push({
-          id: medico.id,
-          fullName: `${medico.nome} ${medico.sobrenome ? medico.sobrenome : ''}`,
-          name: medico.nome,
-          surname: medico.sobrenome,
-          email: medico.email,
-          crm: medico.crm,
-          phone: medico.telefone,
-          department: "Médico",
-          specialization: medico.especializacao,
-          cpf: medico.cpf,
-          dateBirth: medico.dataNascimento,
-        });
-      });
+    try {
+      const data = await EmployeesModel.buscar();
+      console.log("Dados recebidos:", data);
+      setTableInformation((prev) => ({
+        ...prev,
+        data: data,
+        isEmpty: data.length === 0,
+      }));
+    } catch (e) {
+      setTableInformation((prev) => ({
+        ...prev,
+        isEmpty: true,
+      }));
     }
-
-    if (responseFuncionais.data.length !== 0) {
-      responseFuncionais.data.forEach((funcional) => {
-        data.push({
-          id: funcional.id,
-          fullName: `${funcional.nome} ${funcional.sobrenome ? funcional.sobrenome : ''}`,
-          name: funcional.nome,
-          email: funcional.email,
-          phone: funcional.telefone,
-          department: funcional.departamento,
-          specialization: "-",
-          cpf: funcional.cpf,
-          dateBirth: funcional.dataNascimento,
-        });
-      });
-      
-    }
-
-    setTableInformation((prevTableInformation) => ({
-      ...prevTableInformation,
-      data: data,
-    }));
   }
 
   useEffect(() => {
     tableInformation.dataNotFilter = tableInformation.data;
     getData();
-  });
+  }, []);
 
   return (
     <>
       <Navbar />
+      {genericModalError.view && <GenericModalError
+                close={() => setGenericModalError((prev) => ({ ...prev, view: false }))}
+                title={genericModalError.title}
+                description={genericModalError.description}
+                icon={genericModalError.icon} />}
       <h2 className="text-primary text-center my-3">
         Funcionários
       </h2>
       <Container>
-        {viewFormAdd === "block" && (
-          <Add Display={viewFormAdd} close={closeForm} listSpecialization={tableInformation.specialization} />
+        {viewFormAdd && (
+          <EmployeeForm
+            close={closeForm}
+            listSpecialization={tableInformation.specialization}
+          />
         )}
         <div className={style["card"]}>
           <div
@@ -164,7 +151,7 @@ function Employees() {
             </div>
           </div>
           <div className={style['table']}>
-            <Table tableInformation={tableInformation} setTableInformation={setTableInformation} />
+            <Table tableInformation={tableInformation} setTableInformation={setTableInformation} close={getData} />
           </div>
         </div>
       </Container>
@@ -186,88 +173,36 @@ function Employees() {
     getData();
   }
 
-  function buscar() {
-    let listName = [];
-    let listEmail = [];
-    let listCpf = [];
-    let listDepartment = [];
-
-    if (searchName) {
-      const searchLower = searchName.toLowerCase();
-      listName = tableInformation.dataNotFilter.filter((item) =>
-        item.name.toLowerCase().includes(searchLower)
-      );
-    }
-    if (searchEmail) {
-      const searchLower = searchEmail.toLowerCase();
-      listEmail = tableInformation.dataNotFilter.filter((item) =>
-        item.email.toLowerCase().includes(searchLower)
-      );
-    }
-    if (searchCpf) {
-      const listOrdenada = tableInformation.dataNotFilter.sort((a, b) =>
-        a.cpf.localeCompare(b.cpf)
-      );
-      let start = 0;
-      let end = listOrdenada.length - 1;
-
-      while (start <= end) {
-        let meio = Math.floor((start + end) / 2);
-
-        if (listOrdenada[meio].cpf.includes(searchCpf)) {
-          listCpf.push(listOrdenada[meio]);
-          break;
-        } else if (searchCpf < listOrdenada[meio].cpf) {
-          end = meio - 1;
-        } else {
-          start = meio + 1;
-        }
+  async function buscar() {
+    try {
+      const data = {
+        nome: searchName,
+        email: searchEmail,
+        cpf: searchCpf,
+        departamento: searchDepartment
       }
-    }
-    if (searchDepartment) {
-      const searchLower = searchDepartment.toLowerCase();
-      listDepartment = tableInformation.dataNotFilter.filter((item) =>
-        item.department.includes(searchLower)
-      );
-    }
-
-    if (searchName || searchEmail || searchDepartment || searchCpf) {
-      let listAll = [...listName, ...listEmail, ...listCpf, ...listDepartment];
-
-      setTableInformation((prevTableInformation) => ({
-        ...prevTableInformation,
-        data: listAll,
-      }));
-    } else {
-      const listOrdenada = tableInformation.dataNotFilter.sort(
-        (a, b) => a.id - b.id
-      );
-      setTableInformation((prevTableInformation) => ({
-        ...prevTableInformation,
-        data: listOrdenada,
+      const response = await EmployeesModel.filtro(data);
+      setTableInformation((prev) => ({
+        ...prev,
+        data: [...response]
+      }))
+    } catch (e) {
+      setGenericModalError((prev) => ({
+        view: true,
+        title: 'Ops.... Tivemos um erro ao concluir a ação',
+        description: e.message,
+        icon: 'iconErro'
       }));
     }
   }
 
   function abrirModalAdd() {
-    setViewFormAdd("block");
+    setViewFormAdd(true);
   }
 
-  function closeForm(newUser) {
-    setViewFormAdd("none");
-    saveFields(newUser);
-  }
-
-  function saveFields(newUser) {
-    if (newUser?.name) {
-      newUser.id =
-        tableInformation.dataNotFilter[
-          tableInformation.dataNotFilter.length - 1
-        ].id + 1;
-      tableInformation.dataNotFilter.push(newUser);
-
-      alert("Usar essa função para salvar");
-    }
+  function closeForm() {
+    setViewFormAdd(false);
+    getData();
   }
 }
 

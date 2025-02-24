@@ -3,7 +3,7 @@ import style from "./Table.module.css";
 import { Dropdown, Space } from "antd";
 import FormUser from "../Form/User/Edit/Edit";
 import FormConsultation from "../Form/Consultation/Edit/Edit";
-import FormFunctional from "../Form/Functional/Edit/Edit";
+import EmployeeForm from "../Form/Employees/EmployeeForm";
 import FormService from "../Form/Service/EditService/EditService";
 import FormFinance from "../Form/Finance/EditFinance/EditFinance";
 import api from "../../api";
@@ -22,7 +22,7 @@ function Table({ tableInformation, setTableInformation, pacientesDados, close, s
   const [serviceEdit, setServiceEdit] = useState([]);
   const [formFinance, setFormFinance] = useState("none"); 
   const [financeEdit, setFinanceEdit] = useState([]); 
-  const [formFunctional, setFormFunctional] = useState(["none"]);
+  const [formFunctional, setFormFunctional] = useState(false);
   const [modalFinalization, setModalFinalization] = useState("none");
   const [modalViewQuery, setModalViewQuery] = useState(false);
   const [viewQuery, setViewQuery] = useState([]);
@@ -278,13 +278,12 @@ function Table({ tableInformation, setTableInformation, pacientesDados, close, s
               close={closeForm}
             />
           )}
-          {formFunctional !== "none" && (
-            <FormFunctional
-              display={formFunctional}
-              userData={userEdit}
-              close={closeForm}
-              listSpecialization={tableInformation.specialization}
-            />
+           {formFunctional && (
+             <EmployeeForm
+             userData={userEdit}
+               close={closeForm}
+               listSpecialization={tableInformation.specialization}
+             />
           )}
 
           {modalViewQuery && (
@@ -337,17 +336,9 @@ function Table({ tableInformation, setTableInformation, pacientesDados, close, s
       setCount(count + 1);
       setFormFinance("none");
     } else if (tableInformation.tableId === "employeesTable") {
-      const position = tableInformation.data.findIndex(
-        (item) => item.id === information.id
-      );
-      if (position >= 0) {
-        tableInformation.data[position] = {
-          ...tableInformation.data[position],
-          ...information,
-        };
-      }
       setCount(count + 1);
-      setFormFunctional("none");
+      setFormFunctional(false);
+      close();
     } else if (tableInformation.tableId === "consultationTable") {
       setCount(count + 1);
       setFormConsultation("none");
@@ -367,7 +358,7 @@ function Table({ tableInformation, setTableInformation, pacientesDados, close, s
       setFormFinance("block");
       setFinanceEdit(information);
     } else if (tableInformation.tableId === "employeesTable") {
-      setFormFunctional("block");
+      setFormFunctional(true);
       setUserEdit(information);
     } else {
       setFormConsultation("block");
