@@ -4,6 +4,7 @@ import Calendario from "../../../Calendario/Calendario";
 import { Alert } from "antd";
 import SuccessAlert from "../../../AlertSuccess/AlertSuccess";
 import ConsultationControl from "../../../../pages/Consultation/ConsultationControl";
+import GenericModalError from "../../../GenericModal/GenericModalError/GenericModalError";
 
 function Add({ Display, close, listUsers, doctors, treatments }) {
   const [newConsultation, setNewConsultation] = useState({
@@ -76,6 +77,13 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
   const [optionsDoctor, setOptionsDoctor] = useState({});
   const [optionsTreatment, setOptionsTreatment] = useState({});
 
+  const [genericModalError, setGenericModalError] = useState({
+    view: false,
+    title: '',
+    description: '',
+    icon: ''
+  });
+
   useEffect(() => {
     setAgora(new Date());
   }, [inputValueDoctor, dataDisabled]);
@@ -100,6 +108,11 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
 
   return (
     <>
+      {genericModalError.view && <GenericModalError
+        close={() => setGenericModalError((prev) => ({ ...prev, view: false }))}
+        title={genericModalError.title}
+        description={genericModalError.description}
+        icon={genericModalError.icon} />}
       <div
         className={`${style["bottom"]} modal `}
         id="viewCalendarModal"
@@ -599,7 +612,13 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
         close();
       }, 4000);
     } catch (e) {
-      console.error(e)
+      console.error(e);
+      setGenericModalError((prev) => ({
+        view: true,
+        title: 'Preencha todos os dados corretamente',
+        description: e.message,
+        icon: 'iconErro'
+      }));
     }
   }
 }

@@ -2,7 +2,7 @@ import React from "react";
 import styles from "./Modal.module.css";
 import Botao from "../Botao/Botao";
 
-const Modal = ({ show = true, onClose, title, content }) => {
+function Modal ({ show = true, onClose, title, content, click }){
   if (!show) return null;
 
   return (
@@ -27,7 +27,7 @@ const Modal = ({ show = true, onClose, title, content }) => {
           </div>
           <div className={`${styles.modalBody} p-0`} style={{overflowY: 'auto'}}>{content}</div>
           {title === 'Desfazer consulta' && <div className="border-top border-primary pt-3 mt-3">
-            <button className="btn btn-outline-primary">Desfazer</button>
+            <button className="btn btn-outline-primary" onClick={click}>Desfazer</button>
           </div>}
         </div>
       </div>

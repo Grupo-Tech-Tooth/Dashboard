@@ -509,7 +509,7 @@ function Edit({
       }));
       setInputValueDate(value);
       setStep(step + 1);
-      console.error(
+      console.log(
         "Quando essa opção for selecionada precisa fazer uma requisição para os horarios disponiveis"
       );
     } else {

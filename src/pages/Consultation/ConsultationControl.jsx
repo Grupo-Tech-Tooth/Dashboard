@@ -35,6 +35,40 @@ class ConsultationControl {
             throw new Error((e.message));
         }
     }
+    
+    static async buscarPorId(id){
+        try {
+            let data = []
+            let response = await ConsultationModel.buscarPorId(id);
+            if (response) {
+                let date = new Date(response.dataHora);
+                let day = date.getDate().toString().padStart(2, "0");
+                let month = (date.getMonth() + 1).toString().padStart(2, "0");
+                let year = date.getFullYear();
+                let hour = date.getHours().toString().padStart(2, "0");
+                let minutes = date.getMinutes().toString().padStart(2, "0");
+                let formattedDate = `${day}/${month}/${year}`;
+                let formattedTime = `${hour}:${minutes}`;
+
+                data.push({
+                    id: response.id,
+                    idPaciente: response.cliente.id,
+                    nomePaciente: response.cliente.nome,
+                    cpf: response.cliente.cpf,
+                    date: formattedDate,
+                    time: formattedTime,
+                    status: response.status,
+                    treatment: response.servico.nome,
+                    idTratamento: response.servico.id,
+                    doctor: response.medico.nome,
+                    idDoctor: response.medico.id
+                });
+            }
+            return data;
+        } catch (e) {
+            throw new Error((e.message));
+        }
+    }
 
     static async buscarDiasIndiponiveis(medicoId) {
         try {
@@ -173,23 +207,77 @@ class ConsultationControl {
 
     static async filtrar(value) {
         try {
-            let data = {
-                nomeCliente: value.paciente || undefined,
-                nomeServico: value.servico || undefined,
-                nomeMedico: value.medico || undefined,
-                dataInicio: value.dataInicio || undefined,
-                dataFim: value.dataFim || undefined
-            };
-            const filtrosValidos = Object.fromEntries(
-                Object.entries(data).filter(([_, v]) => v != null)
-              );
-            let response = await ConsultationModel.filtrar(filtrosValidos);
+            let response = await ConsultationModel.filtrar(value.paciente || '', value.servico || '', value.medico || '', value.dataInicio || '', value.dataFim || '');
             return response;
         } catch (e) {
             throw new Error((e.message));
         }
     }
 
+    static async exportarCsv() {
+        try {
+            const response = await ConsultationModel.exportarCsv();
+            return response.data;
+        } catch (e) {
+            throw new Error((e.message));
+        }
+    }
+
+    static async buscarFila() {
+        try {
+            const response = await ConsultationModel.buscarFila();
+            for (let i = 0; i < response.length; i++) {
+                const dataObj = new Date(response[i]?.dataHora);
+                const dataFormatada = dataObj.toLocaleDateString("pt-BR");
+                const horaFormatada = dataObj.toLocaleTimeString("pt-BR", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                });
+
+                response[i] = {
+                    ...response[i],
+                    data: dataFormatada,
+                    hora: horaFormatada
+                }
+            }
+            return response;
+        } catch (e) {
+            throw new Error((e.message));
+        }
+    }
+
+    static async buscarPilha() {
+        try {
+            const response = await ConsultationModel.buscarPilha();
+
+            for (let i = 0; i < response.length; i++) {
+                const dataObj = new Date(response[i]?.dataHora);
+                const dataFormatada = dataObj.toLocaleDateString("pt-BR");
+                const horaFormatada = dataObj.toLocaleTimeString("pt-BR", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                });
+
+                response[i] = {
+                    ...response[i],
+                    data: dataFormatada,
+                    hora: horaFormatada
+                }
+            }
+            return response;
+        } catch (e) {
+            throw new Error((e.message));
+        }
+    }
+
+    static async desfazer(id) {
+        try {
+            let response = await ConsultationModel.desfazer(id);
+            return response;
+        } catch (e) {
+            throw new Error((e.message));
+        }
+    }
 
     static formatDateToISO() {
         const now = new Date();
