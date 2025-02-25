@@ -35,7 +35,11 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
 
   const [dataDisabled, setDataDisabled] = useState();
 
-  const availableHours = [
+  const [availableHours, setAvailableHours] = useState([
+    { class: "green", time: "07:00" },
+    { class: "green", time: "07:15" },
+    { class: "green", time: "07:30" },
+    { class: "green", time: "07:45" },
     { class: "green", time: "08:00" },
     { class: "green", time: "08:15" },
     { class: "green", time: "08:30" },
@@ -48,10 +52,10 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
     { class: "green", time: "10:15" },
     { class: "green", time: "10:30" },
     { class: "green", time: "10:45" },
-    { class: "green", time: "11:00" },
     { class: "green", time: "11:15" },
     { class: "green", time: "11:30" },
     { class: "green", time: "11:45" },
+    { class: "green", time: "13:00" },
     { class: "green", time: "13:15" },
     { class: "green", time: "13:30" },
     { class: "green", time: "13:45" },
@@ -70,8 +74,12 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
     { class: "green", time: "17:00" },
     { class: "green", time: "17:15" },
     { class: "green", time: "17:30" },
-    { class: "green", time: "17:45" }
-  ];
+    { class: "green", time: "17:45" },
+    { class: "green", time: "18:00" },
+    { class: "green", time: "18:15" },
+    { class: "green", time: "18:30" },
+    { class: "green", time: "18:45" }
+  ]);
 
   const [optionsUsers, setOptionsUsers] = useState({});
   const [optionsDoctor, setOptionsDoctor] = useState({});
@@ -296,34 +304,30 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
                     ? availableHours
                       .filter(
                         (item) =>
-                          item.time > horarioAtual && item.class === "green"
+                          item.time > horarioAtual && item.class === "green" // Exibe apenas horários disponíveis após o horário atual
                       )
                       .map((item) => (
                         <button
+                          key={item.time}
                           type="button"
                           className={`${style[item.class]} btn btn-primary`}
-                          onClick={() =>
-                            timeConsultation(item.class, item.time)
-                          }
-                          disabled={item.class === "red"}
+                          onClick={() => timeConsultation(item.class, item.time)}
+                          disabled={item.class === "red"} // Desabilita botões de horários indisponíveis
                         >
-                          {item.time}{" "}
-                          {item.class === "red" && "- Horário Ocupado"}
+                          {item.time}
                         </button>
                       ))
                     : availableHours
-                      .filter((item) => item.class === "green")
+                      .filter((item) => item.class === "green") // Exibe apenas horários disponíveis
                       .map((item) => (
                         <button
+                          key={item.time}
                           type="button"
                           className={`${style[item.class]} btn btn-primary`}
-                          onClick={() =>
-                            timeConsultation(item.class, item.time)
-                          }
-                          disabled={item.class === "red"}
+                          onClick={() => timeConsultation(item.class, item.time)}
+                          disabled={item.class === "red"} // Desabilita botões de horários indisponíveis
                         >
-                          {item.time}{" "}
-                          {item.class === "red" && "- Horário Ocupado"}
+                          {item.time}
                         </button>
                       ))}
                 </div>
@@ -487,15 +491,82 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
   async function dateConsultation(value) {
     if (value) {
       try {
-        await ConsultationControl.buscarHorariosIndiponiveis(inputValueDoctor.id, value);
+        // Redefine availableHours para o estado inicial (todos os horários como "green")
+        const initialAvailableHours = [
+          { class: "green", time: "07:00" },
+          { class: "green", time: "07:15" },
+          { class: "green", time: "07:30" },
+          { class: "green", time: "07:45" },
+          { class: "green", time: "08:00" },
+          { class: "green", time: "08:15" },
+          { class: "green", time: "08:30" },
+          { class: "green", time: "08:45" },
+          { class: "green", time: "09:00" },
+          { class: "green", time: "09:15" },
+          { class: "green", time: "09:30" },
+          { class: "green", time: "09:45" },
+          { class: "green", time: "10:00" },
+          { class: "green", time: "10:15" },
+          { class: "green", time: "10:30" },
+          { class: "green", time: "10:45" },
+          { class: "green", time: "11:15" },
+          { class: "green", time: "11:30" },
+          { class: "green", time: "11:45" },
+          { class: "green", time: "13:00" },
+          { class: "green", time: "13:15" },
+          { class: "green", time: "13:30" },
+          { class: "green", time: "13:45" },
+          { class: "green", time: "14:00" },
+          { class: "green", time: "14:15" },
+          { class: "green", time: "14:30" },
+          { class: "green", time: "14:45" },
+          { class: "green", time: "15:00" },
+          { class: "green", time: "15:15" },
+          { class: "green", time: "15:30" },
+          { class: "green", time: "15:45" },
+          { class: "green", time: "16:00" },
+          { class: "green", time: "16:15" },
+          { class: "green", time: "16:30" },
+          { class: "green", time: "16:45" },
+          { class: "green", time: "17:00" },
+          { class: "green", time: "17:15" },
+          { class: "green", time: "17:30" },
+          { class: "green", time: "17:45" },
+          { class: "green", time: "18:00" },
+          { class: "green", time: "18:15" },
+          { class: "green", time: "18:30" },
+          { class: "green", time: "18:45" }
+        ];
+
+        // Busca os horários disponíveis do backend
+        const horariosDisponiveisBackend = await ConsultationControl.buscarHorariosIndiponiveis(inputValueDoctor.id, value);
+
+        // Extrai a lista de horários disponíveis
+        const listaHorariosDisponiveis = horariosDisponiveisBackend.horariosDisponiveis || [];
+
+        // Ajusta o formato dos horários disponíveis (remove os segundos, se necessário)
+        const listaHorariosDisponiveisFormatados = listaHorariosDisponiveis.map(horario => horario.slice(0, 5));
+
+        // Atualiza availableHours com os horários indisponíveis
+        const horariosDisponiveis = initialAvailableHours.map(horario => {
+          // Verifica se o horário NÃO está na lista de disponíveis
+          if (!listaHorariosDisponiveisFormatados.includes(horario.time)) {
+            return { ...horario, class: "red" }; // Marca horários indisponíveis
+          }
+          return horario; // Mantém horários disponíveis
+        });
+
+        // Atualiza o estado com os horários disponíveis e indisponíveis
+        setAvailableHours(horariosDisponiveis);
       } catch (e) {
-        console.error(e);
+        console.error("Erro ao buscar horários disponíveis:", e);
       }
-      setNewConsultation({
-        data: value,
-      });
+
+      // Atualiza a data selecionada e avança para o próximo passo
+      setNewConsultation({ data: value });
       setStep(step + 1);
     } else {
+      // Volta para o passo anterior
       setStep(step - 1);
     }
   }
@@ -503,17 +574,24 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
   function timeConsultation(tipo, time) {
     if (time) {
       if (tipo === "green") {
-        setNewConsultation((prevNewConsultation) => ({
-          ...prevNewConsultation,
-          time: time,
-        }));
-        setStep(step + 1);
-        setMessageAlert(false);
+        // Verifica se o horário está disponível
+        const horarioDisponivel = availableHours.find(horario => horario.time === time && horario.class === "green");
+
+        if (horarioDisponivel) {
+          setNewConsultation((prevNewConsultation) => ({
+            ...prevNewConsultation,
+            time: time,
+          }));
+          setStep(step + 1);
+          setMessageAlert(false);
+        } else {
+          setMessageAlert(true); // Exibe alerta se o horário não estiver disponível
+        }
       } else {
-        setMessageAlert(true);
+        setMessageAlert(true); // Exibe alerta se o horário estiver indisponível
       }
     } else {
-      setStep(step - 1);
+      setStep(step - 1); // Volta para o passo anterior
     }
   }
 
@@ -602,7 +680,13 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
     }
 
     try {
-      await ConsultationControl.cadastrar(inputValueId, inputValueDoctor.id, inputValueTreatmentId, value.target.status.value, newConsultation);
+      await ConsultationControl.cadastrar(
+        inputValueId,
+        inputValueDoctor.id,
+        inputValueTreatmentId,
+        value.target.status.value,
+        newConsultation
+      );
 
       setAlertSucess(true);
       setTimeout(() => {
@@ -612,14 +696,23 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
         close();
       }, 4000);
     } catch (e) {
-      console.error(e);
+      console.error("Erro ao salvar consulta:", e);
+
+      let errorMessage;
+      try {
+        errorMessage = JSON.parse(e.message); // Tenta converter o erro JSON
+      } catch {
+        errorMessage = e.message; // Usa a mensagem de erro padrão se não for JSON
+      }
+
       setGenericModalError((prev) => ({
         view: true,
-        title: 'Preencha todos os dados corretamente',
-        description: e.message,
+        title: 'Erro ao cadastrar consulta',
+        description: errorMessage.message || "Ocorreu um erro inesperado.",
         icon: 'iconErro'
       }));
     }
+
   }
 }
 
