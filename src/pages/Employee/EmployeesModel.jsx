@@ -202,9 +202,8 @@ class EmployeesModel {
     static async filtro(value) {
         try {
             let data = [];
-            
-            if (value.nome, value.email, value.cpf) {
-                let medicos = await EmployeesControl.filtrarMedicos(value.nome || '', value.email || '', value.cpf || '');
+            if (value.nome || value.email || value.crm) {
+                let medicos = await EmployeesControl.filtrarMedicos(value.nome || '', value.email || '', value.crm || '');
                 if (medicos) {
                     for (let i = 0; i < medicos.length; i++) {
                         medicos[i] = {
@@ -220,8 +219,8 @@ class EmployeesModel {
                 }
             }
 
-            if (value.nome, value.email, value.cpf || value.departamento) {
-                let funcionarios = await EmployeesControl.filtrarFuncionais(value.nome || '', value.email || '', value.cpf || '', value.departamento || '');
+            if (value.nome || value.email || value.departamento) {
+                let funcionarios = await EmployeesControl.filtrarFuncionais(value.nome || '', value.email || '', value.departamento || '');
                 if (funcionarios) {
                     for (let i = 0; i < funcionarios.length; i++) {
                         funcionarios[i] = {
@@ -235,7 +234,6 @@ class EmployeesModel {
                     ]
                 }
             }
-
             return data;
         } catch (e) {
             throw new Error(e.message);

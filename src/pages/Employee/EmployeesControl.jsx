@@ -137,29 +137,28 @@ class EmployeesControl {
         }
     }
 
-    static async filtrarMedicos(nome, email, cpf){
+    static async filtrarMedicos(nome, email, crm){
         try {
             const params = new URLSearchParams();
             if (nome) params.append('nome', nome);
             if (email) params.append('email', email);  
-            if (cpf) params.append('cpf', cpf); 
+            if (crm) params.append('crm', crm); 
 
-            const response = await api.get(`/medicos/medicos/filtrar?${params.toString()}`);
+            const response = await api.get(`/medicos/filtrar?${params.toString()}`);
             return response.data;
         } catch (e) {
             throw new Error("Erro ao filtrar os médicos.");
         }
     }
 
-    static async filtrarFuncionais(nome, email, cpf, departamento){
+    static async filtrarFuncionais(nome, email, departamento){
         try {
             const params = new URLSearchParams();
             if (nome) params.append('nome', nome);
             if (email) params.append('email', email);
-            if (cpf) params.append('cpf', cpf);
             if (departamento) params.append('departamento', departamento);
 
-            const response = await api.get(`/funcionais/funcionais/filtrar?${params.toString()}`);
+            const response = await api.get(`/funcionais/filtrar?${params.toString()}`);
             return response.data;
         } catch (e) {
             throw new Error("Erro ao filtrar os funcionais.");

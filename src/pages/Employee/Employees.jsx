@@ -37,7 +37,7 @@ function Employees() {
 
   const [searchEmail, setSearchEmail] = useState("");
   const [searchName, setSearchName] = useState("");
-  const [searchCpf, setSearchCpf] = useState("");
+  const [searchCrm, setSearchCrm] = useState("");
   const [searchDepartment, setSearchDepartment] = useState("");
   const [viewFormAdd, setViewFormAdd] = useState(false);
 
@@ -116,14 +116,14 @@ function Employees() {
               />
             </div>
             <div className="col-md-2 mx-auto">
-              <label htmlFor="searchCpf">CPF do Funcionário</label>
+              <label htmlFor="searchCrm">CRM do Funcionário</label>
               <input
-                id="searchCpf"
+                id="searchCrm"
                 className="form-control"
                 type="text"
-                placeholder="Filtrar por CPF"
-                value={searchCpf}
-                onChange={(e) => setSearchCpf(e.target.value)}
+                placeholder="Filtrar por CRM"
+                value={searchCrm}
+                onChange={(e) => setSearchCrm(e.target.value)}
               />
             </div>
             <div className="col-md-2 mx-auto">
@@ -168,7 +168,7 @@ function Employees() {
   function resetFields() {
     setSearchName("");
     setSearchEmail("");
-    setSearchCpf("");
+    setSearchCrm("");
     setSearchDepartment("");
     getData();
   }
@@ -178,7 +178,7 @@ function Employees() {
       const data = {
         nome: searchName,
         email: searchEmail,
-        cpf: searchCpf,
+        crm: searchCrm,
         departamento: searchDepartment
       }
       const response = await EmployeesModel.filtro(data);
