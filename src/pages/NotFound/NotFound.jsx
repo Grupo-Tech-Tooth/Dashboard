@@ -15,7 +15,7 @@ const NotFound = () => {
         </div>
 
         <footer className={style.footer}>
-          <p>&copy; {new Date().getFullYear()} Minha Empresa. Todos os direitos reservados.</p>
+          <p>&copy; {new Date().getFullYear()} Tech Tooth. Todos os direitos reservados.</p>
           <div className={style.footerLinks}>
             {/* <a href="/termos" className="text-decoration-none text-primary">Termos de Serviço</a>
             <a href="/privacidade" className="text-decoration-none text-primary">Política de Privacidade</a> */}
