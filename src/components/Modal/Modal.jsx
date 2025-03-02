@@ -2,11 +2,21 @@ import React from "react";
 import styles from "./Modal.module.css";
 import Botao from "../Botao/Botao";
 
-function Modal ({ show = true, onClose, title, content, click }){
+function  Modal ({ show = true, onClose, title, content, click }){
   if (!show) return null;
 
+  const getModalStyle = () => {
+    if (title === 'Desfazer consulta') {
+      return { justifyContent: 'start' };
+    } else if (title === 'Sessão Expirada') {
+      return { justifyContent: 'center' };
+    } else {
+      return { justifyContent: 'end' };
+    }
+  };
+
   return (
-    <div className={`${styles.modal} z-2`} tabIndex="2" style={title === 'Desfazer consulta' ? { justifyContent: 'start' } : { justifyContent: 'end' }}>
+    <div className={`${styles.modal} z-2`} tabIndex="2" style={getModalStyle()}>
       <div className={`${styles.modalDialog}`}>
         <div className={`${styles.modalContent} p-4 text-align-center`}>
           <div
