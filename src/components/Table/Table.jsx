@@ -379,7 +379,7 @@ function Table({ tableInformation, setTableInformation, pacientesDados, close, s
         response = await api.delete(`/servicos/${item.id}`);
       }
       else if (tableInformation.tableId === "financesTable") {
-        response = await api.delete(`/financas/${item.id}`);
+        response = await api.delete(`/financeiro/${item.id}`);
       }
       else if (tableInformation.tableId === "employeesTable") {
 

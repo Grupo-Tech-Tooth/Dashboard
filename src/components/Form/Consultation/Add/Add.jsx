@@ -6,7 +6,7 @@ import SuccessAlert from "../../../AlertSuccess/AlertSuccess";
 import ConsultationControl from "../../../../pages/Consultation/ConsultationControl";
 import GenericModalError from "../../../GenericModal/GenericModalError/GenericModalError";
 
-function Add({ Display, close, listUsers, doctors, treatments }) {
+function Add({ Display, close, listUsers, doctors, treatments, createSnap = false }) {
   const [newConsultation, setNewConsultation] = useState({
     date: null,
     time: null,
@@ -480,8 +480,11 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
   async function treatmentConsultation(value) {
     value.preventDefault();
     try {
-      let response = await ConsultationControl.buscarDiasIndiponiveis(inputValueDoctor.id);
-      setDataDisabled(response);
+      //Verifica se é um criação do tipo encaixe      
+      if (!createSnap) {
+        let response = await ConsultationControl.buscarDiasIndiponiveis(inputValueDoctor.id);
+        setDataDisabled(response);
+      }
     } catch (e) {
       console.error(e);
     }
@@ -538,26 +541,30 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
           { class: "green", time: "18:45" }
         ];
 
-        // Busca os horários disponíveis do backend
-        const horariosDisponiveisBackend = await ConsultationControl.buscarHorariosIndiponiveis(inputValueDoctor.id, value);
+        if (!createSnap) {
+          // Busca os horários disponíveis do backend
+          const horariosDisponiveisBackend = await ConsultationControl.buscarHorariosIndiponiveis(inputValueDoctor.id, value);
 
-        // Extrai a lista de horários disponíveis
-        const listaHorariosDisponiveis = horariosDisponiveisBackend.horariosDisponiveis || [];
+          // Extrai a lista de horários disponíveis
+          const listaHorariosDisponiveis = horariosDisponiveisBackend.horariosDisponiveis || [];
 
-        // Ajusta o formato dos horários disponíveis (remove os segundos, se necessário)
-        const listaHorariosDisponiveisFormatados = listaHorariosDisponiveis.map(horario => horario.slice(0, 5));
+          // Ajusta o formato dos horários disponíveis (remove os segundos, se necessário)
+          const listaHorariosDisponiveisFormatados = listaHorariosDisponiveis.map(horario => horario.slice(0, 5));
 
-        // Atualiza availableHours com os horários indisponíveis
-        const horariosDisponiveis = initialAvailableHours.map(horario => {
-          // Verifica se o horário NÃO está na lista de disponíveis
-          if (!listaHorariosDisponiveisFormatados.includes(horario.time)) {
-            return { ...horario, class: "red" }; // Marca horários indisponíveis
-          }
-          return horario; // Mantém horários disponíveis
-        });
+          // Atualiza availableHours com os horários indisponíveis
+          const horariosDisponiveis = initialAvailableHours.map(horario => {
+            // Verifica se o horário NÃO está na lista de disponíveis
+            if (!listaHorariosDisponiveisFormatados.includes(horario.time)) {
+              return { ...horario, class: "red" }; // Marca horários indisponíveis
+            }
+            return horario; // Mantém horários disponíveis
+          });
 
-        // Atualiza o estado com os horários disponíveis e indisponíveis
-        setAvailableHours(horariosDisponiveis);
+          // Atualiza o estado com os horários disponíveis e indisponíveis
+          setAvailableHours(horariosDisponiveis);
+        } else {
+          setAvailableHours(initialAvailableHours);
+        }
       } catch (e) {
         console.error("Erro ao buscar horários disponíveis:", e);
       }
@@ -680,13 +687,22 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
     }
 
     try {
-      await ConsultationControl.cadastrar(
-        inputValueId,
-        inputValueDoctor.id,
-        inputValueTreatmentId,
-        value.target.status.value,
-        newConsultation
-      );
+      if (!createSnap) {
+        await ConsultationControl.cadastrar(
+          inputValueId,
+          inputValueDoctor.id,
+          inputValueTreatmentId,
+          value.target.status.value,
+          newConsultation
+        );
+      } else {
+        await ConsultationControl.encaixe(
+          inputValueId,
+          inputValueDoctor.id,
+          inputValueTreatmentId,
+          newConsultation
+        );
+      }
 
       setAlertSucess(true);
       setTimeout(() => {
@@ -708,7 +724,7 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
       setGenericModalError((prev) => ({
         view: true,
         title: 'Erro ao cadastrar consulta',
-        description: errorMessage.message || "Ocorreu um erro inesperado.",
+        description: errorMessage || "Ocorreu um erro inesperado.",
         icon: 'iconErro'
       }));
     }
