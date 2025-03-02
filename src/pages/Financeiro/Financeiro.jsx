@@ -57,7 +57,7 @@ function Financeiro() {
         agendamentoData: new Date(agendamento.data.dataHora).toLocaleDateString(),
         dataPagamento: new Date(item.dataPagamento).toLocaleDateString(),
         formaPagamento: item.formaPagamento,
-        valorBruto: item.valorBruto.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
+        valorBruto: item.valorBruto.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).replace('R$', '').trim(),
         taxMachine: item.taxMachine || "",
         installments: item.installments || "1",
         acoes: (

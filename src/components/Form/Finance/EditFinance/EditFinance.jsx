@@ -195,7 +195,7 @@ const EditFinance = ({ display, financeData, listUsers, close }) => {
                         value={formData.valorBruto}
                         onChange={handleChange}
                       />
-                      <span className="input-group-text">,00</span>
+                      {/* <span className="input-group-text">,00</span> */}
                     </div>
                   </div>
 
@@ -276,7 +276,7 @@ const EditFinance = ({ display, financeData, listUsers, close }) => {
                     className="btn btn-secondary col-md-2 me-3"
                     onClick={close}
                   >
-                    Fechar
+                    Cancelar
                   </button>
                   <button type="submit" className="btn btn-primary col-md-2">
                     Salvar
