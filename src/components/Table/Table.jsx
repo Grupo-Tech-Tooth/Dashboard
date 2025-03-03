@@ -12,7 +12,7 @@ import ModalFinalization from "../ModalFinalization/ModalFinalization";
 import ViewQuery from "../ViewQuery/ViewQuery";
 import ConsultationControl from "../../pages/Consultation/ConsultationControl";
 
-function Table({ tableInformation, setTableInformation, pacientesDados, close, statusCarregando = false}) {
+function Table({ tableInformation, setTableInformation, pacientesDados, close, statusCarregando = false }) {
   const [count, setCount] = useState(0);
   const [formUser, setFormUser] = useState("none");
   const [userEdit, setUserEdit] = useState([]);
@@ -20,8 +20,8 @@ function Table({ tableInformation, setTableInformation, pacientesDados, close, s
   const [consultationEdit, setConsultationEdit] = useState([]);
   const [formService, setFormService] = useState("none");
   const [serviceEdit, setServiceEdit] = useState([]);
-  const [formFinance, setFormFinance] = useState("none"); 
-  const [financeEdit, setFinanceEdit] = useState([]); 
+  const [formFinance, setFormFinance] = useState("none");
+  const [financeEdit, setFinanceEdit] = useState([]);
   const [formFunctional, setFormFunctional] = useState(false);
   const [modalFinalization, setModalFinalization] = useState("none");
   const [modalViewQuery, setModalViewQuery] = useState(false);
@@ -87,7 +87,7 @@ function Table({ tableInformation, setTableInformation, pacientesDados, close, s
         },
         {
           key: "3",
-          label: (
+          label: item.status !== "Concluído" && item.status !== "Pendente" ? (
             <button
               className="text-decoration-none text-primary"
               onClick={() => concluir(item)}
@@ -95,8 +95,9 @@ function Table({ tableInformation, setTableInformation, pacientesDados, close, s
             >
               Finalizar
             </button>
-          ),
+          ) : null,
         },
+
         {
           key: "4",
           label: (
@@ -192,11 +193,11 @@ function Table({ tableInformation, setTableInformation, pacientesDados, close, s
                           {col.key === ""
                             ? index + 1 + (currentPage - 1) * pageSize
                             : col.key === "amount"
-                            ? "R$ " + item[col.key] + ",00"
-                            : col.key === "paymentMethod" &&
-                              item[col.key] === "Cartão de Crédito"
-                            ? item[col.key] + " - " + item["installments"] + "x"
-                            : item[col.key]}
+                              ? "R$ " + item[col.key] + ",00"
+                              : col.key === "paymentMethod" &&
+                                item[col.key] === "Cartão de Crédito"
+                                ? item[col.key] + " - " + item["installments"] + "x"
+                                : item[col.key]}
                         </td>
                       ) : (
                         <td style={{ gap: "5px" }} key={`${item.id}-acoes`}>
@@ -278,12 +279,12 @@ function Table({ tableInformation, setTableInformation, pacientesDados, close, s
               close={closeForm}
             />
           )}
-           {formFunctional && (
-             <EmployeeForm
-             userData={userEdit}
-               close={closeForm}
-               listSpecialization={tableInformation.specialization}
-             />
+          {formFunctional && (
+            <EmployeeForm
+              userData={userEdit}
+              close={closeForm}
+              listSpecialization={tableInformation.specialization}
+            />
           )}
 
           {modalViewQuery && (
@@ -297,13 +298,13 @@ function Table({ tableInformation, setTableInformation, pacientesDados, close, s
           <span className={style.texto}>Nenhum resultado encontrado</span>
         </div>
       )}
-      
+
       {statusCarregando && !tableInformation.data.length > 0 && (
         <div className={style.carregamento}>
           <div className={style.loader}></div>
         </div>
       )}
-      
+
     </>
   );
 
@@ -394,7 +395,7 @@ function Table({ tableInformation, setTableInformation, pacientesDados, close, s
         response = await ConsultationControl.deletar(item);
       }
 
-      
+
       if (response.status === 204) {
         const newData = tableInformation.data.filter(
           (element) => element.id !== item.id
