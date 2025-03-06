@@ -79,11 +79,11 @@ class ConsultationControl {
         }
     }
 
-    static async buscarHorariosIndiponiveis(medicoId, value) {
+    static async buscarHorariosOcupados(medicoId, value) {
         try {
             const [day, month, year] = value.split('-');
             const dataFormatada = `${year}-${month}-${day}`;
-            let response = await ConsultationModel.buscarHorariosIndiponiveis(medicoId, dataFormatada);
+            let response = await ConsultationModel.buscarHorariosOcupados(medicoId, dataFormatada);
             return response;
         } catch (e) {
             throw new Error((e.message));

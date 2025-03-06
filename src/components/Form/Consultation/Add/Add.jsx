@@ -22,17 +22,6 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
   const [messageAlert, setMessageAlert] = useState(false);
   const [AlertSuccess, setAlertSucess] = useState(false);
 
-  const [agora, setAgora] = useState(new Date());
-  const [horas] = useState(String(agora.getHours()).padStart(2, "0"));
-  const [minutos] = useState(String(agora.getMinutes()).padStart(2, "0"));
-  const horarioAtual = `${horas}:${minutos}`;
-
-  const hoje = new Date();
-  const dia = String(hoje.getDate()).padStart(2, "0");
-  const mes = String(hoje.getMonth() + 1).padStart(2, "0");
-  const ano = hoje.getFullYear();
-  const dataAtualFormatada = `${dia}-${mes}-${ano}`;
-
   const [dataDisabled, setDataDisabled] = useState();
 
   const [availableHours, setAvailableHours] = useState([
@@ -52,6 +41,7 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
     { class: "green", time: "10:15" },
     { class: "green", time: "10:30" },
     { class: "green", time: "10:45" },
+    { class: "green", time: "11:00" },
     { class: "green", time: "11:15" },
     { class: "green", time: "11:30" },
     { class: "green", time: "11:45" },
@@ -93,7 +83,7 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
   });
 
   useEffect(() => {
-    setAgora(new Date());
+
   }, [inputValueDoctor, dataDisabled]);
 
   function userSelect(user) {
@@ -300,36 +290,18 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
               {/* Parte do modal para selecionar um horario */}
               {step === 2 && (
                 <div className={style["listDate"]}>
-                  {newConsultation.data === dataAtualFormatada
-                    ? availableHours
-                      .filter(
-                        (item) =>
-                          item.time > horarioAtual && item.class === "green" // Exibe apenas horários disponíveis após o horário atual
-                      )
-                      .map((item) => (
-                        <button
-                          key={item.time}
-                          type="button"
-                          className={`${style[item.class]} btn btn-primary`}
-                          onClick={() => timeConsultation(item.class, item.time)}
-                          disabled={item.class === "red"} // Desabilita botões de horários indisponíveis
-                        >
-                          {item.time}
-                        </button>
-                      ))
-                    : availableHours
-                      .filter((item) => item.class === "green") // Exibe apenas horários disponíveis
-                      .map((item) => (
-                        <button
-                          key={item.time}
-                          type="button"
-                          className={`${style[item.class]} btn btn-primary`}
-                          onClick={() => timeConsultation(item.class, item.time)}
-                          disabled={item.class === "red"} // Desabilita botões de horários indisponíveis
-                        >
-                          {item.time}
-                        </button>
-                      ))}
+                  {availableHours
+                    .filter((item) => item.class === "green") // Exibe apenas horários disponíveis
+                    .map((item) => (
+                      <button
+                        key={item.time}
+                        type="button"
+                        className={`${style[item.class]} btn btn-primary`}
+                        onClick={() => timeConsultation(item.class, item.time)}
+                      >
+                        {item.time}
+                      </button>
+                    ))}
                 </div>
               )}
 
@@ -491,7 +463,9 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
   async function dateConsultation(value) {
     if (value) {
       try {
-        // Redefine availableHours para o estado inicial (todos os horários como "green")
+        console.log("Buscando horários ocupados para o dia:", value);
+
+        // Lista completa de horários (todos inicialmente disponíveis)
         const initialAvailableHours = [
           { class: "green", time: "07:00" },
           { class: "green", time: "07:15" },
@@ -509,6 +483,7 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
           { class: "green", time: "10:15" },
           { class: "green", time: "10:30" },
           { class: "green", time: "10:45" },
+          { class: "green", time: "11:00" },
           { class: "green", time: "11:15" },
           { class: "green", time: "11:30" },
           { class: "green", time: "11:45" },
@@ -539,27 +514,25 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
         ];
 
         // Busca os horários disponíveis do backend
-        const horariosDisponiveisBackend = await ConsultationControl.buscarHorariosIndiponiveis(inputValueDoctor.id, value);
+        const response = await ConsultationControl.buscarHorariosOcupados(inputValueDoctor.id, value);
+        const horariosDisponiveisBackend = response.horariosDisponiveis; // Extrai a lista de horários disponíveis
+        console.log("Horários disponíveis retornados pelo backend:", horariosDisponiveisBackend);
 
-        // Extrai a lista de horários disponíveis
-        const listaHorariosDisponiveis = horariosDisponiveisBackend.horariosDisponiveis || [];
-
-        // Ajusta o formato dos horários disponíveis (remove os segundos, se necessário)
-        const listaHorariosDisponiveisFormatados = listaHorariosDisponiveis.map(horario => horario.slice(0, 5));
-
-        // Atualiza availableHours com os horários indisponíveis
+        // Atualiza availableHours com os horários disponíveis
         const horariosDisponiveis = initialAvailableHours.map(horario => {
-          // Verifica se o horário NÃO está na lista de disponíveis
-          if (!listaHorariosDisponiveisFormatados.includes(horario.time)) {
-            return { ...horario, class: "red" }; // Marca horários indisponíveis
+          // Verifica se o horário está na lista de disponíveis
+          if (horariosDisponiveisBackend.includes(horario.time)) {
+            return horario; // Mantém horários disponíveis
           }
-          return horario; // Mantém horários disponíveis
+          return { ...horario, class: "red" }; // Marca horários indisponíveis
         });
+
+        console.log("Horários disponíveis após atualização:", horariosDisponiveis);
 
         // Atualiza o estado com os horários disponíveis e indisponíveis
         setAvailableHours(horariosDisponiveis);
       } catch (e) {
-        console.error("Erro ao buscar horários disponíveis:", e);
+        console.error("Erro ao buscar horários ocupados:", e);
       }
 
       // Atualiza a data selecionada e avança para o próximo passo
