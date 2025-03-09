@@ -305,6 +305,7 @@ const Edit = ({ userData, display, close, listaClientes }) => {
                 setAlertSucess(true);
                 setTimeout(() => setAlertSucess(false), 1500);
                 close(userUpdate);
+                window.location.reload();
             } else {
                 console.error('Erro ao atualizar cliente');
             }
