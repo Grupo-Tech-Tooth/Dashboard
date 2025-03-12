@@ -185,7 +185,8 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
               {/* Messagem para o modal de selecionar um hórario */}
               {messageAlert && step === 2 && (
                 <Alert
-                  message={`Selecione um horário disponível!`}
+                  message={messageAlert}
+                  type="error"
                   className={style["alert"]}
                 />
               )}
@@ -513,15 +514,49 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
           { class: "green", time: "18:45" }
         ];
 
+        // Verifica se é o dia atual
+        const hoje = new Date();
+        const [dia, mes, ano] = value.split('-'); // Extrai dia, mês e ano da data selecionada
+        const diaSelecionado = new Date(ano, mes - 1, dia); // Converte para formato Date (mes - 1 porque meses são indexados de 0 a 11)
+        const isDiaAtual = diaSelecionado.toDateString() === hoje.toDateString(); // Compara as datas
+
+        console.log("Dia selecionado:", diaSelecionado.toDateString());
+        console.log("Hoje:", hoje.toDateString());
+        console.log("É o dia atual?", isDiaAtual);
+
+        // Verifica se é o dia atual e se já passou do horário de fechamento (19:00)
+        const horarioFechamento = new Date();
+        horarioFechamento.setHours(14, 0, 0, 0); // Define o horário de fechamento
+
+        if (isDiaAtual && hoje > horarioFechamento) {
+          // Se for o dia atual e já passou do horário de fechamento, bloqueia o dia
+          setAvailableHours([]); // Define a lista de horários como vazia
+          setNewConsultation({ data: value });
+          setMessageAlert("Não há mais horários disponíveis hoje."); // Exibe a mensagem de erro
+          setStep(step + 1);
+          return;
+        }
+
         // Busca os horários disponíveis do backend
         const response = await ConsultationControl.buscarHorariosOcupados(inputValueDoctor.id, value);
-        const horariosDisponiveisBackend = response.horariosDisponiveis; // Extrai a lista de horários disponíveis
+        const horariosDisponiveisBackend = response?.horariosDisponiveis || []; // Extrai a lista de horários disponíveis (ou usa uma lista vazia se for undefined)
         console.log("Horários disponíveis retornados pelo backend:", horariosDisponiveisBackend);
 
         // Atualiza availableHours com os horários disponíveis
         const horariosDisponiveis = initialAvailableHours.map(horario => {
+          // Se for o dia atual, verifica se o horário já passou
+          if (isDiaAtual) {
+            const [hora, minuto] = horario.time.split(':');
+            const horarioAtual = new Date();
+            horarioAtual.setHours(hora, minuto, 0, 0); // Define o horário do botão
+
+            if (horarioAtual < hoje) {
+              return { ...horario, class: "red" }; // Marca horários passados como indisponíveis
+            }
+          }
+
           // Verifica se o horário está na lista de disponíveis
-          if (horariosDisponiveisBackend.includes(horario.time)) {
+          if (horariosDisponiveisBackend.length === 0 || horariosDisponiveisBackend.includes(horario.time)) {
             return horario; // Mantém horários disponíveis
           }
           return { ...horario, class: "red" }; // Marca horários indisponíveis
@@ -531,6 +566,7 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
 
         // Atualiza o estado com os horários disponíveis e indisponíveis
         setAvailableHours(horariosDisponiveis);
+        setMessageAlert(false); // Limpa a mensagem de erro (caso exista)
       } catch (e) {
         console.error("Erro ao buscar horários ocupados:", e);
       }
