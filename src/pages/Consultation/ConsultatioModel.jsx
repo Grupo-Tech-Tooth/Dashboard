@@ -28,7 +28,7 @@ class ConsultationModel {
         }
     }
 
-    static async buscarHorariosIndiponiveis(medicoId, value) {
+    static async buscarHorariosOcupados(medicoId, value) {
         try {
             let response = await api.get(`/medicos/${medicoId}/agenda/horarios-indisponiveis?dia=${value}`);
             return response.data;

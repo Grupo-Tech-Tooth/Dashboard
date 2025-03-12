@@ -79,11 +79,11 @@ class ConsultationControl {
         }
     }
 
-    static async buscarHorariosIndiponiveis(medicoId, value) {
+    static async buscarHorariosOcupados(medicoId, value) {
         try {
             const [day, month, year] = value.split('-');
             const dataFormatada = `${year}-${month}-${day}`;
-            let response = await ConsultationModel.buscarHorariosIndiponiveis(medicoId, dataFormatada);
+            let response = await ConsultationModel.buscarHorariosOcupados(medicoId, dataFormatada);
             return response;
         } catch (e) {
             throw new Error((e.message));
@@ -94,21 +94,24 @@ class ConsultationControl {
         try {
             const [day, month, year] = times.data.split("-");
             const [hour, minute] = times.time.split(":");
-            const formattedDate = new Date(Date.UTC(year, month - 1, day, hour, minute, 0, 0));
-
+            const formattedDate = new Date(Date.UTC(year, month - 1, day, hour, minute, 0, 0)).toISOString();
+    
             let data = {
                 clienteId: cliente,
                 medicoId: medico,
                 servicoId: tratamento,
                 status: "Pendente",
                 dataHora: formattedDate
-            }
+            };
+    
             let response = await ConsultationModel.cadastrar(data);
             return response;
         } catch (e) {
-            throw new Error((e.message));
+            console.error("Erro ao cadastrar consulta:", e.response ? e.response.data : e.message);
+            throw new Error(e.response ? JSON.stringify(e.response.data) : e.message);
         }
     }
+    
 
     static async editar(cliente, medico, tratamento, status, agendamento) {
         try {
