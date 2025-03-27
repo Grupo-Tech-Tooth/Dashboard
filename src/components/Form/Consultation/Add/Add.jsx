@@ -22,17 +22,6 @@ function Add({ Display, close, listUsers, doctors, treatments, createSnap = fals
   const [messageAlert, setMessageAlert] = useState(false);
   const [AlertSuccess, setAlertSucess] = useState(false);
 
-  const [agora, setAgora] = useState(new Date());
-  const [horas] = useState(String(agora.getHours()).padStart(2, "0"));
-  const [minutos] = useState(String(agora.getMinutes()).padStart(2, "0"));
-  const horarioAtual = `${horas}:${minutos}`;
-
-  const hoje = new Date();
-  const dia = String(hoje.getDate()).padStart(2, "0");
-  const mes = String(hoje.getMonth() + 1).padStart(2, "0");
-  const ano = hoje.getFullYear();
-  const dataAtualFormatada = `${dia}-${mes}-${ano}`;
-
   const [dataDisabled, setDataDisabled] = useState();
 
   const [availableHours, setAvailableHours] = useState([
@@ -93,7 +82,7 @@ function Add({ Display, close, listUsers, doctors, treatments, createSnap = fals
   });
 
   useEffect(() => {
-    setAgora(new Date());
+
   }, [inputValueDoctor, dataDisabled]);
 
   function userSelect(user) {
@@ -195,7 +184,8 @@ function Add({ Display, close, listUsers, doctors, treatments, createSnap = fals
               {/* Messagem para o modal de selecionar um hórario */}
               {messageAlert && step === 2 && (
                 <Alert
-                  message={`Selecione um horário disponível!`}
+                  message={messageAlert}
+                  type="error"
                   className={style["alert"]}
                 />
               )}
@@ -512,6 +502,7 @@ function Add({ Display, close, listUsers, doctors, treatments, createSnap = fals
           { class: "green", time: "10:15" },
           { class: "green", time: "10:30" },
           { class: "green", time: "10:45" },
+          { class: "green", time: "11:00" },
           { class: "green", time: "11:15" },
           { class: "green", time: "11:30" },
           { class: "green", time: "11:45" },

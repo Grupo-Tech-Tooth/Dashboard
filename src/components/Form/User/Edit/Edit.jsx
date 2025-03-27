@@ -22,9 +22,11 @@ const Edit = ({ userData, display, close, listaClientes }) => {
                 console.error("Erro ao buscar médicos:", error);
             }
         }
-
+    
         fetchMedicos();
-
+    }, []);
+    
+    useEffect(() => {
         if (userEdit.id) {
             const cliente = listaClientes.find(cliente => cliente.id === userEdit.id);
             if (cliente) {
@@ -46,7 +48,7 @@ const Edit = ({ userData, display, close, listaClientes }) => {
                 });
             }
         }
-    }, [userEdit.id, listaClientes, userEdit]); 
+    }, [userEdit.id, listaClientes]);
 
     const findMedicoById = () => {
         if (userEdit.medicoId && medicos.length > 0) {
@@ -303,6 +305,7 @@ const Edit = ({ userData, display, close, listaClientes }) => {
                 setAlertSucess(true);
                 setTimeout(() => setAlertSucess(false), 1500);
                 close(userUpdate);
+                window.location.reload();
             } else {
                 console.error('Erro ao atualizar cliente');
             }

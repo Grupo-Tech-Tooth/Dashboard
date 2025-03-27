@@ -30,17 +30,17 @@ function ModalFinalization({
   );
 
   function getPrecoServico(id) {
-    let total = treatments.find((servico) => servico.id == agendamento?.idTratamento);
+    let total = treatments.find((servico) => servico.id === agendamento?.idTratamento);
     total = total?.preco || 0;
     if (id) {
-      let tratamento2 = treatments.find((servico) => servico.id == id);
+      let tratamento2 = treatments.find((servico) => servico.id === id);
       total += tratamento2.preco;
     }
     setPrice(total);
   }
 
   useEffect(() => {
-    if(price == 0){
+    if(price === 0){
       getPrecoServico();
     }
   }, []);
@@ -133,6 +133,7 @@ function ModalFinalization({
                     className="form-control"
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
+                    style={{ textAlign: "end" }}
                   />
                   <span className="input-group-text">,00</span>
                 </div>
