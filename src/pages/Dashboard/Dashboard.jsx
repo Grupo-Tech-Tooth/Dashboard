@@ -572,7 +572,6 @@ const Dashboard = () => {
       try {
         const response = await api.get("/financeiro");
         setConsultationsData(response.data);
-        console.log("consultationsData", response.data);
       } catch (error) {
         console.error("Erro ao buscar dados de consultas:", error);
       }
@@ -639,7 +638,6 @@ const Dashboard = () => {
 
   // Dia com mais consultas
   const dayWithMostConsultations = () => {
-    console.log("dailyFlowData", dailyFlowData);
     if (
       dailyFlowData.datasets.length > 0 &&
       typeof dailyFlowData.datasets[0].data === "object" &&
@@ -656,7 +654,7 @@ const Dashboard = () => {
     return { day: "N/A", count: 0 }; // Retorna valores padrão se os dados não forem válidos
   };
 
-  // Dia com menos consultas
+  // Dia com menos consultas (desconsiderando domingo)
   const dayWithLeastConsultations = () => {
     console.log("dailyFlowData", dailyFlowData);
     if (
@@ -665,8 +663,22 @@ const Dashboard = () => {
       Object.keys(dailyFlowData.datasets[0].data).length > 0
     ) {
       const dataArray = Object.values(dailyFlowData.datasets[0].data); // Transforma os valores em um array
-      const minIndex = dataArray.indexOf(Math.min(...dataArray));
       const labelsArray = Object.keys(dailyFlowData.datasets[0].data); // Transforma as chaves em um array
+  
+      // Filtra os dados para desconsiderar "Domingo" e "Quarta"
+      const filteredIndices = labelsArray
+        .map((label, index) => (label !== "Domingo" ? index : -1))
+        .filter((index) => index !== -1);
+  
+      if (filteredIndices.length === 0) {
+        return { day: "N/A", count: 0 }; // Retorna valores padrão se não houver dados válidos
+      }
+  
+      // Encontra o menor valor nos índices filtrados
+      const minIndex = filteredIndices.reduce((minIdx, currentIdx) =>
+        dataArray[currentIdx] < dataArray[minIdx] ? currentIdx : minIdx
+      );
+  
       return {
         day: labelsArray[minIndex],
         count: dataArray[minIndex],
@@ -714,7 +726,13 @@ const Dashboard = () => {
             >
               <h4 className="text-primary align-self-start">
                 Faturamento Por Período{" "}
-                <span style={{ fontSize: "14px" }}>(Valor Bruto)</span>
+                <span style={{ fontSize: "14px" }}>
+                  (Valor Bruto -{" "}
+                  {filterPeriodoFaturamento === "mensal"
+                    ? "Ano Atual"
+                    : "Mês Atual"}
+                  )
+                </span>
               </h4>
 
               {!revenueData.datasets.length > 0 && (
@@ -742,7 +760,7 @@ const Dashboard = () => {
                 className="form-select mt-2"
               >
                 <option value="mensal">Mensal</option>
-                <option value="diasemana">Por dia da semana</option>
+                <option value="diasemana">Dia da Semana</option>
                 <option value="semanal">Semanal</option>
               </select>
             </div>
