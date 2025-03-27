@@ -53,7 +53,7 @@ function Consultation() {
     treatment: [],
     doctor: [],
   });
-  const [viewFormAdd, setViewFormAdd] = useState("none");
+  const [viewFormAdd, setViewFormAdd] = useState({});
   const [searchPatient, setSearchPatient] = useState("");
   const [searchTreatment, setSearchTreatment] = useState(undefined);
   const [searchDoctor, setSearchDoctor] = useState(undefined);
@@ -165,6 +165,7 @@ function Consultation() {
       <Navbar
         toggleArrivalModal={toggleArrivalModal}
         toggleStackModal={toggleStackModal}
+        createSnap={()=> abrirModalAdd(true)}
       />
       {AlertSuccess && <SuccessAlert text={'Sucesso ao exportar CSV!'} />}
       {genericModalError.view && <GenericModalError
@@ -184,9 +185,10 @@ function Consultation() {
       )}
       <h2 className="text-primary text-center my-3">Consultas</h2>
       <Container>
-        {viewFormAdd === "block" && (
+        {viewFormAdd?.view === "block" && (
           <Add
-            Display={viewFormAdd}
+            Display={viewFormAdd?.view}
+            createSnap={viewFormAdd?.createSnap}
             close={closeForm}
             listUsers={tableInformation.pacientes}
             doctors={tableInformation.doctor}
@@ -452,8 +454,12 @@ function Consultation() {
     }
   }
 
-  function abrirModalAdd() {
-    setViewFormAdd("block");
+  function abrirModalAdd(createSnap = false) {
+    setViewFormAdd((prev) => ({
+      ...prev,
+      view: "block",
+      createSnap: createSnap ? true : false
+    }));
   }
 
   async function desfazer() {
