@@ -34,10 +34,7 @@ function Financeiro() {
 
   async function getData() {
     const response = await api.get("/financeiro");
-
-    let cliente = {};
-    let medico = {};
-    let agendamento = {};
+    
     let data = [];
 
     if (response.data) {
@@ -80,7 +77,7 @@ function Financeiro() {
 
   useEffect(() => {
     getData();
-  }, []);
+  });
 
   function editarItem(item) {
     setEditData({
