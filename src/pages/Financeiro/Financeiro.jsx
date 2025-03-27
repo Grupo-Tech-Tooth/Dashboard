@@ -40,32 +40,34 @@ function Financeiro() {
     let agendamento = {};
     let data = [];
 
-    if(response.data) {
-      cliente = await api.get(`/clientes/${response.data[0].clienteId}`);
-      medico = await api.get(`/medicos/${response.data[0].medicoId}`);
-      agendamento = await api.get(`/agendamentos/${response.data[0].agendamentoId}`);
-
-
-      data = response.data.map(item => ({
-        id: item.id,
-        agendamentoId: item.agendamentoId,
-        medicoId: item.medicoId,
-        pacienteId: item.clienteId,
-        nomeCliente: cliente.data.nome,
-        cpfCliente: cliente.data.cpf,
-        nomeMedico: medico.data.nome,
-        agendamentoData: new Date(agendamento.data.dataHora).toLocaleDateString(),
-        dataPagamento: new Date(item.dataPagamento).toLocaleDateString(),
-        formaPagamento: item.formaPagamento,
-        valorBruto: item.valorBruto.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).replace('R$', '').trim(),
-        taxMachine: item.taxMachine || "",
-        installments: item.installments || "1",
-        acoes: (
-          <button onClick={() => editarItem(item)} className="btn btn-primary">
-            Editar
-          </button>
-        ),
-      }));
+    if (response.data) {
+      data = [];
+      for (const item of response.data) {
+        const cliente = await api.get(`/clientes/${item.clienteId}`);
+        const medico = await api.get(`/medicos/${item.medicoId}`);
+        const agendamento = await api.get(`/agendamentos/${item.agendamentoId}`);
+        
+        data.push({
+          id: item.id,
+          agendamentoId: item.agendamentoId,
+          medicoId: item.medicoId,
+          pacienteId: item.clienteId,
+          nomeCliente: cliente.data.nome,
+          cpfCliente: cliente.data.cpf,
+          nomeMedico: medico.data.nome,
+          agendamentoData: new Date(agendamento.data.dataHora).toLocaleDateString(),
+          dataPagamento: new Date(item.dataPagamento).toLocaleDateString(),
+          formaPagamento: item.formaPagamento,
+          valorBruto: item.valorBruto.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).replace('R$', '').trim(),
+          taxMachine: item.taxMachine || "",
+          installments: item.installments || "1",
+          acoes: (
+            <button onClick={() => editarItem(item)} className="btn btn-primary">
+              Editar
+            </button>
+          ),
+        });
+      }
     }
 
 
