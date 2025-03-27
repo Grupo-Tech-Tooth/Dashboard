@@ -31,13 +31,34 @@ ChartJS.register(
 );
 
 const Dashboard = () => {
-
   const [filter, setFilter] = useState({
     year: "2024",
     specialty: "Todos",
     paymentType: "Todos",
     periodo: "Mensal",
   });
+
+  const [specialties, setSpecialties] = useState([]); // Estado para armazenar as especialidades
+
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        const response = await api.get("/medicos"); // Faz a requisição para o endpoint
+        const doctors = response.data || []; // Garante que os dados sejam um array
+
+        // Extrai as especialidades únicas
+        const specialtiesList = [
+          ...new Set(doctors.map((doctor) => doctor.especializacao)),
+        ];
+
+        setSpecialties(specialtiesList); // Salva as especialidades no estado
+      } catch (error) {
+        console.error("Erro ao buscar dados dos médicos:", error);
+      }
+    };
+
+    fetchDoctors();
+  }, []);
 
   const [dailyFlowData, setDailyFlowData] = useState({
     labels: [],
@@ -55,13 +76,13 @@ const Dashboard = () => {
       .get("/clientes/fluxo-mensal")
       .then((response) => {
         const fluxoMensal = response.data;
-        
+
         setDailyFlowData((prevData) => ({
           ...prevData,
           datasets: [
             {
               ...prevData.datasets[0],
-              data: fluxoMensal, 
+              data: fluxoMensal,
             },
           ],
         }));
@@ -77,13 +98,7 @@ const Dashboard = () => {
       {
         label: "Serviços Mais Usados",
         data: [],
-        backgroundColor: [
-          "#0D6EFD",
-          "#2563EB",
-          "#60A5FA",
-          "#BFDBFE",
-          "#E0F2FE",
-        ],
+        backgroundColor: ["#60A5FA", "#BFDBFE", "#E0F2FE"],
       },
     ],
   });
@@ -91,7 +106,6 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchServicesData = async () => {
       try {
-
         const response = await api.get("/servicos/usados", {
           params: {
             periodo: filter.periodo,
@@ -99,23 +113,17 @@ const Dashboard = () => {
         });
         const services = Array.isArray(response.data) ? response.data : [];
 
-        
-        
         const updatedData = {
           labels: services.map((service) => service.nome),
           datasets: [
             {
               label: "Serviços Mais Usados",
               data: services.map((service) => service.usos),
-              backgroundColor: [
-                "#60A5FA",
-                "#BFDBFE",
-                "#E0F2FE",
-              ],
+              backgroundColor: ["#60A5FA", "#BFDBFE", "#E0F2FE"],
             },
           ],
         };
-        
+
         setServicesData(updatedData);
       } catch (error) {
         console.error("Erro ao buscar dados dos serviços mais usados:", error);
@@ -123,9 +131,7 @@ const Dashboard = () => {
     };
 
     fetchServicesData();
-  }, [
-    filter.periodo,
-  ]);
+  }, [filter.periodo]);
 
   const [revenueData, setRevenueData] = useState({
     labels: [],
@@ -148,10 +154,10 @@ const Dashboard = () => {
       },
     ],
   });
-  
-  
-  const [filterPeriodoFaturamento, setFilterPeriodoFaturamento] = useState("Mensal");
-  
+
+  const [filterPeriodoFaturamento, setFilterPeriodoFaturamento] =
+    useState("Mensal");
+
   useEffect(() => {
     const fetchFaturamentoData = async () => {
       try {
@@ -160,21 +166,35 @@ const Dashboard = () => {
             periodo: filterPeriodoFaturamento,
           },
         });
-  
+
         const fetchedData = response.data;
-  
+
         const periodoLower = filterPeriodoFaturamento.toLowerCase();
-  
-        const labels = periodoLower === "diasemana"
-          ? ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"]
-          : periodoLower === "semanal"
+
+        const labels =
+          periodoLower === "diasemana"
+            ? ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"]
+            : periodoLower === "semanal"
             ? Object.keys(fetchedData)
             : periodoLower === "mensal"
-              ? ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"]
-              : [];
-  
+            ? [
+                "Jan",
+                "Fev",
+                "Mar",
+                "Abr",
+                "Mai",
+                "Jun",
+                "Jul",
+                "Ago",
+                "Set",
+                "Out",
+                "Nov",
+                "Dez",
+              ]
+            : [];
+
         const valoresBrutos = Object.values(fetchedData);
-  
+
         const updatedData = {
           labels,
           datasets: [
@@ -201,14 +221,12 @@ const Dashboard = () => {
         console.error("Erro ao buscar dados de faturamento:", error);
       }
     };
-  
+
     fetchFaturamentoData();
   }, [filterPeriodoFaturamento]);
-  
-  
-  
+
   const [annualRevenueData, setAnnualRevenueData] = useState({
-    labels: ["Jul", "Ago", "Set", "Out", "Nov", "Dez"],
+    labels: [],
     datasets: [
       {
         label: `Faturamento Total (${filter.specialty})`,
@@ -248,63 +266,89 @@ const Dashboard = () => {
         backgroundColor: "#93C5FD",
         yAxisID: "y",
       },
+      {
+        type: "bar",
+        label: "Cheque",
+        data: [],
+        backgroundColor: "#BFDBFE",
+        yAxisID: "y",
+      },
     ],
   });
 
   useEffect(() => {
     const fetchFaturamentoSemestral = async () => {
       try {
-  
-        const response = await api.get(`/financeiro/semestral/${filter.specialty}`);
-        const data = response.data || []; 
-  
-        const total = Array(6).fill(0);
-        const creditCard = Array(6).fill(0);
-        const debitCard = Array(6).fill(0);
-        const cash = Array(6).fill(0);
-        const pix = Array(6).fill(0);
-  
-        const monthMap = {
-          6: 0,
-          7: 1,
-          8: 2,
-          9: 3,
-          10: 4,
-          11: 5,
-        };
-  
-        data.forEach(item => {
-          const month = new Date(item.dataPagamento).getMonth();
-          const index = monthMap[month];
-  
-          if (index !== undefined) {
+        const response = await api.get(
+          `/financeiro/semestral/${filter.specialty}`
+        );
+        const data = response.data || [];
+
+        const currentMonth = new Date().getMonth(); // Mês atual (0-11)
+        const currentYear = new Date().getFullYear(); // Ano atual
+
+        // Determina o semestre atual
+        const isFirstSemester = currentMonth < 6; // Janeiro a Junho
+        const startMonth = isFirstSemester ? 0 : 6; // Início do semestre
+        const endMonth = isFirstSemester ? 5 : 11; // Fim do semestre
+
+        // Gera os labels para os meses do semestre atual
+        const labels = Array(endMonth - startMonth + 1)
+          .fill(0)
+          .map((_, i) => {
+            const month = startMonth + i;
+            return new Date(currentYear, month)
+              .toLocaleString("pt-BR", { month: "short" })
+              .replace(".", "") // Remove o ponto final
+              .toUpperCase(); // Converte para maiúsculas
+          });
+
+        // Inicializa os arrays de dados para os meses do semestre atual
+        const total = Array(endMonth - startMonth + 1).fill(0);
+        const creditCard = Array(endMonth - startMonth + 1).fill(0);
+        const debitCard = Array(endMonth - startMonth + 1).fill(0);
+        const cash = Array(endMonth - startMonth + 1).fill(0);
+        const pix = Array(endMonth - startMonth + 1).fill(0);
+        const cheque = Array(endMonth - startMonth + 1).fill(0);
+
+        // Processa os dados para os meses do semestre atual
+        data.forEach((item) => {
+          const paymentDate = new Date(item.dataPagamento);
+          const month = paymentDate.getMonth();
+
+          if (month >= startMonth && month <= endMonth) {
+            const index = month - startMonth; // Índice relativo ao semestre
             total[index] += item.valorCorrigido;
             switch (item.formaPagamento) {
-              case 'CARTAO_CREDITO':
+              case "CARTAO_CREDITO":
                 creditCard[index] += item.valorCorrigido;
                 break;
-              case 'CARTAO_DEBITO':
+              case "CARTAO_DEBITO":
                 debitCard[index] += item.valorCorrigido;
                 break;
-              case 'DINHEIRO':
+              case "DINHEIRO":
                 cash[index] += item.valorCorrigido;
                 break;
-              case 'PIX':
+              case "PIX":
                 pix[index] += item.valorCorrigido;
+                break;
+              case "CHEQUE":
+                cheque[index] += item.valorCorrigido;
                 break;
               default:
                 break;
             }
           }
         });
-  
-        const filterZeroValues = (arr) => arr.map((value, index) => value === 0 ? null : value);
-  
+
+        const filterZeroValues = (arr) =>
+          arr.map((value) => (value === 0 ? null : value));
+
         const updatedData = {
-          labels: ["Jul", "Ago", "Set", "Out", "Nov", "Dez"],
+          labels,
           datasets: [
             {
-              label: `Faturamento Total (${filter.specialty})`,
+              label: `Receita Total`,
               data: filterZeroValues(total),
               borderColor: "#0D6EFD",
               backgroundColor: "#0D6EFD",
@@ -341,26 +385,33 @@ const Dashboard = () => {
               backgroundColor: "#93C5FD",
               yAxisID: "y",
             },
+            {
+              type: "bar",
+              label: "Cheque",
+              data: filterZeroValues(cheque),
+              backgroundColor: "#BFDBFE",
+              yAxisID: "y",
+            },
           ],
         };
-  
+
         setAnnualRevenueData(updatedData);
       } catch (error) {
         console.error("Erro ao buscar dados de faturamento semestral:", error);
       }
     };
-  
+
     fetchFaturamentoSemestral();
   }, [filter.specialty]);
 
   function calculateGrowthRate(data) {
-    const growthRates = [0]; 
+    const growthRates = [0];
     for (let i = 1; i < data.length; i++) {
       if (data[i - 1] === 0) {
-        growthRates.push(0); 
+        growthRates.push(0);
       } else {
         const growth = ((data[i] - data[i - 1]) / data[i - 1]) * 100;
-        growthRates.push(Number(growth.toFixed(2))); 
+        growthRates.push(Number(growth.toFixed(2)));
       }
     }
     return growthRates;
@@ -372,7 +423,7 @@ const Dashboard = () => {
       tooltip: {
         callbacks: {
           label: (context) => {
-            const label = context.dataset.label || ""; 
+            const label = context.dataset.label || "";
             const value = context.dataset.data[context.dataIndex];
             return context.dataset.type === "line"
               ? `${label}: ${value}%`
@@ -435,7 +486,7 @@ const Dashboard = () => {
         suggestedMax: suggestedBarMax,
         title: {
           display: true,
-          text: "Receita (em Reais)", 
+          text: "Receita (em Reais)",
         },
       },
       growth: {
@@ -444,13 +495,13 @@ const Dashboard = () => {
         position: "right",
         title: {
           display: true,
-          text: "Faturamento Total (em Reais)", 
+          text: "Faturamento Total (em Reais)",
         },
         ticks: {
           callback: (value) => `R$ ${value.toLocaleString("pt-BR")}`,
         },
         grid: {
-          drawOnChartArea: false, 
+          drawOnChartArea: false,
         },
       },
     },
@@ -486,16 +537,147 @@ const Dashboard = () => {
         color: "#000",
         font: {
           size: 14,
-          weight: "bold", 
+          weight: "bold",
         },
       },
     },
   };
 
-  const totalMonthlyRevenue = annualRevenueData.datasets[0].data.reduce(
-    (acc, val) => acc + val,
-    0
-  );
+  // Calcula o faturamento total mensal
+  const totalMonthlyRevenue = annualRevenueData.datasets[0].data
+    .reduce((acc, val) => acc + val, 0)
+    .toLocaleString("pt-BR", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }); // Formata o valor
+
+  // Calcula o faturamento médio por consulta
+  const averageRevenuePerConsultation = () => {
+    const totalRevenue = annualRevenueData.datasets[0].data.reduce(
+      (acc, val) => acc + val,
+      0
+    );
+    const totalConsultations = annualRevenueData.datasets[0].data.length;
+    return totalConsultations > 0
+      ? (totalRevenue / totalConsultations).toLocaleString("pt-BR", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+      : "0,00";
+  };
+
+  const [consultationsData, setConsultationsData] = useState(null);
+  useEffect(() => {
+    const fetchConsultationsData = async () => {
+      try {
+        const response = await api.get("/financeiro");
+        setConsultationsData(response.data);
+        console.log("consultationsData", response.data);
+      } catch (error) {
+        console.error("Erro ao buscar dados de consultas:", error);
+      }
+    };
+
+    fetchConsultationsData();
+  }, []);
+
+  // Calcula o maior faturamento por consulta
+  const highestRevenuePerConsultation = () => {
+    if (consultationsData && consultationsData.length > 0) {
+      let highestValue = consultationsData[0].valorCorrigido;
+      for (let i = 1; i < consultationsData.length; i++) {
+        if (consultationsData[i].valorCorrigido > highestValue) {
+          highestValue = consultationsData[i].valorCorrigido;
+        }
+      }
+      return highestValue.toLocaleString("pt-BR", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }); // Formata o valor
+    }
+    return "N/A";
+  };
+
+  // Calcula o menor faturamento por consulta
+  const lowestRevenuePerConsultation = () => {
+    if (consultationsData && consultationsData.length > 0) {
+      let lowestValue = consultationsData[0].valorCorrigido;
+      for (let i = 1; i < consultationsData.length; i++) {
+        if (consultationsData[i].valorCorrigido < lowestValue) {
+          lowestValue = consultationsData[i].valorCorrigido;
+        }
+      }
+      return lowestValue.toLocaleString("pt-BR", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }); // Formata o valor
+    }
+    return "N/A";
+  };
+
+  // Serviço mais realizado
+  const mostPerformedService = () => {
+    const maxIndex = popularServicesData.datasets[0].data.indexOf(
+      Math.max(...popularServicesData.datasets[0].data)
+    );
+    return {
+      name: popularServicesData.labels[maxIndex],
+      count: popularServicesData.datasets[0].data[maxIndex],
+    };
+  };
+
+  // Serviço menos realizado
+  const leastPerformedService = () => {
+    const minIndex = popularServicesData.datasets[0].data.indexOf(
+      Math.min(...popularServicesData.datasets[0].data)
+    );
+    return {
+      name: popularServicesData.labels[minIndex],
+      count: popularServicesData.datasets[0].data[minIndex],
+    };
+  };
+
+  // Dia com mais consultas
+  const dayWithMostConsultations = () => {
+    console.log("dailyFlowData", dailyFlowData);
+    if (
+      dailyFlowData.datasets.length > 0 &&
+      typeof dailyFlowData.datasets[0].data === "object" &&
+      Object.keys(dailyFlowData.datasets[0].data).length > 0
+    ) {
+      const dataArray = Object.values(dailyFlowData.datasets[0].data); // Transforma os valores em um array
+      const maxIndex = dataArray.indexOf(Math.max(...dataArray));
+      const labelsArray = Object.keys(dailyFlowData.datasets[0].data); // Transforma as chaves em um array
+      return {
+        day: labelsArray[maxIndex],
+        count: dataArray[maxIndex],
+      };
+    }
+    return { day: "N/A", count: 0 }; // Retorna valores padrão se os dados não forem válidos
+  };
+
+  // Dia com menos consultas
+  const dayWithLeastConsultations = () => {
+    console.log("dailyFlowData", dailyFlowData);
+    if (
+      dailyFlowData.datasets.length > 0 &&
+      typeof dailyFlowData.datasets[0].data === "object" &&
+      Object.keys(dailyFlowData.datasets[0].data).length > 0
+    ) {
+      const dataArray = Object.values(dailyFlowData.datasets[0].data); // Transforma os valores em um array
+      const minIndex = dataArray.indexOf(Math.min(...dataArray));
+      const labelsArray = Object.keys(dailyFlowData.datasets[0].data); // Transforma as chaves em um array
+      return {
+        day: labelsArray[minIndex],
+        count: dataArray[minIndex],
+      };
+    }
+    return { day: "N/A", count: 0 }; // Retorna valores padrão se os dados não forem válidos
+  };
+
+  const capitalizeFirstLetter = (string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+  };
 
   return (
     <>
@@ -529,7 +711,6 @@ const Dashboard = () => {
                 height: "fit-content",
                 marginBottom: "2%",
               }}
-
             >
               <h4 className="text-primary align-self-start">
                 Faturamento Por Período{" "}
@@ -543,18 +724,17 @@ const Dashboard = () => {
               )}
 
               {revenueData.datasets.length > 0 && (
-              <div
-                style={{
-                  height: "33vh",
-                  maxHeight: "33vh",
-                  width: "100%",
-                  justifyItems: "center",
-                }}
-              >  
-                <Bar data={revenueData} options={lineOptions} />
-              </div>
+                <div
+                  style={{
+                    height: "33vh",
+                    maxHeight: "33vh",
+                    width: "100%",
+                    justifyItems: "center",
+                  }}
+                >
+                  <Bar data={revenueData} options={lineOptions} />
+                </div>
               )}
-
 
               <select
                 onChange={(e) => setFilterPeriodoFaturamento(e.target.value)}
@@ -562,7 +742,7 @@ const Dashboard = () => {
                 className="form-select mt-2"
               >
                 <option value="mensal">Mensal</option>
-                <option value="diasemana">Por dia da semana</option>    
+                <option value="diasemana">Por dia da semana</option>
                 <option value="semanal">Semanal</option>
               </select>
             </div>
@@ -612,25 +792,25 @@ const Dashboard = () => {
                   <span style={{ fontSize: "14px" }}>(Nº Absoluto)</span>
                 </h4>
 
-              {popularServicesData.datasets[0].data.length < 1 && (
-                <div className={style.carregamento} id="carregamento">
-                  <div className={style.loader}></div>
-              </div>
-              )}
-              
-              {popularServicesData.datasets[0].data.length > 0 && (
-                <div style={{ height: "fit-content", minWidth: "100%" }}>
-                  <Pie
-                    data={popularServicesData}
-                    options={pieOptions}
-                    style={{ maxHeight: "23vh", minWidth: "60%" }}
-                  />
-                </div>
-              )}
+                {popularServicesData.datasets[0].data.length < 1 && (
+                  <div className={style.carregamento} id="carregamento">
+                    <div className={style.loader}></div>
+                  </div>
+                )}
+
+                {popularServicesData.datasets[0].data.length > 0 && (
+                  <div style={{ height: "fit-content", minWidth: "100%" }}>
+                    <Pie
+                      data={popularServicesData}
+                      options={pieOptions}
+                      style={{ maxHeight: "23vh", minWidth: "60%" }}
+                    />
+                  </div>
+                )}
 
                 <select
                   onChange={(e) =>
-                    setFilter({ ...filter, periodo: e.target.value, })
+                    setFilter({ ...filter, periodo: e.target.value })
                   }
                   value={filter.timeframe}
                   className="form-select mt-2"
@@ -666,13 +846,15 @@ const Dashboard = () => {
               </h4>
 
               {!annualRevenueData.datasets[0].data.length > 0 && (
-               <div className={style.carregamento} id="carregamento">
-                 <div className={style.loader}></div>
+                <div className={style.carregamento} id="carregamento">
+                  <div className={style.loader}></div>
                 </div>
               )}
 
               {annualRevenueData.datasets[0].data.length > 0 && (
-                <div style={{ height: "40vh", maxHeight: "40vh", width: "auto" }}>
+                <div
+                  style={{ height: "40vh", maxHeight: "40vh", width: "auto" }}
+                >
                   <Bar data={annualRevenueData} options={lineOptions2} />
                 </div>
               )}
@@ -684,14 +866,17 @@ const Dashboard = () => {
                 value={filter.specialty}
                 className="form-select mt-2"
               >
-                <option value="Todos">Todos</option>
-                <option value="Ortodontia">Ortodontia</option>
-                <option value="Implantodontia">Implantodontia</option>
+                <option value="TODOS">Todos</option>
+                {specialties.map((specialty, index) => (
+                  <option key={index} value={specialty}>
+                    {capitalizeFirstLetter(specialty)}
+                  </option>
+                ))}
               </select>
             </div>
             <div
               className="card p-3 text-center justify-content-between"
-              style={{ height: "100%", width: "100%"}}
+              style={{ height: "100%", width: "100%" }}
             >
               <h5 className="text-primary">Descritivo do Mês</h5>
               <div className="d-flex justify-content-between align-items-center">
@@ -711,7 +896,10 @@ const Dashboard = () => {
                     <h6 className="text-primary">
                       Faturam. Médio Por Consulta:{" "}
                       <span className="text-dark">
-                        R${totalMonthlyRevenue.toLocaleString("pt-BR")}
+                        R$
+                        {averageRevenuePerConsultation().toLocaleString(
+                          "pt-BR"
+                        )}
                       </span>
                     </h6>
                   </div>
@@ -719,7 +907,10 @@ const Dashboard = () => {
                     <h6 className="text-primary">
                       Maior Faturam. Por Consulta:{" "}
                       <span className="text-dark">
-                        R${totalMonthlyRevenue.toLocaleString("pt-BR")}
+                        R$
+                        {highestRevenuePerConsultation().toLocaleString(
+                          "pt-BR"
+                        )}
                       </span>
                     </h6>
                   </div>
@@ -727,7 +918,8 @@ const Dashboard = () => {
                     <h6 className="text-primary">
                       Menor Faturam. Por Consulta:{" "}
                       <span className="text-dark">
-                        R${totalMonthlyRevenue.toLocaleString("pt-BR")}
+                        R$
+                        {lowestRevenuePerConsultation().toLocaleString("pt-BR")}
                       </span>
                     </h6>
                   </div>
@@ -740,8 +932,10 @@ const Dashboard = () => {
                     <h6 className="text-primary">
                       Serviço Mais Realizado:{" "}
                       <span className="text-dark">
-                        Limpeza{" "}
-                        <span style={{ fontSize: "14px" }}>(60 proced.)</span>
+                        {mostPerformedService().name}{" "}
+                        <span style={{ fontSize: "14px" }}>
+                          ({mostPerformedService().count} proced.)
+                        </span>
                       </span>
                     </h6>
                   </div>
@@ -749,25 +943,33 @@ const Dashboard = () => {
                     <h6 className="text-primary">
                       Serviço Menos Realizado:{" "}
                       <span className="text-dark">
-                        Implante{" "}
-                        <span style={{ fontSize: "14px" }}>(20 proced.)</span>
+                        {leastPerformedService().name}{" "}
+                        <span style={{ fontSize: "14px" }}>
+                          ({leastPerformedService().count} proced.)
+                        </span>
                       </span>
                     </h6>
                   </div>
                   <div className="d-flex align-items-end py-2">
                     <h6 className="text-primary">
                       Dia Com Mais Consultas:{" "}
-                      <span className="text-dark">Segunda-Feira, Dia 06</span>
+                      <span className="text-dark">
+                        {dayWithMostConsultations().day},{" "}
+                        {dayWithMostConsultations().count} consultas
+                      </span>
                     </h6>
                   </div>
                   <div className="d-flex align-items-end py-2">
                     <h6 className="text-primary">
                       Dia Com Menos Consultas:{" "}
-                      <span className="text-dark">Segunda-Feira, Dia 06</span>
+                      <span className="text-dark">
+                        {dayWithLeastConsultations().day},{" "}
+                        {dayWithLeastConsultations().count} consultas
+                      </span>
                     </h6>
                   </div>
                 </div>
-              </div>  
+              </div>
             </div>
           </div>
         </div>
