@@ -12,7 +12,13 @@ import ModalFinalization from "../ModalFinalization/ModalFinalization";
 import ViewQuery from "../ViewQuery/ViewQuery";
 import ConsultationControl from "../../pages/Consultation/ConsultationControl";
 
-function Table({ tableInformation, setTableInformation, pacientesDados, close, statusCarregando = false}) {
+function Table({
+  tableInformation,
+  setTableInformation,
+  pacientesDados,
+  close,
+  statusCarregando = false,
+}) {
   const [count, setCount] = useState(0);
   const [formUser, setFormUser] = useState("none");
   const [userEdit, setUserEdit] = useState([]);
@@ -20,8 +26,8 @@ function Table({ tableInformation, setTableInformation, pacientesDados, close, s
   const [consultationEdit, setConsultationEdit] = useState([]);
   const [formService, setFormService] = useState("none");
   const [serviceEdit, setServiceEdit] = useState([]);
-  const [formFinance, setFormFinance] = useState("none"); 
-  const [financeEdit, setFinanceEdit] = useState([]); 
+  const [formFinance, setFormFinance] = useState("none");
+  const [financeEdit, setFinanceEdit] = useState([]);
   const [formFunctional, setFormFunctional] = useState(false);
   const [modalFinalization, setModalFinalization] = useState("none");
   const [modalViewQuery, setModalViewQuery] = useState(false);
@@ -50,77 +56,115 @@ function Table({ tableInformation, setTableInformation, pacientesDados, close, s
     if (tableId === "consultationBody") {
       return [
         {
-          key: "1",
-          label: (
-            <button
-              className="text-decoration-none text-primary"
-              onClick={() => editar(item)}
-              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
-            >
-              Editar
-            </button>
-          ),
-        },
-        {
-          key: "6",
-          label: (
-            <button
-              className="text-decoration-none text-primary"
-              onClick={() => confirmar(item)}
-              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
-            >
-              Confirmar
-            </button>
-          ),
-        },
-        {
-          key: "2",
-          label: (
-            <button
-              className="text-decoration-none text-primary"
-              onClick={() => cancelar(item.id)}
-              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
-            >
-              Cancelar
-            </button>
-          ),
-        },
-        {
-          key: "3",
-          label: (
-            <button
-              className="text-decoration-none text-primary"
-              onClick={() => concluir(item)}
-              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
-            >
-              Finalizar
-            </button>
-          ),
-        },
-        {
           key: "4",
           label: (
             <button
               className="text-decoration-none text-primary"
               onClick={() => visualizarConsulta(item)}
-              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+              style={{
+                background: "none",
+                border: "none",
+                padding: 0,
+                cursor: "pointer",
+              }}
             >
               Visualizar
             </button>
           ),
         },
-        {
-          key: "5",
-          label: (
-            <button
-              className="text-decoration-none text-primary"
-              onClick={() => deletar(item.id)}
-              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
-            >
-              Deletar
-            </button>
-          ),
-        },
+        ...(item.status === "Pendente" 
+        ? [
+          {
+            key: "6",
+            label: (
+              <button
+                className="text-decoration-none text-primary"
+                onClick={() => confirmar(item)}
+                style={{
+                  background: "none",
+                  border: "none",
+                  padding: 0,
+                  cursor: "pointer",
+                }}
+              >
+                Confirmar
+              </button>
+            ),
+          }
+        ]
+        : []),
+        ...(item.status !== "Concluído" && item.status !== "Cancelado"
+          ? [
+              {
+                key: "1",
+                label: (
+                  <button
+                    className="text-decoration-none text-primary"
+                    onClick={() => editar(item)}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      padding: 0,
+                      cursor: "pointer",
+                    }}
+                  >
+                    Editar
+                  </button>
+                ),
+              },
+              {
+                key: "2",
+                label: (
+                  <button
+                    className="text-decoration-none text-primary"
+                    onClick={() => cancelar(item.id)}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      padding: 0,
+                      cursor: "pointer",
+                    }}
+                  >
+                    Cancelar
+                  </button>
+                ),
+              },
+              {
+                key: "3",
+                label: (
+                  <button
+                    className="text-decoration-none text-primary"
+                    onClick={() => concluir(item)}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      padding: 0,
+                      cursor: "pointer",
+                    }}
+                  >
+                    Finalizar
+                  </button>
+                ),
+              },
+              {
+                key: "5",
+                label: (
+                  <button
+                    className="text-decoration-none text-primary"
+                    onClick={() => deletar(item.id)}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      padding: 0,
+                      cursor: "pointer",
+                    }}
+                  >
+                    Deletar
+                  </button>
+                ),
+              },
+            ]
+          : []),
       ];
     } else {
       return [
@@ -130,7 +174,12 @@ function Table({ tableInformation, setTableInformation, pacientesDados, close, s
             <button
               className="text-decoration-none text-primary"
               onClick={() => editar(item)}
-              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+              style={{
+                background: "none",
+                border: "none",
+                padding: 0,
+                cursor: "pointer",
+              }}
             >
               Editar
             </button>
@@ -142,7 +191,12 @@ function Table({ tableInformation, setTableInformation, pacientesDados, close, s
             <button
               className="text-decoration-none text-primary"
               onClick={() => deletar(item)}
-              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+              style={{
+                background: "none",
+                border: "none",
+                padding: 0,
+                cursor: "pointer",
+              }}
             >
               Deletar
             </button>
@@ -165,8 +219,9 @@ function Table({ tableInformation, setTableInformation, pacientesDados, close, s
 
       {!statusCarregando && tableInformation.data.length > 0 && (
         <div
-          className={`${style["table"]} table-responsive ${pageSize === 10 ? "overflow-hidden" : ""
-            }`}
+          className={`${style["table"]} table-responsive ${
+            pageSize === 10 ? "overflow-hidden" : ""
+          }`}
         >
           <table
             className="table table-hover mb-2"
@@ -278,12 +333,12 @@ function Table({ tableInformation, setTableInformation, pacientesDados, close, s
               close={closeForm}
             />
           )}
-           {formFunctional && (
-             <EmployeeForm
-             userData={userEdit}
-               close={closeForm}
-               listSpecialization={tableInformation.specialization}
-             />
+          {formFunctional && (
+            <EmployeeForm
+              userData={userEdit}
+              close={closeForm}
+              listSpecialization={tableInformation.specialization}
+            />
           )}
 
           {modalViewQuery && (
@@ -297,13 +352,12 @@ function Table({ tableInformation, setTableInformation, pacientesDados, close, s
           <span className={style.texto}>Nenhum resultado encontrado</span>
         </div>
       )}
-      
+
       {statusCarregando && !tableInformation.data.length > 0 && (
         <div className={style.carregamento}>
           <div className={style.loader}></div>
         </div>
       )}
-      
     </>
   );
 
@@ -377,24 +431,18 @@ function Table({ tableInformation, setTableInformation, pacientesDados, close, s
         response = await api.delete(`/clientes/${item.id}`);
       } else if (tableInformation.tableId === "servicesTable") {
         response = await api.delete(`/servicos/${item.id}`);
-      }
-      else if (tableInformation.tableId === "financesTable") {
+      } else if (tableInformation.tableId === "financesTable") {
         response = await api.delete(`/financeiro/${item.id}`);
-      }
-      else if (tableInformation.tableId === "employeesTable") {
-
+      } else if (tableInformation.tableId === "employeesTable") {
         if (item.crm) {
           response = await api.delete(`/medicos/${item.id}`);
         } else {
           response = await api.delete(`/funcionais/${item.id}`);
         }
-      }
-
-      else {
+      } else {
         response = await ConsultationControl.deletar(item);
       }
 
-      
       if (response.status === 204) {
         const newData = tableInformation.data.filter(
           (element) => element.id !== item.id
@@ -403,7 +451,6 @@ function Table({ tableInformation, setTableInformation, pacientesDados, close, s
         alert("Item deletado com sucesso.");
       }
       close();
-
     } catch (error) {
       console.error(error);
     }
@@ -439,6 +486,6 @@ function Table({ tableInformation, setTableInformation, pacientesDados, close, s
     setViewQuery(item);
     setModalViewQuery(true);
   }
-};
+}
 
 export default Table;
