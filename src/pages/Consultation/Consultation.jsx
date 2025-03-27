@@ -63,7 +63,12 @@ function Consultation() {
 
   async function getDataAppointement() {
     try {
-      const agendamentos = await ConsultationControl.buscar();
+      let agendamentos = await ConsultationControl.buscar();
+
+      agendamentos = agendamentos.filter(
+        (agendamento) => agendamento.status !== "Cancelado"
+      );
+
       if (isMounted.current) {
         setTableInformation((prevTableInformation) => ({
           ...prevTableInformation,
