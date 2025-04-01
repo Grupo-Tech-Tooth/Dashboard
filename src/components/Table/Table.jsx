@@ -56,6 +56,55 @@ function Table({
     if (tableId === "consultationBody") {
       return [
         {
+          key: "1",
+          label: (
+            <button
+              className="text-decoration-none text-primary"
+              onClick={() => editar(item)}
+              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+            >
+              Editar
+            </button>
+          ),
+        },
+        {
+          key: "6",
+          label: (
+            <button
+              className="text-decoration-none text-primary"
+              onClick={() => confirmar(item)}
+              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+            >
+              Confirmar
+            </button>
+          ),
+        },
+        {
+          key: "2",
+          label: (
+            <button
+              className="text-decoration-none text-primary"
+              onClick={() => cancelar(item.id)}
+              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+            >
+              Cancelar
+            </button>
+          ),
+        },
+        {
+          key: "3",
+          label: item.status !== "Concluído" && item.status !== "Pendente" ? (
+            <button
+              className="text-decoration-none text-primary"
+              onClick={() => concluir(item)}
+              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+            >
+              Finalizar
+            </button>
+          ) : null,
+        },
+
+        {
           key: "4",
           label: (
             <button
@@ -247,11 +296,11 @@ function Table({
                           {col.key === ""
                             ? index + 1 + (currentPage - 1) * pageSize
                             : col.key === "amount"
-                            ? "R$ " + item[col.key] + ",00"
-                            : col.key === "paymentMethod" &&
-                              item[col.key] === "Cartão de Crédito"
-                            ? item[col.key] + " - " + item["installments"] + "x"
-                            : item[col.key]}
+                              ? "R$ " + item[col.key] + ",00"
+                              : col.key === "paymentMethod" &&
+                                item[col.key] === "Cartão de Crédito"
+                                ? item[col.key] + " - " + item["installments"] + "x"
+                                : item[col.key]}
                         </td>
                       ) : (
                         <td style={{ gap: "5px" }} key={`${item.id}-acoes`}>
@@ -442,7 +491,6 @@ function Table({
       } else {
         response = await ConsultationControl.deletar(item);
       }
-
       if (response.status === 204) {
         const newData = tableInformation.data.filter(
           (element) => element.id !== item.id

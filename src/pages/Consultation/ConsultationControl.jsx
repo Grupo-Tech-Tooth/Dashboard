@@ -112,7 +112,6 @@ class ConsultationControl {
         }
     }
     
-
     static async encaixe(cliente, medico, tratamento, times){
         try {
             const [day, month, year] = times.data.split("-");
@@ -134,7 +133,6 @@ class ConsultationControl {
             throw new Error(e.response ? JSON.stringify(e.response.data) : e.message);
         }
     }
-    
 
     static async editar(cliente, medico, tratamento, status, agendamento) {
         try {
