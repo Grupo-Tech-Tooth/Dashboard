@@ -28,7 +28,7 @@ class ConsultationModel {
         }
     }
 
-    static async buscarHorariosIndiponiveis(medicoId, value) {
+    static async buscarHorariosOcupados(medicoId, value) {
         try {
             let response = await api.get(`/medicos/${medicoId}/agenda/horarios-indisponiveis?dia=${value}`);
             return response.data;
@@ -40,6 +40,17 @@ class ConsultationModel {
     static async cadastrar(value) {
         try {
             const response = await api.post("/agendamentos", value, {
+                headers: { 'Content-Type': 'application/json' },
+            });
+            return response.data;
+        } catch (e) {
+            throw new Error((e?.response?.data || e.message));
+        }
+    }
+
+    static async encaixe(value){
+        try {
+            const response = await api.post("/agendamentos/encaixe", value, {
                 headers: { 'Content-Type': 'application/json' },
             });
             return response.data;
