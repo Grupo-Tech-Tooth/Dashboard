@@ -6,7 +6,14 @@ import SuccessAlert from "../../../AlertSuccess/AlertSuccess";
 import ConsultationControl from "../../../../pages/Consultation/ConsultationControl";
 import GenericModalError from "../../../GenericModal/GenericModalError/GenericModalError";
 
-function Add({ Display, close, listUsers, doctors, treatments }) {
+function Add({
+  Display,
+  close,
+  listUsers,
+  doctors,
+  treatments,
+  createSnap = false,
+}) {
   const [newConsultation, setNewConsultation] = useState({
     date: null,
     time: null,
@@ -21,6 +28,17 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
   const [step, setStep] = useState(0);
   const [messageAlert, setMessageAlert] = useState(false);
   const [AlertSuccess, setAlertSucess] = useState(false);
+
+  const [agora, setAgora] = useState(new Date());
+  const [horas] = useState(String(agora.getHours()).padStart(2, "0"));
+  const [minutos] = useState(String(agora.getMinutes()).padStart(2, "0"));
+  const horarioAtual = `${horas}:${minutos}`;
+
+  const hoje = new Date();
+  const dia = String(hoje.getDate()).padStart(2, "0");
+  const mes = String(hoje.getMonth() + 1).padStart(2, "0");
+  const ano = hoje.getFullYear();
+  const dataAtualFormatada = `${dia}-${mes}-${ano}`;
 
   const [dataDisabled, setDataDisabled] = useState();
 
@@ -41,7 +59,6 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
     { class: "green", time: "10:15" },
     { class: "green", time: "10:30" },
     { class: "green", time: "10:45" },
-    { class: "green", time: "11:00" },
     { class: "green", time: "11:15" },
     { class: "green", time: "11:30" },
     { class: "green", time: "11:45" },
@@ -68,7 +85,7 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
     { class: "green", time: "18:00" },
     { class: "green", time: "18:15" },
     { class: "green", time: "18:30" },
-    { class: "green", time: "18:45" }
+    { class: "green", time: "18:45" },
   ]);
 
   const [optionsUsers, setOptionsUsers] = useState({});
@@ -77,13 +94,13 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
 
   const [genericModalError, setGenericModalError] = useState({
     view: false,
-    title: '',
-    description: '',
-    icon: ''
+    title: "",
+    description: "",
+    icon: "",
   });
 
   useEffect(() => {
-
+    setAgora(new Date());
   }, [inputValueDoctor, dataDisabled]);
 
   function userSelect(user) {
@@ -106,11 +123,16 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
 
   return (
     <>
-      {genericModalError.view && <GenericModalError
-        close={() => setGenericModalError((prev) => ({ ...prev, view: false }))}
-        title={genericModalError.title}
-        description={genericModalError.description}
-        icon={genericModalError.icon} />}
+      {genericModalError.view && (
+        <GenericModalError
+          close={() =>
+            setGenericModalError((prev) => ({ ...prev, view: false }))
+          }
+          title={genericModalError.title}
+          description={genericModalError.description}
+          icon={genericModalError.icon}
+        />
+      )}
       <div
         className={`${style["bottom"]} modal `}
         id="viewCalendarModal"
@@ -291,18 +313,40 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
               {/* Parte do modal para selecionar um horario */}
               {step === 2 && (
                 <div className={style["listDate"]}>
-                  {availableHours
-                    .filter((item) => item.class === "green") // Exibe apenas horários disponíveis
-                    .map((item) => (
-                      <button
-                        key={item.time}
-                        type="button"
-                        className={`${style[item.class]} btn btn-primary`}
-                        onClick={() => timeConsultation(item.class, item.time)}
-                      >
-                        {item.time}
-                      </button>
-                    ))}
+                  {newConsultation.data === dataAtualFormatada
+                    ? availableHours
+                        .filter(
+                          (item) =>
+                            item.time > horarioAtual && item.class === "green" // Exibe apenas horários disponíveis após o horário atual
+                        )
+                        .map((item) => (
+                          <button
+                            key={item.time}
+                            type="button"
+                            className={`${style[item.class]} btn btn-primary`}
+                            onClick={() =>
+                              timeConsultation(item.class, item.time)
+                            }
+                            disabled={item.class === "red"} // Desabilita botões de horários indisponíveis
+                          >
+                            {item.time}
+                          </button>
+                        ))
+                    : availableHours
+                        .filter((item) => item.class === "green") // Exibe apenas horários disponíveis
+                        .map((item) => (
+                          <button
+                            key={item.time}
+                            type="button"
+                            className={`${style[item.class]} btn btn-primary`}
+                            onClick={() =>
+                              timeConsultation(item.class, item.time)
+                            }
+                            disabled={item.class === "red"} // Desabilita botões de horários indisponíveis
+                          >
+                            {item.time}
+                          </button>
+                        ))}
                 </div>
               )}
 
@@ -374,9 +418,9 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
                           value={
                             newConsultation.data
                               ? newConsultation.data
-                                .split("-")
-                                .reverse()
-                                .join("-")
+                                  .split("-")
+                                  .reverse()
+                                  .join("-")
                               : ""
                           }
                           disabled
@@ -435,7 +479,11 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
                         </select>
                       </div>
                       <div className="d-grid">
-                        <button type="submit" className="btn btn-primary w-100" style={{ marginTop: '2rem' }}>
+                        <button
+                          type="submit"
+                          className="btn btn-primary w-100"
+                          style={{ marginTop: "2rem" }}
+                        >
                           Confirmar Consulta
                         </button>
                       </div>
@@ -453,8 +501,13 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
   async function treatmentConsultation(value) {
     value.preventDefault();
     try {
-      let response = await ConsultationControl.buscarDiasIndiponiveis(inputValueDoctor.id);
-      setDataDisabled(response);
+      //Verifica se é um criação do tipo encaixe
+      if (!createSnap) {
+        let response = await ConsultationControl.buscarDiasIndiponiveis(
+          inputValueDoctor.id
+        );
+        setDataDisabled(response);
+      }
     } catch (e) {
       console.error(e);
     }
@@ -464,9 +517,7 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
   async function dateConsultation(value) {
     if (value) {
       try {
-        console.log("Buscando horários ocupados para o dia:", value);
-
-        // Lista completa de horários (todos inicialmente disponíveis)
+        // Redefine availableHours para o estado inicial (todos os horários como "green")
         const initialAvailableHours = [
           { class: "green", time: "07:00" },
           { class: "green", time: "07:15" },
@@ -511,64 +562,41 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
           { class: "green", time: "18:00" },
           { class: "green", time: "18:15" },
           { class: "green", time: "18:30" },
-          { class: "green", time: "18:45" }
+          { class: "green", time: "18:45" },
         ];
 
-        // Verifica se é o dia atual
-        const hoje = new Date();
-        const [dia, mes, ano] = value.split('-'); // Extrai dia, mês e ano da data selecionada
-        const diaSelecionado = new Date(ano, mes - 1, dia); // Converte para formato Date (mes - 1 porque meses são indexados de 0 a 11)
-        const isDiaAtual = diaSelecionado.toDateString() === hoje.toDateString(); // Compara as datas
+        if (!createSnap) {
+          // Busca os horários disponíveis do backend
+          const horariosDisponiveisBackend =
+            await ConsultationControl.buscarHorariosIndiponiveis(
+              inputValueDoctor.id,
+              value
+            );
 
-        console.log("Dia selecionado:", diaSelecionado.toDateString());
-        console.log("Hoje:", hoje.toDateString());
-        console.log("É o dia atual?", isDiaAtual);
+          // Extrai a lista de horários disponíveis
+          const listaHorariosDisponiveis =
+            horariosDisponiveisBackend.horariosDisponiveis || [];
 
-        // Verifica se é o dia atual e se já passou do horário de fechamento (19:00)
-        const horarioFechamento = new Date();
-        horarioFechamento.setHours(14, 0, 0, 0); // Define o horário de fechamento
+          // Ajusta o formato dos horários disponíveis (remove os segundos, se necessário)
+          const listaHorariosDisponiveisFormatados =
+            listaHorariosDisponiveis.map((horario) => horario.slice(0, 5));
 
-        if (isDiaAtual && hoje > horarioFechamento) {
-          // Se for o dia atual e já passou do horário de fechamento, bloqueia o dia
-          setAvailableHours([]); // Define a lista de horários como vazia
-          setNewConsultation({ data: value });
-          setMessageAlert("Não há mais horários disponíveis hoje."); // Exibe a mensagem de erro
-          setStep(step + 1);
-          return;
-        }
-
-        // Busca os horários disponíveis do backend
-        const response = await ConsultationControl.buscarHorariosOcupados(inputValueDoctor.id, value);
-        const horariosDisponiveisBackend = response?.horariosDisponiveis || []; // Extrai a lista de horários disponíveis (ou usa uma lista vazia se for undefined)
-        console.log("Horários disponíveis retornados pelo backend:", horariosDisponiveisBackend);
-
-        // Atualiza availableHours com os horários disponíveis
-        const horariosDisponiveis = initialAvailableHours.map(horario => {
-          // Se for o dia atual, verifica se o horário já passou
-          if (isDiaAtual) {
-            const [hora, minuto] = horario.time.split(':');
-            const horarioAtual = new Date();
-            horarioAtual.setHours(hora, minuto, 0, 0); // Define o horário do botão
-
-            if (horarioAtual < hoje) {
-              return { ...horario, class: "red" }; // Marca horários passados como indisponíveis
+          // Atualiza availableHours com os horários indisponíveis
+          const horariosDisponiveis = initialAvailableHours.map((horario) => {
+            // Verifica se o horário NÃO está na lista de disponíveis
+            if (!listaHorariosDisponiveisFormatados.includes(horario.time)) {
+              return { ...horario, class: "red" }; // Marca horários indisponíveis
             }
-          }
-
-          // Verifica se o horário está na lista de disponíveis
-          if (horariosDisponiveisBackend.length === 0 || horariosDisponiveisBackend.includes(horario.time)) {
             return horario; // Mantém horários disponíveis
-          }
-          return { ...horario, class: "red" }; // Marca horários indisponíveis
-        });
+          });
 
-        console.log("Horários disponíveis após atualização:", horariosDisponiveis);
-
-        // Atualiza o estado com os horários disponíveis e indisponíveis
-        setAvailableHours(horariosDisponiveis);
-        setMessageAlert(false); // Limpa a mensagem de erro (caso exista)
+          // Atualiza o estado com os horários disponíveis e indisponíveis
+          setAvailableHours(horariosDisponiveis);
+        } else {
+          setAvailableHours(initialAvailableHours);
+        }
       } catch (e) {
-        console.error("Erro ao buscar horários ocupados:", e);
+        console.error("Erro ao buscar horários disponíveis:", e);
       }
 
       // Atualiza a data selecionada e avança para o próximo passo
@@ -584,7 +612,9 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
     if (time) {
       if (tipo === "green") {
         // Verifica se o horário está disponível
-        const horarioDisponivel = availableHours.find(horario => horario.time === time && horario.class === "green");
+        const horarioDisponivel = availableHours.find(
+          (horario) => horario.time === time && horario.class === "green"
+        );
 
         if (horarioDisponivel) {
           setNewConsultation((prevNewConsultation) => ({
@@ -615,7 +645,7 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
           filteredPatients.push({
             nome: patient.nome,
             cpf: patient.cpf,
-            id: patient.id
+            id: patient.id,
           });
         }
       }
@@ -689,13 +719,22 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
     }
 
     try {
-      await ConsultationControl.cadastrar(
-        inputValueId,
-        inputValueDoctor.id,
-        inputValueTreatmentId,
-        value.target.status.value,
-        newConsultation
-      );
+      if (!createSnap) {
+        await ConsultationControl.cadastrar(
+          inputValueId,
+          inputValueDoctor.id,
+          inputValueTreatmentId,
+          value.target.status.value,
+          newConsultation
+        );
+      } else {
+        await ConsultationControl.encaixe(
+          inputValueId,
+          inputValueDoctor.id,
+          inputValueTreatmentId,
+          newConsultation
+        );
+      }
 
       setAlertSucess(true);
       setTimeout(() => {
@@ -716,9 +755,9 @@ function Add({ Display, close, listUsers, doctors, treatments }) {
 
       setGenericModalError((prev) => ({
         view: true,
-        title: 'Erro ao cadastrar consulta',
-        description: errorMessage.message || "Ocorreu um erro inesperado.",
-        icon: 'iconErro'
+        title: "Erro ao cadastrar consulta",
+        description: errorMessage || "Ocorreu um erro inesperado.",
+        icon: "iconErro",
       }));
     }
 

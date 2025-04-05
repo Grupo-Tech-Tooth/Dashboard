@@ -48,6 +48,17 @@ class ConsultationModel {
         }
     }
 
+    static async encaixe(value){
+        try {
+            const response = await api.post("/agendamentos/encaixe", value, {
+                headers: { 'Content-Type': 'application/json' },
+            });
+            return response.data;
+        } catch (e) {
+            throw new Error((e?.response?.data || e.message));
+        }
+    }
+
     static async editar(id, value) {
         try {
             const response = await api.put(`/agendamentos/${id}`, value, {

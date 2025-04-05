@@ -4,7 +4,7 @@ import styles from "./Navbar.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTooth } from "@fortawesome/free-solid-svg-icons";
 
-const Navbar = ({ toggleArrivalModal, toggleStackModal }) => {
+const Navbar = ({ toggleArrivalModal, toggleStackModal, createSnap }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const isLoginPage = location.pathname === "/";
@@ -12,7 +12,7 @@ const Navbar = ({ toggleArrivalModal, toggleStackModal }) => {
 
   const handleLogout = () => {
     sessionStorage.clear();
-    navigate("/"); 
+    navigate("/");
   };
 
   return (
@@ -49,12 +49,20 @@ const Navbar = ({ toggleArrivalModal, toggleStackModal }) => {
                   Últimas Consultas Marcadas
                 </Link>
               </li>
-              <li className="nav-item">
+              <li className="nav-item  me-3">
                 <Link
                   className="btn btn-outline-primary"
                   onClick={() => toggleArrivalModal()}
                 >
                   Fila de Espera
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link
+                  className="btn btn-outline-primary"
+                  onClick={() => createSnap()}
+                >
+                  Marcar Encaixe
                 </Link>
               </li>
             </ul>
