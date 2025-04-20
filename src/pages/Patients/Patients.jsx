@@ -37,7 +37,7 @@ function Patients() {
       const response = await api.get(`/clientes/agendamentos`);
       resetFields();
       setPacientesData(response.data);
-      formatData(response.data); 
+      formatData(response.data);
     } catch (error) {
       console.error("Erro ao obter consultas:", error);
     }
@@ -61,7 +61,7 @@ function Patients() {
       lastVisit: paciente.ultimoAgendamento
         ? new Date(paciente.ultimoAgendamento.dataHora)
             .toISOString()
-            .split("T")[0] 
+            .split("T")[0]
         : "Não agendado",
     }));
 
@@ -99,12 +99,12 @@ function Patients() {
       const response = await filtrarClientes(filtrosValidos);
 
       if (!response || response.length === 0) {
-        formatData([]); 
+        formatData([]);
         console.warn("Nenhum cliente encontrado.");
         return;
       }
 
-      formatData(response); 
+      formatData(response);
     } catch (error) {
       console.error("Erro ao filtrar clientes:", error);
     }
@@ -125,8 +125,8 @@ function Patients() {
       try {
         newUser.hierarquia = "CLIENTE";
 
-        const response = await criarCliente(newUser); 
-        const savedPatient = response.data; 
+        const response = await criarCliente(newUser);
+        const savedPatient = response.data;
 
         alert("Paciente adicionado com sucesso!");
 
@@ -225,13 +225,15 @@ function Patients() {
           </div>
         </div>
       </Container>
-        <button
-          type="button"
-          onClick={() => abrirModalAdd()}
-          className={`${style["add"]} btn btn-primary`}
-        >
-          Cadastrar Paciente
-        </button>
+      <button
+        type="button"
+        onClick={() => abrirModalAdd()}
+        className={`${style["add"]} btn btn-primary`}
+        hidden={sessionStorage.getItem("hierarquia") === "MEDICO"}
+        disabled={sessionStorage.getItem("hierarquia") === "MEDICO"}
+      >
+        Cadastrar Paciente
+      </button>
     </>
   );
 }

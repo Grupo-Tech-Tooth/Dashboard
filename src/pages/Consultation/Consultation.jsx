@@ -20,13 +20,13 @@ function Consultation() {
   const [AlertSuccess, setAlertSucess] = useState(false);
   const [genericModalError, setGenericModalError] = useState({
     view: false,
-    title: '',
-    description: '',
-    icon: ''
+    title: "",
+    description: "",
+    icon: "",
   });
   const [modalFinalization, setModalFinalization] = useState({
     view: false,
-    userEdit: null
+    userEdit: null,
   });
 
   const timeoutRef = useRef(null);
@@ -60,13 +60,21 @@ function Consultation() {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
-
   async function getDataAppointement() {
     try {
       let agendamentos = await ConsultationControl.buscar();
 
+      if (sessionStorage.getItem("hierarquia") === "MEDICO") {
+        agendamentos = agendamentos.filter(
+          (agendamento) =>
+            agendamento.idDoctor.toString() === sessionStorage.getItem("id")
+        );
+      }
+
       agendamentos = agendamentos.filter(
-        (agendamento) => agendamento.status !== "Cancelado"
+        (agendamento) =>
+          agendamento.status !== "Cancelado" &&
+          agendamento.status !== "Concluído"
       );
 
       if (isMounted.current) {
@@ -93,7 +101,15 @@ function Consultation() {
 
   async function getMedicos() {
     try {
-      const medicos = await EmployeesControl.buscarMedicos();
+      let medicos = await EmployeesControl.buscarMedicos();
+
+      if (sessionStorage.getItem("hierarquia") === "MEDICO") {
+        medicos = medicos.filter(
+          (medico) =>
+            medico.id.toString() === sessionStorage.getItem("id")
+        );
+      }
+
       setTableInformation((prevTableInformation) => ({
         ...prevTableInformation,
         doctor: medicos,
@@ -162,7 +178,7 @@ function Consultation() {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
-    }
+    };
   }, []);
 
   return (
@@ -170,20 +186,27 @@ function Consultation() {
       <Navbar
         toggleArrivalModal={toggleArrivalModal}
         toggleStackModal={toggleStackModal}
-        createSnap={()=> abrirModalAdd(true)}
+        createSnap={() => abrirModalAdd(true)}
       />
-      {AlertSuccess && <SuccessAlert text={'Sucesso ao exportar CSV!'} />}
-      {genericModalError.view && <GenericModalError
-        close={() => setGenericModalError((prev) => ({ ...prev, view: false }))}
-        title={genericModalError.title}
-        description={genericModalError.description}
-        icon={genericModalError.icon} />}
+      {AlertSuccess && <SuccessAlert text={"Sucesso ao exportar CSV!"} />}
+      {genericModalError.view && (
+        <GenericModalError
+          close={() =>
+            setGenericModalError((prev) => ({ ...prev, view: false }))
+          }
+          title={genericModalError.title}
+          description={genericModalError.description}
+          icon={genericModalError.icon}
+        />
+      )}
       {modalFinalization.view && (
         <ModalFinalization
-          fecharModal={() => setModalFinalization((prev) => ({
-            ...prev,
-            view: false
-          }))}
+          fecharModal={() =>
+            setModalFinalization((prev) => ({
+              ...prev,
+              view: false,
+            }))
+          }
           agendamento={modalFinalization.agendamento}
           treatments={tableInformation.treatment}
         />
@@ -296,7 +319,11 @@ function Consultation() {
             </div>
           </div>
           <div className={style["table"]}>
-            <Table tableInformation={tableInformation} setTableInformation={setTableInformation} close={closeForm} />
+            <Table
+              tableInformation={tableInformation}
+              setTableInformation={setTableInformation}
+              close={closeForm}
+            />
           </div>
         </div>
         <Modal
@@ -330,8 +357,9 @@ function Consultation() {
                           }}
                           onClick={() => {
                             setModalFinalization((prev) => ({
-                              userEdit: paciente.cliente
-                            })); buscarAgendamento(paciente.id)
+                              userEdit: paciente.cliente,
+                            }));
+                            buscarAgendamento(paciente.id);
                           }}
                         >
                           <FontAwesomeIcon icon={faCheck} />
@@ -347,8 +375,9 @@ function Consultation() {
                           <FontAwesomeIcon icon={faTimes} />
                         </button>
                       </div>
-                    ) : <></>
-                    }
+                    ) : (
+                      <></>
+                    )}
                   </div>
                 ))
               ) : (
@@ -363,19 +392,20 @@ function Consultation() {
           title="Desfazer consulta"
           click={() => desfazer()}
           content={
-            <div className={style.modalContainer} style={{ height: "65vh", overflowY: "scroll" }}>
+            <div
+              className={style.modalContainer}
+              style={{ height: "65vh", overflowY: "scroll" }}
+            >
               <div className={style.stackModalBody}>
                 {pacientesAgendados.length > 0 ? (
                   <>
                     {pacientesAgendados.map((paciente, index) => (
                       <div key={index} className={style.pacienteItem}>
-                        <span className={style.data}>
-                          {paciente.data}
+                        <span className={style.data}>{paciente.data}</span>
+                        <span className={style.horario}>{paciente.hora}</span>
+                        <span className={style.nome}>
+                          {paciente?.cliente?.nome}
                         </span>
-                        <span className={style.horario}>
-                          {paciente.hora}
-                        </span>
-                        <span className={style.nome}>{paciente?.cliente?.nome}</span>
                       </div>
                     ))}
                   </>
@@ -398,6 +428,12 @@ function Consultation() {
         type="button"
         onClick={() => exportCSVAppointments()}
         className={`${style["csv"]} btn btn-primary`}
+        hidden={
+          sessionStorage.getItem("hierarquia") === "MEDICO" ? true : false
+        }
+        disabled={
+          sessionStorage.getItem("hierarquia") === "MEDICO" ? true : false
+        }
       >
         Exportar Lista de Consultas
       </button>
@@ -441,20 +477,19 @@ function Consultation() {
         tratamento: searchTreatment,
         medico: searchDoctor,
         dataInicio: startDate,
-        dataFim: endDate
-      }
+        dataFim: endDate,
+      };
       const response = await ConsultationControl.filtrar(data);
       setTableInformation((prev) => ({
         ...prev,
-        data: [...response]
+        data: [...response],
       }));
-
     } catch (e) {
       setGenericModalError((prev) => ({
         view: true,
-        title: 'Ops.... Tivemos um erro ao concluir a ação',
+        title: "Ops.... Tivemos um erro ao concluir a ação",
         description: e.message,
-        icon: 'iconErro'
+        icon: "iconErro",
       }));
     }
   }
@@ -463,20 +498,20 @@ function Consultation() {
     setViewFormAdd((prev) => ({
       ...prev,
       view: "block",
-      createSnap: createSnap ? true : false
+      createSnap: createSnap ? true : false,
     }));
   }
 
   async function desfazer() {
     try {
       await ConsultationControl.desfazer(pacientesAgendados[0]?.id);
-      getPilha()
+      getPilha();
     } catch (e) {
       setGenericModalError((prev) => ({
         view: true,
-        title: 'Erro ao Concluir Ação',
+        title: "Erro ao Concluir Ação",
         description: e.message,
-        icon: 'iconErro'
+        icon: "iconErro",
       }));
     }
   }
@@ -502,9 +537,9 @@ function Consultation() {
     } catch (e) {
       setGenericModalError((prev) => ({
         view: true,
-        title: 'Erro ao exportar CSV',
+        title: "Erro ao exportar CSV",
         description: e,
-        icon: 'iconErro'
+        icon: "iconErro",
       }));
     }
   }
@@ -526,16 +561,16 @@ function Consultation() {
     } catch (e) {
       setGenericModalError((prev) => ({
         view: true,
-        title: 'Erro ao buscar informações do agendamento',
+        title: "Erro ao buscar informações do agendamento",
         description: e,
-        icon: 'iconErro'
+        icon: "iconErro",
       }));
     } finally {
       if (response) {
         setModalFinalization((prev) => ({
           ...prev,
           view: true,
-          agendamento: response[0]
+          agendamento: response[0],
         }));
       }
     }
@@ -551,13 +586,12 @@ function Consultation() {
     } catch (e) {
       setGenericModalError((prev) => ({
         view: true,
-        title: 'Erro ao Concluir Ação',
+        title: "Erro ao Concluir Ação",
         description: e,
-        icon: 'iconErro'
+        icon: "iconErro",
       }));
     }
   }
-
 }
 
 export default Consultation;

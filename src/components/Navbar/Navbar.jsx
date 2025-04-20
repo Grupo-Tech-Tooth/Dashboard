@@ -23,7 +23,7 @@ const Navbar = ({ toggleArrivalModal, toggleStackModal, createSnap }) => {
         className="container-fluid p-0 d-flex justify-content-between align-items-center"
         style={{ width: "80%" }}
       >
-        <Link className="navbar-brand text-primary m-0" to="/dashboard">
+        <Link className="navbar-brand text-primary m-0" to="/consultas">
           <FontAwesomeIcon icon={faTooth} /> Tech Tooth
         </Link>
         <button
@@ -38,7 +38,7 @@ const Navbar = ({ toggleArrivalModal, toggleStackModal, createSnap }) => {
           <span className="navbar-toggler-icon"></span>
         </button>
 
-        {isAppointmentsPage && (
+        {isAppointmentsPage && (sessionStorage.getItem("hierarquia") !== "MEDICO") && (
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav ms-auto">
               <li className="nav-item me-3">
@@ -91,7 +91,12 @@ const Navbar = ({ toggleArrivalModal, toggleStackModal, createSnap }) => {
                   Pacientes
                 </Link>
               </li>
-              <li className="nav-item">
+              <li className="nav-item" hidden={
+                sessionStorage.getItem("hierarquia") === "MEDICO"
+                }
+                disabled={
+                  sessionStorage.getItem("hierarquia") === "MEDICO"
+                }>
                 <Link
                   className={`${styles.nav_link} nav-link text-primary`}
                   to="/funcionarios"
@@ -99,7 +104,12 @@ const Navbar = ({ toggleArrivalModal, toggleStackModal, createSnap }) => {
                   Funcionários
                 </Link>
               </li>
-              <li className="nav-item">
+              <li className="nav-item" hidden={
+                sessionStorage.getItem("hierarquia") === "MEDICO"
+                }
+                disabled={
+                  sessionStorage.getItem("hierarquia") === "MEDICO"
+                }>
                 <Link
                   className={`${styles.nav_link} nav-link text-primary`}
                   to="/servicos"
@@ -107,7 +117,12 @@ const Navbar = ({ toggleArrivalModal, toggleStackModal, createSnap }) => {
                   Serviços
                 </Link>
               </li>
-              <li className="nav-item">
+              <li className="nav-item" hidden={
+                sessionStorage.getItem("hierarquia") === "MEDICO"
+                }
+                disabled={
+                  sessionStorage.getItem("hierarquia") === "MEDICO"
+                }>
                 <Link
                   className={`${styles.nav_link} nav-link text-primary`}
                   to="/financeiro"
@@ -115,7 +130,12 @@ const Navbar = ({ toggleArrivalModal, toggleStackModal, createSnap }) => {
                   Pagamentos
                 </Link>
               </li>
-              <li className="nav-item">
+              <li className="nav-item" hidden={
+                sessionStorage.getItem("hierarquia") !== "GERENTE"
+                }
+                disabled={
+                  sessionStorage.getItem("hierarquia") !== "GERENTE"
+                }>
                 <Link
                   className={`${styles.nav_link} nav-link text-primary`}
                   to="/dashboard"
