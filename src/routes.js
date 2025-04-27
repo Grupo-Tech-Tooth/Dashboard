@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  Routes,
-  Route,
-  Navigate,
-  useLocation,
-} from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Patients from "./pages/Patients/Patients";
 import Login from "./pages/Login/Login";
 import Consultation from "./pages/Consultation/Consultation";
@@ -21,6 +16,19 @@ function RequireAuth({ children }) {
   if (!token) {
     return <Navigate to="/" state={{ from: location }} replace />;
   }
+  if (location.pathname === "/") {
+    return <Navigate to="/consultas" replace />;
+  }
+
+  return children;
+}
+function RequireRole({ allowedRoles, children }) {
+  const hierarquia = sessionStorage.getItem("hierarquia");
+  const location = useLocation();
+
+  if (!allowedRoles.includes(hierarquia)) {
+    return <Navigate to="/404" state={{ from: location }} replace />;
+  }
 
   return children;
 }
@@ -33,7 +41,9 @@ const AppRoutes = () => {
         path="/financeiro"
         element={
           <RequireAuth>
-            <Financeiro />
+            <RequireRole allowedRoles={["GERENTE", "FUNCIONAL"]}>
+              <Financeiro />
+            </RequireRole>
           </RequireAuth>
         }
       />
@@ -41,7 +51,9 @@ const AppRoutes = () => {
         path="/funcionarios"
         element={
           <RequireAuth>
-            <Employees />
+            <RequireRole allowedRoles={["GERENTE", "FUNCIONAL"]}>
+              <Employees />
+            </RequireRole>
           </RequireAuth>
         }
       />
@@ -57,7 +69,9 @@ const AppRoutes = () => {
         path="/servicos"
         element={
           <RequireAuth>
+          <RequireRole allowedRoles={["GERENTE", "FUNCIONAL"]}>
             <Services />
+          </RequireRole>
           </RequireAuth>
         }
       />
@@ -73,7 +87,9 @@ const AppRoutes = () => {
         path="/dashboard"
         element={
           <RequireAuth>
+          <RequireRole allowedRoles={["GERENTE"]}>
             <Dashboard />
+          </RequireRole>
           </RequireAuth>
         }
       />
