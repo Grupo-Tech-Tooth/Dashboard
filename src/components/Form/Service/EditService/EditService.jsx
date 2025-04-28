@@ -1,5 +1,5 @@
 import style from "./EditService.module.css";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import SuccessAlert from "../../../AlertSuccess/AlertSuccess";
 import api from "../../../../api";
@@ -9,14 +9,8 @@ const EditService = ({ serviceData, display, close }) => {
   const [AlertSuccess, setAlertSucess] = useState(false);
   const [disabled, setDisabled] = useState(true);
 
-  const [dtoServico, setDtoServico] = useState({
-    nome: "",
-    descricao: "",
-    preco: 0,
-    duracaoMinutos: 0,
-  });
 
-  const [listaCategorias, setListaCategorias] = useState([
+  const [listaCategorias] = useState([
     { key: "CONSULTAS_GERAIS", name: "Consultas Gerais" },
     { key: "PREVENCAO", name: "Prevenção" },
     { key: "ODONTOPEDIATRIA", name: "Odontopediatria" },
@@ -116,18 +110,26 @@ const EditService = ({ serviceData, display, close }) => {
                     Preço*
                   </label>
                   <input
-                    type="number"
+                    type="text"
                     className="form-control"
                     id="servicePrice"
                     placeholder="Preço do serviço"
                     disabled={disabled}
                     value={serviceEdit.preco}
-                    onChange={(e) =>
-                      setServiceEdit({
-                        ...serviceEdit,
-                        price: parseFloat(e.target.value),
-                      })
-                    }
+                    onChange={(e) => {
+                      const value = e.target.value.replace(",", "."); // Substitui vírgula por ponto
+                      if (!isNaN(value) || value === "") {
+                        setServiceEdit({ ...serviceEdit, preco: value });
+                      }
+                    }}
+                    onBlur={() => {
+                      if (serviceEdit.preco !== "" && !isNaN(serviceEdit.preco)) {
+                        setServiceEdit({
+                          ...serviceEdit,
+                          preco: parseFloat(serviceEdit.preco).toFixed(2),
+                        });
+                      }
+                    }}
                   />
                 </div>
                 <div className="col-md-6 mb-3">
@@ -144,7 +146,7 @@ const EditService = ({ serviceData, display, close }) => {
                     onChange={(e) =>
                       setServiceEdit({
                         ...serviceEdit,
-                        duration: parseInt(e.target.value),
+                        duracaoMinutos: parseInt(e.target.value),
                       })
                     }
                   />
@@ -158,8 +160,12 @@ const EditService = ({ serviceData, display, close }) => {
                     id="serviceDescription"
                     rows="3"
                     placeholder="Descrição do serviço"
+                    required={"true"}
                     disabled={disabled}
-                    required
+                    value={serviceEdit.descricao}
+                    onChange={(e) =>
+                      setServiceEdit({ ...serviceEdit, descricao: e.target.value })
+                    }
                   ></textarea>
                 </div>
                 <div className={style["lineButton"]}>
@@ -205,16 +211,14 @@ const EditService = ({ serviceData, display, close }) => {
     e.preventDefault();
     setAlertSucess(true);
 
-    // Crie um objeto local com os valores atualizados
     const dtoServicoAtualizado = {
       nome: serviceEdit?.nome,
       descricao: serviceEdit?.descricao,
-      preco: serviceEdit?.preco,
+      preco: parseFloat(serviceEdit?.preco),
       duracaoMinutos: serviceEdit?.duracaoMinutos,
       categoria: serviceEdit?.categoria,
     };
 
-    console.log("dtoServicoAtualizado", dtoServicoAtualizado);
 
     try {
       const response = await api.put(

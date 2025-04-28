@@ -1,7 +1,7 @@
 @echo off
 
 echo ==== Removendo pasta dist do build anterior ====
-rmdir /S /Q dist || (
+rmdir /S /Q build || (
   echo Falha ao remover a pasta dist.
   exit /b 1
 )

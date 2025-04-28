@@ -2,11 +2,8 @@ import React, { useState, useEffect } from 'react';
 import style from './Services.module.css';
 import Navbar from '../../components/Navbar/Navbar';
 import Container from '../../components/Container/Container';
-import Button from '../../components/Botao/Botao';
 import Table from '../../components/Table/Table';
 import Add from '../../components/Form/Service/AddService/AddService';
-import axios from 'axios';
-import api from '../../api';
 import ServiceControl from './ServiceControl';
 
 function Services() {
@@ -28,10 +25,12 @@ function Services() {
   const [searchName, setSearchName] = useState('');
   const [searchDuration, setSearchDuration] = useState('');
   const [searchPrice, setSearchPrice] = useState('');
-  const [searchId, setSearchId] = useState('');
+  const [searchCategory, setSearchCategory] = useState('');
   const [viewFormAdd, setViewFormAdd] = useState("none");
+  const [carregando, setCarregando] = useState(false);
 
   async function getData() {
+    setCarregando(true);
     try {
       const response = await ServiceControl.buscar();
       setTableInformation((prevTableInformation) => ({
@@ -40,8 +39,9 @@ function Services() {
         dataNotFilter: response
       }));
     } catch (error) {
-      console.log('Erro ao obter serviços:', error);
+      console.error('Erro ao obter serviços:', error);
     }
+    setCarregando(false);
   }
 
   useEffect(() => {
@@ -59,7 +59,7 @@ function Services() {
       <Container>
         {viewFormAdd === 'block' && <Add Display={viewFormAdd} close={closeForm} />}
         <div className={style['card']}>
-          <div className="row mb-4" style={{ display: 'flex', alignItems: 'center' }}>
+          <div className="row mb-2" style={{ display: 'flex', alignItems: 'center' }}>
             <div className="col-md-2 mx-auto">
               <label htmlFor="searchNome">Nome do Serviço</label>
               <input
@@ -94,15 +94,33 @@ function Services() {
               />
             </div>
             <div className="col-md-2 mx-auto">
-              <label htmlFor="searchId">ID do Serviço</label>
-              <input
-                id="searchId"
+              <label htmlFor="searchCategory">Categoria</label>
+              <select
+                id="searchCategory"
                 className="form-control"
-                type="text"
-                placeholder="Filtrar por ID"
-                value={searchId}
-                onChange={(e) => setSearchId(e.target.value)}
-              />
+                value={searchCategory}
+                onChange={(e) => setSearchCategory(e.target.value)}
+              >
+                <option value="">Selecione</option>
+                <option value="CONSULTAS_GERAIS">Consultas Gerais</option>
+                <option value="PREVENCAO">Prevenção</option>
+                <option value="ODONTOPEDIATRIA">Odontopediatria</option>
+                <option value="ORTODONTIA">Ortodontia</option>
+                <option value="PERIODONTIA">Periodontia</option>
+                <option value="ENDODONTIA">Endodontia</option>
+                <option value="CIRURGIAS_ODONTOLOGICAS">Cirurgias Odontológicas</option>
+                <option value="IMPLANTODONTIA">Implantodontia</option>
+                <option value="PROTESE_DENTARIA">Prótese Dentária</option>
+                <option value="ESTETICA_DENTAL">Estética Dental</option>
+                <option value="ODONTOGERIATRIA">Odontogeriatria</option>
+                <option value="RADIOLOGIA_ODONTOLOGICA">Radiologia Odontológica</option>
+                <option value="ODONTOLOGIA_DE_URGENCIA">Odontologia de Urgência</option>
+                <option value="DISFUNCAO_TEMPOROMANDIBULAR">Disfunção Temporomandibular</option>
+                <option value="ODONTOLOGIA_DO_SONO">Odontologia do Sono</option>
+                <option value="ODONTOLOGIA_HOSPITALAR">Odontologia Hospitalar</option>
+                <option value="ODONTOLOGIA_LEGAL">Odontologia Legal</option>
+                <option value="LASERTERAPIA">Laserterapia</option>
+              </select>
             </div>
             <div className={`col-md-2 mx-auto ${style['lineButton']}`}>
               <button
@@ -118,11 +136,11 @@ function Services() {
               >
                 Limpar Filtro
               </button>
-              <button type="button" onClick={() => abrirModalAdd()} className={style['add']}>Novo Serviço</button>
+              <button type="button" onClick={() => abrirModalAdd()} className={`${style["add"]} btn btn-primary`}>Novo Serviço</button>
             </div>
           </div>
           <div className={style['table']}>
-            <Table tableInformation={tableInformation} setTableInformation={setTableInformation}/>
+            <Table tableInformation={tableInformation} setTableInformation={setTableInformation} />
           </div>
         </div>
       </Container>
@@ -130,21 +148,22 @@ function Services() {
   );
 
   async function filtrar() {
-    
-    let servicosFiltrados = await ServiceControl.filtrar(searchName, searchDuration, searchPrice);
+
+    let servicosFiltrados = await ServiceControl.filtrar(searchName, searchDuration, searchPrice, searchCategory);
 
     setTableInformation((prev) => ({
       ...prev,
       data: servicosFiltrados
     }));
-
+    
+    setCarregando(false);
   }
 
   function resetFields() {
     setSearchName('');
     setSearchDuration('');
     setSearchPrice('');
-    setSearchId('');
+    setSearchCategory('');
     setTableInformation((prev) => ({
       ...prev,
       data: prev.dataNotFilter
@@ -152,6 +171,7 @@ function Services() {
   }
 
   function buscar() {
+    setCarregando(true);
     let filteredData = tableInformation.dataNotFilter;
 
     if (searchName) {
@@ -170,9 +190,10 @@ function Services() {
         item.preco === `R$ ${parseFloat(searchPrice).toFixed(2)}`
       );
     }
-    if (searchId) {
+    if (searchCategory) {
+      const searchLower = searchCategory.toLowerCase();
       filteredData = filteredData.filter((item) =>
-        item.id === parseInt(searchId, 10)
+        item.categoria.toLowerCase().includes(searchLower)
       );
     }
 
@@ -180,6 +201,8 @@ function Services() {
       ...prev,
       data: filteredData
     }));
+    
+    setCarregando(false);
   }
 
   function abrirModalAdd() {

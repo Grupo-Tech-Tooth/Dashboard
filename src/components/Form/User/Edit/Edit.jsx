@@ -1,36 +1,32 @@
 import style from './Edit.module.css';
 import React, { useState, useEffect } from 'react';
-import Input from '../../../Input/Input';
 import InputMask from 'react-input-mask';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import logo from "../../../../assets/Tech-Tooth-Logo.png";
 import SuccessAlert from '../../../AlertSuccess/AlertSuccess';
 import { atualizarCliente, buscarIdMedicoPorCpf, listarMedicos } from '../../../../api';
 
 const Edit = ({ userData, display, close, listaClientes }) => {
-    // const [date, setDate] = useState(userData.lastVisit);
-    const [dateBirth, setDateBirth] = useState(userData.dateBirth);
-    const [error, setError] = useState('');
+    const [error] = useState('');
     const [disabled, setDisabled] = useState(true);
     const [AlertSuccess, setAlertSucess] = useState(false);
     const [userEdit, setUserEdit] = useState(userData || {});
     const [userUpdate, setUserUpdate] = useState({});
-    // const [clienteData, setClienteData] = useState(null);
     const [medicos, setMedicos] = useState([]);
 
-    // Carrega os médicos assim que o componente é montado
     useEffect(() => {
         async function fetchMedicos() {
             try {
                 const medicosData = await listarMedicos();
-                setMedicos(medicosData); // Atribui os médicos ao estado
+                setMedicos(medicosData);
             } catch (error) {
                 console.error("Erro ao buscar médicos:", error);
             }
         }
-
+    
         fetchMedicos();
-
+    }, []);
+    
+    useEffect(() => {
         if (userEdit.id) {
             const cliente = listaClientes.find(cliente => cliente.id === userEdit.id);
             if (cliente) {
@@ -52,9 +48,8 @@ const Edit = ({ userData, display, close, listaClientes }) => {
                 });
             }
         }
-    }, [userEdit.id]); // Este useEffect roda apenas uma vez na montagem do componente
+    }, [userEdit.id, listaClientes]);
 
-    // Função para buscar o médico correspondente ao medicoId
     const findMedicoById = () => {
         if (userEdit.medicoId && medicos.length > 0) {
             const medico = medicos.find(medico => medico.id === userEdit.medicoId);
@@ -64,32 +59,6 @@ const Edit = ({ userData, display, close, listaClientes }) => {
         }
     };
 
-    const validateDate = (inputDate) => {
-        const [day, month, year] = inputDate.split('/').map(Number);
-        const inputDateObject = new Date(year, month - 1, day);
-        const minDate = new Date(1900, 0, 1);
-        const today = new Date();
-        if (inputDateObject < minDate) {
-            return 'A data não pode ser anterior a 01/01/1900.';
-        } else if (inputDateObject > today) {
-            return 'A data não pode ser futura.';
-        } else {
-            return '';
-        }
-    };
-
-    //Trata a data de aniversário
-    const handleChangeDate = (e) => {
-        const inputValue = e.target.value;
-        setDateBirth(inputValue);
-
-        if (inputValue.length === 10) {
-            const validationError = validateDate(inputValue);
-            setError(validationError);
-        } else {
-            setError('');
-        }
-    };
 
     function handleInputChange(event) {
         const { id, value } = event.target;
@@ -98,12 +67,6 @@ const Edit = ({ userData, display, close, listaClientes }) => {
             [id]: value,
         }));
     }
-
-
-    // useEffect(() => {
-    //     setUserUpdate(userData);
-    // }, [userData])
-
 
     return (
         <>
@@ -266,25 +229,20 @@ const Edit = ({ userData, display, close, listaClientes }) => {
     }
 
     function formatDate(dateString) {
-        // Verifica se a string da data está no formato esperado (YYYY-MM-DD)
         if (!dateString || !dateString.includes('-')) {
             return 'Data inválida';
         }
     
-        // Divide a string pelo delimitador "-"
         const [year, month, day] = dateString.split('-');
     
-        // Retorna no formato DD/MM/YYYY
         return `${day}/${month}/${year}`;
     }
 
     function formatDateToISO(dateString) {
-        // Verifica se a data está no formato ISO e retorna sem modificar
         if (/\d{4}-\d{2}-\d{2}/.test(dateString)) {
             return dateString;
         }
 
-        // Verifica se a data está no formato dd/MM/yyyy
         if (dateString && dateString.includes('/')) {
             const [day, month, year] = dateString.split('/');
 
@@ -301,15 +259,12 @@ const Edit = ({ userData, display, close, listaClientes }) => {
         event.preventDefault();
 
         const formattedBirthDate = formatDateToISO(event.target.dateBirth.value);
-        // const formattedLastVisitDate = formatDateToISO(event.target.patientLastVisit.value);
 
-        // Verifica se as datas são válidas antes de prosseguir
         if (!formattedBirthDate) {
             alert("Erro: Formato de data inválido. Por favor, revise as datas.");
-            return; // Encerra a função se as datas forem inválidas
+            return; 
         }
 
-        // Busca o médico correspondente pelo nome/sobrenome
         const medicoNome = userEdit.medicoName.trim().toLowerCase();
         const medicoEncontrado = medicos.find(
             (medico) =>
@@ -319,13 +274,11 @@ const Edit = ({ userData, display, close, listaClientes }) => {
 
         if (!medicoEncontrado) {
             alert("Erro: Médico não encontrado. Por favor, revise o nome digitado.");
-            return; // Encerra a função se o médico não for encontrado
+            return; 
         }
 
-        // Busca o ID do médico pelo CPF
         const medicoId = await buscarIdMedicoPorCpf(medicoEncontrado.cpf);
 
-        // Prepare os dados para envio
         const data = {
                 nome: event.target.name.value,
                 sobrenome: event.target.surname.value,
@@ -345,7 +298,6 @@ const Edit = ({ userData, display, close, listaClientes }) => {
         setUserUpdate(data);
 
         try {
-            // Chamando a função atualizarCliente
             const updatedClient = await atualizarCliente(userEdit.id, data);
 
             if (updatedClient) {
@@ -353,6 +305,7 @@ const Edit = ({ userData, display, close, listaClientes }) => {
                 setAlertSucess(true);
                 setTimeout(() => setAlertSucess(false), 1500);
                 close(userUpdate);
+                window.location.reload();
             } else {
                 console.error('Erro ao atualizar cliente');
             }

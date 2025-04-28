@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import style from "./ViewQuery.module.css";
 
 function ViewQuery({ queryData, close }) {
-  const [paciente, setPaciente] = useState({
+  const [paciente] = useState({
     id: 1,
     name: "João",
     surname: "da Silva",
@@ -25,12 +25,12 @@ function ViewQuery({ queryData, close }) {
             <h5 className="modal-title text-primary">
               Informações do Paciente
             </h5>
-            <button
+            {/* <button
               type="button"
               className="btn-close"
               aria-label="Close"
               onClick={() => close()}
-            ></button>
+            ></button> */}
           </div>
           <div className="modal-body">
             <form className="row">
@@ -101,7 +101,7 @@ function ViewQuery({ queryData, close }) {
               </div>
               <div className="col-md-4 mb-3">
                 <label className="form-label">
-                  Dentista Resposável pelo Paciente:
+                  Dentista Responsável:
                 </label>
                 <input
                   type="text"

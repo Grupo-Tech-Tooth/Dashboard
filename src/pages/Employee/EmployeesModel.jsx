@@ -1,4 +1,3 @@
-import { registry } from 'chart.js';
 import EmployeesControl from './EmployeesControl';
 
 class EmployeesModel {
@@ -11,12 +10,21 @@ class EmployeesModel {
                 medicos.forEach((medico) => {
                     data.push({
                         id: medico?.id,
+                        nome: medico?.nome,
+                        sobrenome: medico?.sobrenome,
                         fullName: `${medico?.nome} ${medico?.sobrenome ? medico?.sobrenome : ''}`,
                         email: medico?.email,
                         crm: medico?.crm,
-                        department: "-",
-                        specialization: medico?.especializacao,
-                        cpf: medico.cpf
+                        telefone: medico?.telefone,
+                        matricula: medico?.matricula,
+                        departamento: "Médico",
+                        genero: medico?.genero,
+                        especializacao: medico?.especializacao,
+                        cpf: medico?.cpf,
+                        dataNascimento: medico?.dataNascimento,
+                        cep: medico?.cep,
+                        numeroResidencia: medico?.numeroResidencia,
+                        complemento: medico?.complemento
                     });
                 });
             }
@@ -27,10 +35,19 @@ class EmployeesModel {
                     data.push({
                         id: funcional?.id,
                         fullName: `${funcional?.nome} ${funcional?.sobrenome ? funcional?.sobrenome : ''}`,
+                        nome: funcional.nome,
+                        sobrenome: funcional?.sobrenome,
                         email: funcional?.email,
-                        department: funcional?.departamento,
-                        specialization: "-",
-                        cpf: funcional.cpf
+                        telefone: funcional?.telefone,
+                        genero: funcional?.genero,
+                        departamento: funcional?.departamento,
+                        matricula: funcional?.matricula,
+                        especializacao: "-",
+                        cpf: funcional.cpf,
+                        dataNascimento: funcional.dataNascimento,
+                        cep: funcional?.cep,
+                        numeroResidencia: funcional?.numeroResidencia,
+                        complemento: funcional?.complemento
                     });
                 });
             }
@@ -52,25 +69,25 @@ class EmployeesModel {
                 response = await EmployeesControl.buscarFuncionalPorId(id);
             }
 
-            let dateBirth = null;
+            let dataNascimento = null;
             if (response?.dataNascimento) {
                 const [year, month, day] = response?.dataNascimento.split('-');
-                dateBirth = `${day}/${month}/${year}`;
+                dataNascimento = `${day}/${month}/${year}`;
             }
-            
+
             data = {
                 id: response.id,
-                name: response?.nome,
-                surname: response?.sobrenome,
+                nome: response?.nome,
+                sobrenome: response?.sobrenome,
                 gender: response?.genero,
-                dateBirth: dateBirth,
+                dataNascimento: dataNascimento,
                 cpf: response?.cpf,
-                phone: response?.telefone,
+                telefone: response?.telefone,
                 email: response?.email,
                 crm: response?.crm,
-                specialization: response?.especializacao,
-                department: response?.departamento,
-                registry: response?.matricula,
+                especializacao: response?.especializacao,
+                departamento: response?.departamento,
+                matricula: response?.matricula,
                 cep: response?.cep,
                 number: response?.numeroResidencia,
                 complemento: response?.complemento,
@@ -81,44 +98,44 @@ class EmployeesModel {
         }
     }
 
-    static async save(values) {
+    static async save(values, tipo) {
         try {
             let data;
-            if (values.crm) {
-                const [day, month, year] = values.dataNascimento.split('/');
+            if (tipo == 'medico') {
+                const [day, month, year] = values?.dataNascimento.value.split('/');
                 data = {
-                    nome: values.nome,
-                    sobrenome: values.sobrenome,
-                    email: values.email,
-                    cpf: values.cpf,
+                    nome: values?.nome.value,
+                    sobrenome: values?.sobrenome.value,
+                    email: values?.email.value,
+                    cpf: values?.cpf.value,
                     dataNascimento: `${year}-${month}-${day}`,
-                    telefone: values.telefone,
-                    genero: values.genero,
-                    matricula: values.matricula,
-                    cep: values.cep,
-                    numeroResidencia: values.numeroResidencia,
-                    complemento: values.complemento,
+                    telefone: values?.telefone.value,
+                    genero: values?.genero.value,
+                    matricula: values?.matricula.value,
+                    cep: values?.cep.value,
+                    numeroResidencia: values?.numeroResidencia.value,
+                    complemento: values?.complemento.value,
                     senha: null,
-                    crm: values.crm,
-                    especializacao: values.especializacao.toUpperCase()
+                    crm: values?.crm.value,
+                    especializacao: values?.especializacao.value.toUpperCase()
                 }
                 await EmployeesControl.saveMedico(data);
-            }else{
-                const [day, month, year] = values.dataNascimento.split('/');
+            } else {
+                const [day, month, year] = values?.dataNascimento.value.split('/');
                 let data = {
-                    nome: values.nome,
-                    sobrenome: values.sobrenome,
-                    email: values.email,
-                    cpf: values.cpf,
+                    nome: values?.nome.value,
+                    sobrenome: values?.sobrenome.value,
+                    email: values?.email.value,
+                    cpf: values?.cpf.value,
                     dataNascimento: `${year}-${month}-${day}`,
-                    departamento: values.departamento,
-                    matricula: values.matricula,
+                    departamento: values?.departamento.value,
+                    matricula: values?.matricula.value,
                     senha: null,
-                    telefone: values.telefone,
-                    genero: values.genero,
-                    cep: values.cep,
-                    numeroResidencia: values.numeroResidencia,
-                    complemento: values.complemento
+                    telefone: values?.telefone.value,
+                    genero: values?.genero.value,
+                    cep: values?.cep.value,
+                    numeroResidencia: values?.numeroResidencia.value,
+                    complemento: values?.complemento.value
                 }
                 await EmployeesControl.saveFuncional(data);
             }
@@ -127,46 +144,46 @@ class EmployeesModel {
         }
     }
 
-    static async editar(id, value){
-        try{
-            if(value.crm.value){
-                const [day, month, year] = value.date.value.split('/');
+    static async editar(id, value, tipo) {
+        try {
+            if (tipo == 'medico') {
+                const [day, month, year] = value.dataNascimento.value.split('/');
                 let data = {
-                    nome: value.firstName.value,
-                    sobrenome: value.lastName.value,
-                    genero: value.inputGender.value,
+                    nome: value.nome.value,
+                    sobrenome: value.sobrenome.value,
+                    genero: value.genero.value,
                     dataNascimento: `${year}-${month}-${day}`,
                     cpf: value.cpf.value,
-                    telefone: value.phone.value,
+                    telefone: value.telefone.value,
                     email: value.email.value,
                     crm: value.crm.value,
-                    especializacao: value.inputSpecialization.value.toUpperCase(),
-                    matricula: value.registry.value,
-                    cep: value.patientCep.value,
-                    numeroResidencia: value.patientNumber.value,
+                    especializacao: value.especializacao.value.toUpperCase(),
+                    matricula: value.matricula.value,
+                    cep: value.cep.value,
+                    numeroResidencia: value.numeroResidencia.value,
                     complemento: value.complemento.value,
                 };
                 await EmployeesControl.editarMedico(id, data);
-            }else{
-                const [day, month, year] = value.date.value.split('/');
+            } else {
+                const [day, month, year] = value.dataNascimento.value.split('/');
                 let data = {
-                    nome: value.firstName.value,
-                    sobrenome: value.lastName.value,
-                    genero: value.inputGender.value,
+                    nome: value.nome.value,
+                    sobrenome: value.sobrenome.value,
+                    genero: value.genero.value,
                     dataNascimento: `${year}-${month}-${day}`,
                     cpf: value.cpf.value,
-                    telefone: value.phone.value,
+                    telefone: value.telefone.value,
                     email: value.email.value,
-                    matricula: value.registry.value,
-                    cep: value.patientCep.value,
-                    departamento: value.department.value,
-                    numeroResidencia: value.patientNumber.value,
+                    matricula: value.matricula.value,
+                    cep: value.cep.value,
+                    departamento: value.departamento.value,
+                    numeroResidencia: value.numeroResidencia.value,
                     complemento: value.complemento.value,
                 };
-                await EmployeesControl.editarFuncional(id, data);
+                return await EmployeesControl.editarFuncional(id, data);
             }
-        }catch(e){
-
+        } catch (e) {
+            throw new Error(e.message);
         }
     }
 
@@ -177,6 +194,49 @@ class EmployeesModel {
             } else {
                 EmployeesControl.deletarFuncional(value.id);
             }
+        } catch (e) {
+            throw new Error(e.message);
+        }
+    }
+
+    static async filtro(value) {
+        try {
+            let data = [];
+            
+            if (value.nome, value.email, value.cpf) {
+                let medicos = await EmployeesControl.filtrarMedicos(value.nome || '', value.email || '', value.cpf || '');
+                if (medicos) {
+                    for (let i = 0; i < medicos.length; i++) {
+                        medicos[i] = {
+                            ...medicos[i],
+                            departamento: "Médico",
+                            fullName: `${medicos[i]?.nome} ${medicos[i]?.sobrenome ? medicos[i]?.sobrenome : ''}`
+                        }
+                    }
+                    data = [
+                        ...data,
+                        ...medicos
+                    ];
+                }
+            }
+
+            if (value.nome, value.email, value.cpf || value.departamento) {
+                let funcionarios = await EmployeesControl.filtrarFuncionais(value.nome || '', value.email || '', value.cpf || '', value.departamento || '');
+                if (funcionarios) {
+                    for (let i = 0; i < funcionarios.length; i++) {
+                        funcionarios[i] = {
+                            ...funcionarios[i],
+                            fullName: `${funcionarios[i]?.nome} ${funcionarios[i]?.sobrenome ? funcionarios[i]?.sobrenome : ''}`
+                        }
+                    }
+                    data = [
+                        ...data,
+                        ...funcionarios
+                    ]
+                }
+            }
+
+            return data;
         } catch (e) {
             throw new Error(e.message);
         }

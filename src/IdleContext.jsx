@@ -2,7 +2,6 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Modal from "./components/Modal/Modal";
 import zIndex from "@mui/material/styles/zIndex";
-import { Modal as BootstrapModal } from "bootstrap"; 
 
 const IdleContext = createContext();
 
@@ -10,17 +9,17 @@ export const IdleProvider = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [isModalOpen, setIsModalOpen] = useState(false); // Estado para controlar o modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
   let idleTimer = null;
 
   const handleLogout = () => {
-    setIsModalOpen(false); // Fecha o modal
+    setIsModalOpen(false);
     sessionStorage.removeItem("token");
     navigate("/");
   };
 
   const closeAllModals = () => {
-    const modals = document.querySelectorAll(".modal"); // Seleciona todos os modais
+    const modals = document.querySelectorAll(".modal");
     modals.forEach((modal) => {
       modal.style.display = "none";
     });
@@ -31,7 +30,7 @@ export const IdleProvider = ({ children }) => {
     idleTimer = setTimeout(() => {
       closeAllModals();
       setIsModalOpen(true);
-    }, 2 * 60 * 60 * 1000); // Mostra o modal após o tempo de inatividade
+    }, 10 * 60 * 1000);
   };
 
   useEffect(() => {
@@ -43,17 +42,17 @@ export const IdleProvider = ({ children }) => {
       "touchstart",
     ];
 
-    if (location.pathname === "/") return; // Não iniciar o timer na página de login
+    if (location.pathname === "/") return;
 
     events.forEach((event) => window.addEventListener(event, resetTimer));
 
-    resetTimer(); // Reinicia o timer quando a tela muda
+    resetTimer();
 
     return () => {
       events.forEach((event) => window.removeEventListener(event, resetTimer));
       if (idleTimer) clearTimeout(idleTimer);
     };
-  }, [location.pathname]); // Monitora mudanças na rota
+  }, [location.pathname]);
 
   return (
     <IdleContext.Provider
@@ -65,7 +64,7 @@ export const IdleProvider = ({ children }) => {
         <Modal
           title="Sessão Expirada"
           content="Sua sessão expirou por inatividade."
-          onClose={handleLogout} // Define o comportamento de fechamento do modal
+          onClose={handleLogout}
         />
       )}
     </IdleContext.Provider>

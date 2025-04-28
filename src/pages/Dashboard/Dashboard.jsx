@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Line, Bar, Pie } from "react-chartjs-2";
+import { Bar, Pie } from "react-chartjs-2";
 import style from "./Dashboard.module.css";
 import {
   Chart as ChartJS,
@@ -31,15 +31,34 @@ ChartJS.register(
 );
 
 const Dashboard = () => {
-  const [timeframe, setTimeframe] = useState("Mensal");
-  const [dashInformation, setDashInformation] = useState({ data: [] });
-
   const [filter, setFilter] = useState({
     year: "2024",
     specialty: "Todos",
     paymentType: "Todos",
     periodo: "Mensal",
   });
+
+  const [specialties, setSpecialties] = useState([]); // Estado para armazenar as especialidades
+
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        const response = await api.get("/medicos"); // Faz a requisição para o endpoint
+        const doctors = response.data || []; // Garante que os dados sejam um array
+
+        // Extrai as especialidades únicas
+        const specialtiesList = [
+          ...new Set(doctors.map((doctor) => doctor.especializacao)),
+        ];
+
+        setSpecialties(specialtiesList); // Salva as especialidades no estado
+      } catch (error) {
+        console.error("Erro ao buscar dados dos médicos:", error);
+      }
+    };
+
+    fetchDoctors();
+  }, []);
 
   const [dailyFlowData, setDailyFlowData] = useState({
     labels: [],
@@ -57,13 +76,13 @@ const Dashboard = () => {
       .get("/clientes/fluxo-mensal")
       .then((response) => {
         const fluxoMensal = response.data;
-        console.log("Dados de fluxo mensal:", fluxoMensal);
+
         setDailyFlowData((prevData) => ({
           ...prevData,
           datasets: [
             {
               ...prevData.datasets[0],
-              data: fluxoMensal, // Popula o campo `data`
+              data: fluxoMensal,
             },
           ],
         }));
@@ -79,13 +98,7 @@ const Dashboard = () => {
       {
         label: "Serviços Mais Usados",
         data: [],
-        backgroundColor: [
-          "#0D6EFD",
-          "#2563EB",
-          "#60A5FA",
-          "#BFDBFE",
-          "#E0F2FE",
-        ],
+        backgroundColor: ["#60A5FA", "#BFDBFE", "#E0F2FE"],
       },
     ],
   });
@@ -93,8 +106,6 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchServicesData = async () => {
       try {
-        console.log("Buscando dados dos serviços mais usados...");
-
         const response = await api.get("/servicos/usados", {
           params: {
             periodo: filter.periodo,
@@ -102,24 +113,17 @@ const Dashboard = () => {
         });
         const services = Array.isArray(response.data) ? response.data : [];
 
-        
-        
-        // Atualizando o gráfico com os dados retornados
         const updatedData = {
           labels: services.map((service) => service.nome),
           datasets: [
             {
               label: "Serviços Mais Usados",
               data: services.map((service) => service.usos),
-              backgroundColor: [
-                "#60A5FA",
-                "#BFDBFE",
-                "#E0F2FE",
-              ],
+              backgroundColor: ["#60A5FA", "#BFDBFE", "#E0F2FE"],
             },
           ],
         };
-        
+
         setServicesData(updatedData);
       } catch (error) {
         console.error("Erro ao buscar dados dos serviços mais usados:", error);
@@ -127,37 +131,14 @@ const Dashboard = () => {
     };
 
     fetchServicesData();
-  }, [
-    filter.periodo,
-  ]);
+  }, [filter.periodo]);
 
-  const revenueData = {
-    labels:
-      timeframe === "diário"
-        ? ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"]
-        : timeframe === "semanal"
-          ? ["Semana 1", "Semana 2", "Semana 3", "Semana 4"]
-          : [
-            "Jan",
-            "Fev",
-            "Mar",
-            "Abr",
-            "Mai",
-            "Jun",
-            "Jul",
-            "Ago",
-            "Set",
-            "Out",
-            "Nov",
-            "Dez",
-          ],
+  const [revenueData, setRevenueData] = useState({
+    labels: [],
     datasets: [
       {
         label: "Taxa de Crescimento (%)",
-        data: calculateGrowthRate([
-          12000, 15000, 14000, 16000, 17000, 13000, 18000, 15000, 14000, 16000,
-          15000, 17000,
-        ]),
+        data: [],
         borderColor: "#0D6EFD",
         backgroundColor: "#0D6EFD",
         borderWidth: 2,
@@ -166,77 +147,272 @@ const Dashboard = () => {
         fill: false,
       },
       {
-        label: `Faturamento (${timeframe})`,
-        data:
-          timeframe === "diário"
-            ? [300, 500, 200, 400, 600, 700, 100]
-            : timeframe === "semanal"
-              ? [1500, 2000, 1750, 1800]
-              : [
-                12000, 15000, 14000, 16000, 17000, 13000, 18000, 15000, 14000,
-                16000, 15000, 17000,
-              ],
+        label: "Faturamento",
+        data: [],
         backgroundColor: "#93C5FD",
         type: "bar",
       },
     ],
-  };
+  });
 
-  const annualRevenueData = {
-    // labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
-    labels: ["Jul", "Ago", "Set", "Out", "Nov", "Dez"],
+  const [filterPeriodoFaturamento, setFilterPeriodoFaturamento] =
+    useState("Mensal");
+
+  useEffect(() => {
+    const fetchFaturamentoData = async () => {
+      try {
+        const response = await api.get("/financeiro/soma-transacoes", {
+          params: {
+            periodo: filterPeriodoFaturamento,
+          },
+        });
+
+        const fetchedData = response.data;
+
+        const periodoLower = filterPeriodoFaturamento.toLowerCase();
+
+        const labels =
+          periodoLower === "diasemana"
+            ? ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"]
+            : periodoLower === "semanal"
+            ? Object.keys(fetchedData)
+            : periodoLower === "mensal"
+            ? [
+                "Jan",
+                "Fev",
+                "Mar",
+                "Abr",
+                "Mai",
+                "Jun",
+                "Jul",
+                "Ago",
+                "Set",
+                "Out",
+                "Nov",
+                "Dez",
+              ]
+            : [];
+
+        const valoresBrutos = Object.values(fetchedData);
+
+        const updatedData = {
+          labels,
+          datasets: [
+            {
+              label: "Taxa de Crescimento (%)",
+              data: calculateGrowthRate(valoresBrutos),
+              borderColor: "#0D6EFD",
+              backgroundColor: "#0D6EFD",
+              borderWidth: 2,
+              type: "line",
+              yAxisID: "growth",
+              fill: false,
+            },
+            {
+              label: "Faturamento",
+              data: valoresBrutos,
+              backgroundColor: "#93C5FD",
+              type: "bar",
+            },
+          ],
+        };
+        setRevenueData(updatedData);
+      } catch (error) {
+        console.error("Erro ao buscar dados de faturamento:", error);
+      }
+    };
+
+    fetchFaturamentoData();
+  }, [filterPeriodoFaturamento]);
+
+  const [annualRevenueData, setAnnualRevenueData] = useState({
+    labels: [],
     datasets: [
       {
         label: `Faturamento Total (${filter.specialty})`,
-        // data: [12000, 15000, 14000, 16000, 17000, 13000, 18000, 15000, 14000, 16000, 15000, 17000],
-        data: [18000, 15000, 14000, 16000, 15000, 17000],
+        data: [],
         borderColor: "#0D6EFD",
         backgroundColor: "#0D6EFD",
         borderWidth: 2,
-        type: "line", // Define o tipo como linha
-        yAxisID: "growth", // Usa o eixo `growth`
+        type: "line",
+        yAxisID: "growth",
         fill: false,
       },
       {
-        type: "bar", // Tipo barra para Cartão de Crédito
+        type: "bar",
         label: "Cartão de Crédito",
-        // data: [6000, 7500, 7000, 8000, 8500, 6500, 9000, 7500, 7000, 8000, 7500, 8500],
-        data: [9000, 7500, 7000, 8000, 7500, 8500],
+        data: [],
         backgroundColor: "#1D4ED8",
-        yAxisID: "y", // Usa o eixo padrão
+        yAxisID: "y",
       },
       {
-        type: "bar", // Tipo barra para Cartão de Débito
+        type: "bar",
         label: "Cartão de Débito",
-        // data: [3000, 3750, 3500, 4000, 4250, 3250, 4500, 3750, 3500, 4000, 3750, 4250],
-        data: [4500, 3750, 3500, 4000, 3750, 4250],
+        data: [],
         backgroundColor: "#3B82F6",
         yAxisID: "y",
       },
       {
-        type: "bar", // Tipo barra para Dinheiro
+        type: "bar",
         label: "Dinheiro",
-        // data: [2000, 2500, 2300, 2600, 2700, 2100, 2800, 2500, 2400, 2600, 2500, 2700],
-        data: [2800, 2500, 2400, 2600, 2500, 2700],
+        data: [],
         backgroundColor: "#60A5FA",
         yAxisID: "y",
       },
       {
-        type: "bar", // Tipo barra para Pix
+        type: "bar",
         label: "Pix",
-        // data: [1000, 1250, 1200, 1300, 1350, 1050, 1400, 1250, 1200, 1300, 1250, 1350],
-        data: [1400, 1250, 1200, 1300, 1250, 1350],
+        data: [],
         backgroundColor: "#93C5FD",
         yAxisID: "y",
       },
+      {
+        type: "bar",
+        label: "Cheque",
+        data: [],
+        backgroundColor: "#BFDBFE",
+        yAxisID: "y",
+      },
     ],
-  };
+  });
+
+  useEffect(() => {
+    const fetchFaturamentoSemestral = async () => {
+      try {
+        const response = await api.get(
+          `/financeiro/semestral/${filter.specialty}`
+        );
+        const data = response.data || [];
+
+        const currentMonth = new Date().getMonth(); // Mês atual (0-11)
+        const currentYear = new Date().getFullYear(); // Ano atual
+
+        // Determina o semestre atual
+        const isFirstSemester = currentMonth < 6; // Janeiro a Junho
+        const startMonth = isFirstSemester ? 0 : 6; // Início do semestre
+        const endMonth = isFirstSemester ? 5 : 11; // Fim do semestre
+
+        // Gera os labels para os meses do semestre atual
+        const labels = Array(endMonth - startMonth + 1)
+          .fill(0)
+          .map((_, i) => {
+            const month = startMonth + i;
+            return new Date(currentYear, month)
+              .toLocaleString("pt-BR", { month: "short" })
+              .replace(".", "") // Remove o ponto final
+              .toUpperCase(); // Converte para maiúsculas
+          });
+
+        // Inicializa os arrays de dados para os meses do semestre atual
+        const total = Array(endMonth - startMonth + 1).fill(0);
+        const creditCard = Array(endMonth - startMonth + 1).fill(0);
+        const debitCard = Array(endMonth - startMonth + 1).fill(0);
+        const cash = Array(endMonth - startMonth + 1).fill(0);
+        const pix = Array(endMonth - startMonth + 1).fill(0);
+        const cheque = Array(endMonth - startMonth + 1).fill(0);
+
+        // Processa os dados para os meses do semestre atual
+        data.forEach((item) => {
+          const paymentDate = new Date(item.dataPagamento);
+          const month = paymentDate.getMonth();
+
+          if (month >= startMonth && month <= endMonth) {
+            const index = month - startMonth; // Índice relativo ao semestre
+            total[index] += item.valorCorrigido;
+            switch (item.formaPagamento) {
+              case "CARTAO_CREDITO":
+                creditCard[index] += item.valorCorrigido;
+                break;
+              case "CARTAO_DEBITO":
+                debitCard[index] += item.valorCorrigido;
+                break;
+              case "DINHEIRO":
+                cash[index] += item.valorCorrigido;
+                break;
+              case "PIX":
+                pix[index] += item.valorCorrigido;
+                break;
+              case "CHEQUE":
+                cheque[index] += item.valorCorrigido;
+                break;
+              default:
+                break;
+            }
+          }
+        });
+
+        const filterZeroValues = (arr) =>
+          arr.map((value) => (value === 0 ? null : value));
+
+        const updatedData = {
+          labels,
+          datasets: [
+            {
+              label: `Receita Total`,
+              data: filterZeroValues(total),
+              borderColor: "#0D6EFD",
+              backgroundColor: "#0D6EFD",
+              borderWidth: 2,
+              type: "line",
+              yAxisID: "growth",
+              fill: false,
+            },
+            {
+              type: "bar",
+              label: "Cartão de Crédito",
+              data: filterZeroValues(creditCard),
+              backgroundColor: "#1D4ED8",
+              yAxisID: "y",
+            },
+            {
+              type: "bar",
+              label: "Cartão de Débito",
+              data: filterZeroValues(debitCard),
+              backgroundColor: "#3B82F6",
+              yAxisID: "y",
+            },
+            {
+              type: "bar",
+              label: "Dinheiro",
+              data: filterZeroValues(cash),
+              backgroundColor: "#60A5FA",
+              yAxisID: "y",
+            },
+            {
+              type: "bar",
+              label: "Pix",
+              data: filterZeroValues(pix),
+              backgroundColor: "#93C5FD",
+              yAxisID: "y",
+            },
+            {
+              type: "bar",
+              label: "Cheque",
+              data: filterZeroValues(cheque),
+              backgroundColor: "#BFDBFE",
+              yAxisID: "y",
+            },
+          ],
+        };
+
+        setAnnualRevenueData(updatedData);
+      } catch (error) {
+        console.error("Erro ao buscar dados de faturamento semestral:", error);
+      }
+    };
+
+    fetchFaturamentoSemestral();
+  }, [filter.specialty]);
 
   function calculateGrowthRate(data) {
-    const growthRates = [0]; // Primeiro mês não tem crescimento, então começamos com 0
+    const growthRates = [0];
     for (let i = 1; i < data.length; i++) {
-      const growth = ((data[i] - data[i - 1]) / data[i - 1]) * 100;
-      growthRates.push(growth.toFixed(2)); // Arredondamento para 2 casas decimais
+      if (data[i - 1] === 0) {
+        growthRates.push(0);
+      } else {
+        const growth = ((data[i] - data[i - 1]) / data[i - 1]) * 100;
+        growthRates.push(Number(growth.toFixed(2)));
+      }
     }
     return growthRates;
   }
@@ -259,7 +435,6 @@ const Dashboard = () => {
         position: "top",
       },
       datalabels: {
-        // Adiciona o plugin datalabels para exibir valores
         display: true,
         align: "left",
         formatter: (value, context) => {
@@ -311,7 +486,7 @@ const Dashboard = () => {
         suggestedMax: suggestedBarMax,
         title: {
           display: true,
-          text: "Receita (em Reais)", // Título do eixo y padrão
+          text: "Receita (em Reais)",
         },
       },
       growth: {
@@ -320,14 +495,13 @@ const Dashboard = () => {
         position: "right",
         title: {
           display: true,
-          text: "Faturamento Total (em Reais)", // Título do eixo growth
+          text: "Faturamento Total (em Reais)",
         },
         ticks: {
-          // Você pode ajustar o callback para formatar os valores, caso necessário
           callback: (value) => `R$ ${value.toLocaleString("pt-BR")}`,
         },
         grid: {
-          drawOnChartArea: false, // Evita sobreposição de grades entre os eixos
+          drawOnChartArea: false,
         },
       },
     },
@@ -336,11 +510,10 @@ const Dashboard = () => {
         position: "top",
       },
       datalabels: {
-        // display: (context) => context.dataset.type === 'line', // Mostra apenas valores do tipo 'line'
-        backgroundColor: "#fffb", // Cor de fundo das etiquetas
+        backgroundColor: "#fffb",
         color: "#000",
         font: {
-          weight: "bold", // Define as etiquetas em negrito
+          weight: "bold",
         },
         anchor: "center",
         align: "end",
@@ -352,7 +525,7 @@ const Dashboard = () => {
     responsive: true,
     plugins: {
       legend: {
-        position: "left", // Alinhamento dos labels no lado esquerdo
+        position: "left",
       },
       tooltip: {
         callbacks: {
@@ -360,21 +533,163 @@ const Dashboard = () => {
         },
       },
       datalabels: {
-        // display: (context) => context.dataset.type === 'line', // Mostra apenas valores do tipo 'line'
         backgroundColor: "#fffa",
         color: "#000",
         font: {
           size: 14,
-          weight: "bold", // Define as etiquetas em negrito
+          weight: "bold",
         },
       },
     },
   };
 
-  const totalMonthlyRevenue = annualRevenueData.datasets[0].data.reduce(
-    (acc, val) => acc + val,
-    0
-  );
+  // Calcula o faturamento total mensal
+  const totalMonthlyRevenue = annualRevenueData.datasets[0].data
+    .reduce((acc, val) => acc + val, 0)
+    .toLocaleString("pt-BR", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }); // Formata o valor
+
+  // Calcula o faturamento médio por consulta
+  const averageRevenuePerConsultation = () => {
+    const totalRevenue = annualRevenueData.datasets[0].data.reduce(
+      (acc, val) => acc + val,
+      0
+    );
+    const totalConsultations = annualRevenueData.datasets[0].data.length;
+    return totalConsultations > 0
+      ? (totalRevenue / totalConsultations).toLocaleString("pt-BR", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+      : "0,00";
+  };
+
+  const [consultationsData, setConsultationsData] = useState(null);
+  useEffect(() => {
+    const fetchConsultationsData = async () => {
+      try {
+        const response = await api.get("/financeiro");
+        setConsultationsData(response.data);
+      } catch (error) {
+        console.error("Erro ao buscar dados de consultas:", error);
+      }
+    };
+
+    fetchConsultationsData();
+  }, []);
+
+  // Calcula o maior faturamento por consulta
+  const highestRevenuePerConsultation = () => {
+    if (consultationsData && consultationsData.length > 0) {
+      let highestValue = consultationsData[0].valorCorrigido;
+      for (let i = 1; i < consultationsData.length; i++) {
+        if (consultationsData[i].valorCorrigido > highestValue) {
+          highestValue = consultationsData[i].valorCorrigido;
+        }
+      }
+      return highestValue.toLocaleString("pt-BR", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }); // Formata o valor
+    }
+    return "N/A";
+  };
+
+  // Calcula o menor faturamento por consulta
+  const lowestRevenuePerConsultation = () => {
+    if (consultationsData && consultationsData.length > 0) {
+      let lowestValue = consultationsData[0].valorCorrigido;
+      for (let i = 1; i < consultationsData.length; i++) {
+        if (consultationsData[i].valorCorrigido < lowestValue) {
+          lowestValue = consultationsData[i].valorCorrigido;
+        }
+      }
+      return lowestValue.toLocaleString("pt-BR", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }); // Formata o valor
+    }
+    return "N/A";
+  };
+
+  // Serviço mais realizado
+  const mostPerformedService = () => {
+    const maxIndex = popularServicesData.datasets[0].data.indexOf(
+      Math.max(...popularServicesData.datasets[0].data)
+    );
+    return {
+      name: popularServicesData.labels[maxIndex],
+      count: popularServicesData.datasets[0].data[maxIndex],
+    };
+  };
+
+  // Serviço menos realizado
+  const leastPerformedService = () => {
+    const minIndex = popularServicesData.datasets[0].data.indexOf(
+      Math.min(...popularServicesData.datasets[0].data)
+    );
+    return {
+      name: popularServicesData.labels[minIndex],
+      count: popularServicesData.datasets[0].data[minIndex],
+    };
+  };
+
+  // Dia com mais consultas
+  const dayWithMostConsultations = () => {
+    if (
+      dailyFlowData.datasets.length > 0 &&
+      typeof dailyFlowData.datasets[0].data === "object" &&
+      Object.keys(dailyFlowData.datasets[0].data).length > 0
+    ) {
+      const dataArray = Object.values(dailyFlowData.datasets[0].data); // Transforma os valores em um array
+      const maxIndex = dataArray.indexOf(Math.max(...dataArray));
+      const labelsArray = Object.keys(dailyFlowData.datasets[0].data); // Transforma as chaves em um array
+      return {
+        day: labelsArray[maxIndex],
+        count: dataArray[maxIndex],
+      };
+    }
+    return { day: "N/A", count: 0 }; // Retorna valores padrão se os dados não forem válidos
+  };
+
+  // Dia com menos consultas (desconsiderando domingo)
+  const dayWithLeastConsultations = () => {
+    console.log("dailyFlowData", dailyFlowData);
+    if (
+      dailyFlowData.datasets.length > 0 &&
+      typeof dailyFlowData.datasets[0].data === "object" &&
+      Object.keys(dailyFlowData.datasets[0].data).length > 0
+    ) {
+      const dataArray = Object.values(dailyFlowData.datasets[0].data); // Transforma os valores em um array
+      const labelsArray = Object.keys(dailyFlowData.datasets[0].data); // Transforma as chaves em um array
+  
+      // Filtra os dados para desconsiderar "Domingo" e "Quarta"
+      const filteredIndices = labelsArray
+        .map((label, index) => (label !== "Domingo" ? index : -1))
+        .filter((index) => index !== -1);
+  
+      if (filteredIndices.length === 0) {
+        return { day: "N/A", count: 0 }; // Retorna valores padrão se não houver dados válidos
+      }
+  
+      // Encontra o menor valor nos índices filtrados
+      const minIndex = filteredIndices.reduce((minIdx, currentIdx) =>
+        dataArray[currentIdx] < dataArray[minIdx] ? currentIdx : minIdx
+      );
+  
+      return {
+        day: labelsArray[minIndex],
+        count: dataArray[minIndex],
+      };
+    }
+    return { day: "N/A", count: 0 }; // Retorna valores padrão se os dados não forem válidos
+  };
+
+  const capitalizeFirstLetter = (string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+  };
 
   return (
     <>
@@ -408,11 +723,16 @@ const Dashboard = () => {
                 height: "fit-content",
                 marginBottom: "2%",
               }}
-
             >
               <h4 className="text-primary align-self-start">
                 Faturamento Por Período{" "}
-                <span style={{ fontSize: "14px" }}>(Valor Bruto)</span>
+                <span style={{ fontSize: "14px" }}>
+                  (Valor Bruto -{" "}
+                  {filterPeriodoFaturamento === "mensal"
+                    ? "Ano Atual"
+                    : "Mês Atual"}
+                  )
+                </span>
               </h4>
 
               {!revenueData.datasets.length > 0 && (
@@ -422,28 +742,26 @@ const Dashboard = () => {
               )}
 
               {revenueData.datasets.length > 0 && (
-              <div
-                style={{
-                  height: "33vh",
-                  maxHeight: "33vh",
-                  width: "100%",
-                  justifyItems: "center",
-                }}
-              >  
-                <Bar data={revenueData} options={lineOptions} />
-              </div>
+                <div
+                  style={{
+                    height: "33vh",
+                    maxHeight: "33vh",
+                    width: "100%",
+                    justifyItems: "center",
+                  }}
+                >
+                  <Bar data={revenueData} options={lineOptions} />
+                </div>
               )}
 
-
               <select
-                onChange={(e) => setTimeframe(e.target.value)}
-                value={timeframe}
+                onChange={(e) => setFilterPeriodoFaturamento(e.target.value)}
+                value={filterPeriodoFaturamento}
                 className="form-select mt-2"
               >
-                <option value="Diário">Diário</option>
-                <option value="Semanal">Semanal</option>
-                <option value="Mensal">Mensal</option>
-                <option value="Anual">Anual</option>
+                <option value="mensal">Mensal</option>
+                <option value="diasemana">Dia da Semana</option>
+                <option value="semanal">Semanal</option>
               </select>
             </div>
 
@@ -492,25 +810,25 @@ const Dashboard = () => {
                   <span style={{ fontSize: "14px" }}>(Nº Absoluto)</span>
                 </h4>
 
-              {popularServicesData.datasets[0].data.length < 1 && (
-                <div className={style.carregamento} id="carregamento">
-                  <div className={style.loader}></div>
-              </div>
-              )}
-              
-              {popularServicesData.datasets[0].data.length > 0 && (
-                <div style={{ height: "fit-content", minWidth: "100%" }}>
-                  <Pie
-                    data={popularServicesData}
-                    options={pieOptions}
-                    style={{ maxHeight: "23vh", minWidth: "60%" }}
-                  />
-                </div>
-              )}
+                {popularServicesData.datasets[0].data.length < 1 && (
+                  <div className={style.carregamento} id="carregamento">
+                    <div className={style.loader}></div>
+                  </div>
+                )}
+
+                {popularServicesData.datasets[0].data.length > 0 && (
+                  <div style={{ height: "fit-content", minWidth: "100%" }}>
+                    <Pie
+                      data={popularServicesData}
+                      options={pieOptions}
+                      style={{ maxHeight: "23vh", minWidth: "60%" }}
+                    />
+                  </div>
+                )}
 
                 <select
                   onChange={(e) =>
-                    setFilter({ ...filter, periodo: e.target.value, })
+                    setFilter({ ...filter, periodo: e.target.value })
                   }
                   value={filter.timeframe}
                   className="form-select mt-2"
@@ -546,13 +864,15 @@ const Dashboard = () => {
               </h4>
 
               {!annualRevenueData.datasets[0].data.length > 0 && (
-               <div className={style.carregamento} id="carregamento">
-                 <div className={style.loader}></div>
+                <div className={style.carregamento} id="carregamento">
+                  <div className={style.loader}></div>
                 </div>
               )}
 
               {annualRevenueData.datasets[0].data.length > 0 && (
-                <div style={{ height: "40vh", maxHeight: "40vh", width: "auto" }}>
+                <div
+                  style={{ height: "40vh", maxHeight: "40vh", width: "auto" }}
+                >
                   <Bar data={annualRevenueData} options={lineOptions2} />
                 </div>
               )}
@@ -564,14 +884,17 @@ const Dashboard = () => {
                 value={filter.specialty}
                 className="form-select mt-2"
               >
-                <option value="Todos">Todos</option>
-                <option value="Ortodontia">Ortodontia</option>
-                <option value="Implantes">Implantes</option>
+                <option value="TODOS">Todos</option>
+                {specialties.map((specialty, index) => (
+                  <option key={index} value={specialty}>
+                    {capitalizeFirstLetter(specialty)}
+                  </option>
+                ))}
               </select>
             </div>
             <div
               className="card p-3 text-center justify-content-between"
-              style={{ height: "100%", width: "100%"}}
+              style={{ height: "100%", width: "100%" }}
             >
               <h5 className="text-primary">Descritivo do Mês</h5>
               <div className="d-flex justify-content-between align-items-center">
@@ -591,7 +914,10 @@ const Dashboard = () => {
                     <h6 className="text-primary">
                       Faturam. Médio Por Consulta:{" "}
                       <span className="text-dark">
-                        R${totalMonthlyRevenue.toLocaleString("pt-BR")}
+                        R$
+                        {averageRevenuePerConsultation().toLocaleString(
+                          "pt-BR"
+                        )}
                       </span>
                     </h6>
                   </div>
@@ -599,7 +925,10 @@ const Dashboard = () => {
                     <h6 className="text-primary">
                       Maior Faturam. Por Consulta:{" "}
                       <span className="text-dark">
-                        R${totalMonthlyRevenue.toLocaleString("pt-BR")}
+                        R$
+                        {highestRevenuePerConsultation().toLocaleString(
+                          "pt-BR"
+                        )}
                       </span>
                     </h6>
                   </div>
@@ -607,7 +936,8 @@ const Dashboard = () => {
                     <h6 className="text-primary">
                       Menor Faturam. Por Consulta:{" "}
                       <span className="text-dark">
-                        R${totalMonthlyRevenue.toLocaleString("pt-BR")}
+                        R$
+                        {lowestRevenuePerConsultation().toLocaleString("pt-BR")}
                       </span>
                     </h6>
                   </div>
@@ -620,8 +950,10 @@ const Dashboard = () => {
                     <h6 className="text-primary">
                       Serviço Mais Realizado:{" "}
                       <span className="text-dark">
-                        Limpeza{" "}
-                        <span style={{ fontSize: "14px" }}>(60 proced.)</span>
+                        {mostPerformedService().name}{" "}
+                        <span style={{ fontSize: "14px" }}>
+                          ({mostPerformedService().count} proced.)
+                        </span>
                       </span>
                     </h6>
                   </div>
@@ -629,25 +961,33 @@ const Dashboard = () => {
                     <h6 className="text-primary">
                       Serviço Menos Realizado:{" "}
                       <span className="text-dark">
-                        Implante{" "}
-                        <span style={{ fontSize: "14px" }}>(20 proced.)</span>
+                        {leastPerformedService().name}{" "}
+                        <span style={{ fontSize: "14px" }}>
+                          ({leastPerformedService().count} proced.)
+                        </span>
                       </span>
                     </h6>
                   </div>
                   <div className="d-flex align-items-end py-2">
                     <h6 className="text-primary">
                       Dia Com Mais Consultas:{" "}
-                      <span className="text-dark">Segunda-Feira, Dia 06</span>
+                      <span className="text-dark">
+                        {dayWithMostConsultations().day},{" "}
+                        {dayWithMostConsultations().count} consultas
+                      </span>
                     </h6>
                   </div>
                   <div className="d-flex align-items-end py-2">
                     <h6 className="text-primary">
                       Dia Com Menos Consultas:{" "}
-                      <span className="text-dark">Segunda-Feira, Dia 06</span>
+                      <span className="text-dark">
+                        {dayWithLeastConsultations().day},{" "}
+                        {dayWithLeastConsultations().count} consultas
+                      </span>
                     </h6>
                   </div>
                 </div>
-              </div>  
+              </div>
             </div>
           </div>
         </div>

@@ -1,42 +1,50 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import style from "./ModalFinalization.module.css";
 import Alert from "../AlertSuccess/AlertSuccess";
+import ConsultationControl from "../../pages/Consultation/ConsultationControl";
 
-const ModalFinalization = ({
-  display,
+function ModalFinalization({
+  display = "block",
   fecharModal,
   agendamento,
   treatments,
-}) => {
+}) {
   const [optionsTreatment, setOptionsTreatment] = useState(false);
 
-  const [agendamentoFinal, setAgendamentoFinal] = useState(agendamento);
-
   const [newTreatment, setNewTreatment] = useState("");
-  const [price, setPrice] = useState(agendamento?.price || "");
+  const [price, setPrice] = useState(agendamento?.price || 0);
   const [taxMachine, setTaxMachine] = useState(agendamento?.taxMachine || "");
   const [installments, setInstallments] = useState(
     agendamento?.installments || ""
   );
-
   const [observation, setObservation] = useState(agendamento?.observacao || "");
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(
-    agendamento?.paymentMethod || ""
+    agendamento?.paymentMethod || "DINHEIRO"
   );
 
   const [rightValueErro, setRightValueErro] = useState("-25");
   const [rightValueSucess, setRightValueSucess] = useState("-25");
 
-  const paymentMethods = [
-    { id: 1, label: "Pix" },
-    { id: 2, label: "Dinheiro" },
-    { id: 3, label: "Cartão De Débito" },
-    { id: 4, label: "Cartão De Crédito" },
-  ];
-
   const listTreatments = treatments.filter(
-    (item) => item.name !== agendamento.treatment
+    (item) => item.nome !== agendamento.treatment
   );
+
+  function getPrecoServico(id) {
+    let total = treatments.find((servico) => servico.id === agendamento?.idTratamento);
+    total = total?.preco || 0;
+    if (id) {
+      let tratamento2 = treatments.find((servico) => servico.id === id);
+      total += tratamento2.preco;
+    }
+    setPrice(total);
+  }
+
+  useEffect(() => {
+    if(price === 0){
+      getPrecoServico();
+    }
+  }, []);
+
 
   return (
     <div
@@ -96,7 +104,10 @@ const ModalFinalization = ({
                 </div>
                 <select
                   className="form-select"
-                  onChange={(e) => setNewTreatment(e.target.value)}
+                  onChange={(e) => {
+                    setNewTreatment(e.target.value)
+                    getPrecoServico(e.target.value)
+                  }}
                   disabled={!optionsTreatment}
                   defaultValue=""
                 >
@@ -104,8 +115,8 @@ const ModalFinalization = ({
                     Marque a caixa ao lado para escolher um tratamento
                   </option>
                   {listTreatments.map((item) => (
-                    <option key={item.name} value={item.name}>
-                      {item.name}
+                    <option key={item.nome} value={item.id}>
+                      {item.nome}
                     </option>
                   ))}
                 </select>
@@ -122,6 +133,7 @@ const ModalFinalization = ({
                     className="form-control"
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
+                    style={{ textAlign: "end" }}
                   />
                   <span className="input-group-text">,00</span>
                 </div>
@@ -132,62 +144,60 @@ const ModalFinalization = ({
                   className="form-select"
                   onChange={(e) => setSelectedPaymentMethod(e.target.value)}
                 >
-                  <option value="1" selected>
-                    {" "}
-                    Dinheiro{" "}
+                  <option value="DINHEIRO">
+                    Dinheiro
                   </option>
-                  <option value="2"> PIX </option>
-                  <option value="3"> Cartão de Débito </option>
-                  <option value="4"> Cartão de Crédito </option>
-                  <option value="5"> Cheque </option>
-                  <option value="6"> Permuta </option>
+                  <option value="PIX"> PIX </option>
+                  <option value="CARTAO_DEBITO"> Cartão de Débito </option>
+                  <option value="CARTAO_CREDITO"> Cartão de Crédito </option>
+                  <option value="CHEQUE"> Cheque </option>
+                  <option value="PERMUTA"> Permuta </option>
                 </select>
               </p>
             </div>
 
-            {(selectedPaymentMethod === "4" ||
-              selectedPaymentMethod === "3") && (
-              <div className="d-flex justify-content-between align-items-end">
-                <p style={{ width: "49%" }}>
-                  Valor da Taxa do Cartão:*
-                  <div className="input-group">
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={taxMachine}
-                      onChange={(e) => setTaxMachine(e.target.value)}
+            {(selectedPaymentMethod === "CARTAO_CREDITO" ||
+              selectedPaymentMethod === "CARTAO_DEBITO") && (
+                <div className="d-flex justify-content-between align-items-end">
+                  <p style={{ width: "49%" }}>
+                    Valor da Taxa do Cartão:*
+                    <div className="input-group">
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={taxMachine}
+                        onChange={(e) => setTaxMachine(e.target.value)}
+                        required
+                      />
+                      <span className="input-group-text">%</span>
+                    </div>
+                  </p>
+                  <p style={{ width: "49%" }}>
+                    Quantidade de Parcelas:*
+                    <select
+                      className="form-select"
+                      onChange={(e) => setInstallments(e.target.value)}
                       required
-                    />
-                    <span className="input-group-text">%</span>
-                  </div>
-                </p>
-                <p style={{ width: "49%" }}>
-                  Quantidade de Parcelas:*
-                  <select
-                    className="form-select"
-                    onChange={(e) => setInstallments(e.target.value)}
-                    required
-                    disabled={selectedPaymentMethod !== "4"}
-                  >
-                    <option value="1" selected>
-                      {" "}
-                      1 Parcela{" "}
-                    </option>
-                    <option value="2"> 2 Parcelas </option>
-                    <option value="3"> 3 Parcelas </option>
-                    <option value="4"> 4 Parcelas </option>
-                    <option value="5"> 5 Parcelas </option>
-                    <option value="6"> 6 Parcelas </option>
-                    <option value="7"> 7 Parcelas </option>
-                    <option value="8"> 8 Parcelas </option>
-                    <option value="9"> 9 Parcelas </option>
-                    <option value="10"> 10 Parcelas </option>
-                    <option value="11"> 11 Parcelas </option>
-                    <option value="12"> 12 Parcelas </option>
-                  </select>
-                </p>
-              </div>
-            )}
+                      disabled={selectedPaymentMethod !== "CARTAO_CREDITO"}
+                    >
+                      <option value="1" selected>
+                        1 Parcela
+                      </option>
+                      <option value="2"> 2 Parcelas </option>
+                      <option value="3"> 3 Parcelas </option>
+                      <option value="4"> 4 Parcelas </option>
+                      <option value="5"> 5 Parcelas </option>
+                      <option value="6"> 6 Parcelas </option>
+                      <option value="7"> 7 Parcelas </option>
+                      <option value="8"> 8 Parcelas </option>
+                      <option value="9"> 9 Parcelas </option>
+                      <option value="10"> 10 Parcelas </option>
+                      <option value="11"> 11 Parcelas </option>
+                      <option value="12"> 12 Parcelas </option>
+                    </select>
+                  </p>
+                </div>
+              )}
             <p className={style["observacao"]}>
               Observação
               <textarea
@@ -219,24 +229,22 @@ const ModalFinalization = ({
     </div>
   );
 
-  function saveFields() {
-    if(!optionsTreatment){
+  async function saveFields() {
+    if (!optionsTreatment) {
       setNewTreatment("");
     }
     if (price && selectedPaymentMethod) {
-      setAgendamentoFinal((prevAgendamento) => ({
-        ...prevAgendamento,
-        treatments: [agendamento.treatment, newTreatment],
-        preco: price,
-        paymentMethod: selectedPaymentMethod,
-        observacao: observation,
-        status: "Finalizado",
-      }));
 
-      setRightValueSucess(5);
-      setTimeout(() => {
-        fecharModal();
-      }, 4000);
+      try {
+        await ConsultationControl.finalizar(agendamento, newTreatment, price, selectedPaymentMethod, observation, taxMachine, installments);
+
+        setRightValueSucess(5);
+        setTimeout(() => {
+          fecharModal();
+        }, 4000);
+      } catch (e) {
+        console.error(e);
+      }
     } else {
       setRightValueErro(1);
       setTimeout(() => {

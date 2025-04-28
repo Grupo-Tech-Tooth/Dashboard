@@ -17,13 +17,13 @@ class ServiceModel{
             const response = await api.post("/servicos", service);  
             return response.data;
         } catch (e) {
-            console.log("error", e);
+            console.error("error", e);
             
             throw new Error(e);
         }
     }
 
-    static async filtrar(nome, duracao, preco) {
+    static async filtrar(nome, duracao, preco, categoria) {
         
         try {
             const params = new URLSearchParams();
@@ -31,6 +31,7 @@ class ServiceModel{
             if (nome) params.append('nome', nome);
             if (duracao) params.append('duracao', duracao);
             if (preco) params.append('preco', preco);
+            if (categoria) params.append('categoria', categoria);
     
             const response = await api.get(`/servicos/filtrar?${params.toString()}`);
     

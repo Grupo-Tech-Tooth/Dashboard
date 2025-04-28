@@ -2,25 +2,44 @@ import style from "./Consultation.module.css";
 import Navbar from "../../components/Navbar/Navbar";
 import Container from "../../components/Container/Container";
 import Table from "../../components/Table/Table";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Add from "../../components/Form/Consultation/Add/Add";
 import Modal from "../../components/Modal/Modal";
+import EmployeesControl from "../Employee/EmployeesControl";
+import ServiceControl from "../Services/ServiceControl";
+import SuccessAlert from "../../components/AlertSuccess/AlertSuccess";
+import GenericModalError from "../../components/GenericModal/GenericModalError/GenericModalError";
+import ModalFinalization from "../../components/ModalFinalization/ModalFinalization";
 import api from "../../api";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
-//import { handleDesfazer } from './utils/desfazerUtils';
+import ConsultationControl from "./ConsultationControl";
 
 function Consultation() {
+  const [AlertSuccess, setAlertSucess] = useState(false);
+  const [genericModalError, setGenericModalError] = useState({
+    view: false,
+    title: "",
+    description: "",
+    icon: "",
+  });
+  const [modalFinalization, setModalFinalization] = useState({
+    view: false,
+    userEdit: null,
+  });
+
+  const timeoutRef = useRef(null);
+  const isMounted = useRef(true);
+
   const [pacientes, setPacientes] = useState([]);
   const [pacientesAgendados, setPacientesAgendados] = useState([]);
   const [showStackModal, setShowStackModal] = useState(false);
   const [showArrivalList, setShowArrivalList] = useState(false);
-  const [showEvaluationModal] = useState(false);
   const [tableInformation, setTableInformation] = useState({
     columns: [
       { name: "#", key: "" },
-      { name: "Nome", key: "nomePaciente" },
+      { name: "Paciente", key: "nomePaciente" },
       { name: "Data", key: "date" },
       { name: "Hora", key: "time" },
       { name: "Médico", key: "doctor" },
@@ -28,148 +47,138 @@ function Consultation() {
       { name: "Status", key: "status" },
       { name: "Ações", key: "acoes" },
     ],
-    data: [
-    ],
-    dataNotFilter: [],
+    data: [],
     tableId: "consultationTable",
     tbodyId: "consultationBody",
-    treatment: [
-    ],
-    doctor: [
-    ],
+    treatment: [],
+    doctor: [],
   });
-  const [viewFormAdd, setViewFormAdd] = useState("none");
+  const [viewFormAdd, setViewFormAdd] = useState({});
   const [searchPatient, setSearchPatient] = useState("");
   const [searchTreatment, setSearchTreatment] = useState(undefined);
   const [searchDoctor, setSearchDoctor] = useState(undefined);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
-  async function getData() {
+  async function getDataAppointement() {
     try {
-      const agendamentos = await api.get(`/agendamentos`);
-      formatData(agendamentos.data);
+      let agendamentos = await ConsultationControl.buscar();
 
-      const medicos = await api.get(`/medicos`);
+      if (sessionStorage.getItem("hierarquia") === "MEDICO") {
+        agendamentos = agendamentos.filter(
+          (agendamento) =>
+            agendamento.idDoctor.toString() === sessionStorage.getItem("id")
+        );
+      }
+
+      agendamentos = agendamentos.filter(
+        (agendamento) =>
+          agendamento.status !== "Cancelado" &&
+          agendamento.status !== "Concluído"
+      );
+
+      if (isMounted.current) {
+        setTableInformation((prevTableInformation) => ({
+          ...prevTableInformation,
+          data: agendamentos,
+        }));
+      }
+    } catch (e) {
+      console.error("Erro ao obter consultas:", e);
+    }
+
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    if (isMounted.current) {
+      timeoutRef.current = setTimeout(() => {
+        getDataAppointement();
+        getFila();
+        getPilha();
+      }, 50000);
+    }
+  }
+
+  async function getMedicos() {
+    try {
+      let medicos = await EmployeesControl.buscarMedicos();
+
+      if (sessionStorage.getItem("hierarquia") === "MEDICO") {
+        medicos = medicos.filter(
+          (medico) =>
+            medico.id.toString() === sessionStorage.getItem("id")
+        );
+      }
+
       setTableInformation((prevTableInformation) => ({
         ...prevTableInformation,
-        doctor: medicos.data,
+        doctor: medicos,
       }));
+    } catch (e) {
+      console.error("Erro ao buscar medicos:", e);
+    }
+  }
 
-      const servicos = await api.get(`/servicos`);
-      setTableInformation((prevTableInformation) => ({
-        ...prevTableInformation,
-        treatment: servicos.data,
-      }));
-
+  async function getPacientes() {
+    try {
       const clientes = await api.get(`/clientes`);
       setTableInformation((prevTableInformation) => ({
         ...prevTableInformation,
         pacientes: clientes.data,
       }));
-    } catch (error) {
-      console.log("Erro ao obter consultas:", error);
+    } catch (e) {
+      console.error("Erro ao buscar pacientes:", e);
     }
-    setTimeout(() => {
-      getData();
-    }, 50000);
   }
 
-  function formatData(consultas) {
-    const data = [];
-    //Pedir para alterarem o endPoint para trazer o telefone e a data da ultima visita
-    consultas.forEach((consulta) => {
-      let date = new Date(consulta.dataHora);
-      let day = date.getDate().toString().padStart(2, "0");
-      let month = (date.getMonth() + 1).toString().padStart(2, "0");
-      let year = date.getFullYear();
-      let hour = date.getHours().toString().padStart(2, "0");
-      let minutes = date.getMinutes().toString().padStart(2, "0");
-      let formattedDate = `${day}/${month}/${year}`;
-      let formattedTime = `${hour}:${minutes}`;
+  async function getServicos() {
+    try {
+      const servicos = await ServiceControl.buscar();
+      setTableInformation((prevTableInformation) => ({
+        ...prevTableInformation,
+        treatment: servicos,
+      }));
+    } catch (e) {
+      console.error("Erro ao buscar serviços:", e);
+    }
+  }
 
-      data.push({
-        id: consulta.id,
-        nomePaciente: consulta.cliente.nome,
-        date: formattedDate,
-        time: formattedTime,
-        status: consulta.status,
-        treatment: consulta.servico.nome,
-        doctor: consulta.medico.nome,
-      });
-    });
-    setTableInformation((prevTableInformation) => ({
-      ...prevTableInformation,
-      data: data,
-      dataNotFilter: data,
-    }));
+  async function getFila() {
+    try {
+      const listPessoas = await ConsultationControl.buscarFila();
+      setPacientes(listPessoas);
+    } catch (e) {
+      console.error("Erro ao buscar a fila:", e);
+    }
+  }
+
+  async function getPilha() {
+    try {
+      const response = await ConsultationControl.buscarPilha();
+      setPacientesAgendados(response);
+    } catch (e) {
+      console.error("Erro ao buscar pilha:", e);
+    }
   }
 
   useEffect(() => {
-    setTableInformation((prevTableInformation) => ({
-      ...prevTableInformation,
-      dataNotFilter: prevTableInformation.data,
-    }));
-  }, []);
+    getDataAppointement();
+    getFila();
+    getPilha();
+    getMedicos();
+    getPacientes();
+    getServicos();
+    isMounted.current = true;
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
 
-  // useEffect(() => {
-  //     // Busca a fila de chegada do backend
-  //     axios.get('/api/fila-chegada')  // Troque para o endpoint correto do seu backend
-  //         .then(response => setPacientes(response.data))
-  //         .catch(error => console.error('Erro ao buscar pacientes:', error));
-  // }, []);
-
-  useEffect(() => {
-    // Mock de dados para a fila de chegada
-    const mockPacientes = [
-      { horario: "09:00", nome: "Luiz Fernando" },
-      { horario: "10:00", nome: "Camila Silva" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-      { horario: "10:30", nome: "Rafael Andrade" },
-    ];
-
-    const pacientesPilha = [
-      { data: "2024-11-29", horario: "09:00", nome: "Luiz Fernando" },
-      { data: "2024-11-29", horario: "10:00", nome: "Camila Silva" },
-      { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-      { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-      { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-      { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-      { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-      { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-      { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-      { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-      { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-      { data: "2024-11-29", horario: "09:00", nome: "Luiz Fernando" },
-      { data: "2024-11-29", horario: "10:00", nome: "Camila Silva" },
-      { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-      { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-      { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-      { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-      { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-      { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-      { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-      { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-      { data: "2024-11-29", horario: "10:30", nome: "Rafael Andrade" },
-    ];
-
-    setPacientes(mockPacientes);
-    setPacientesAgendados(pacientesPilha);
+    return () => {
+      isMounted.current = false;
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
   }, []);
 
   return (
@@ -177,14 +186,39 @@ function Consultation() {
       <Navbar
         toggleArrivalModal={toggleArrivalModal}
         toggleStackModal={toggleStackModal}
+        createSnap={() => abrirModalAdd(true)}
       />
+      {AlertSuccess && <SuccessAlert text={"Sucesso ao exportar CSV!"} />}
+      {genericModalError.view && (
+        <GenericModalError
+          close={() =>
+            setGenericModalError((prev) => ({ ...prev, view: false }))
+          }
+          title={genericModalError.title}
+          description={genericModalError.description}
+          icon={genericModalError.icon}
+        />
+      )}
+      {modalFinalization.view && (
+        <ModalFinalization
+          fecharModal={() =>
+            setModalFinalization((prev) => ({
+              ...prev,
+              view: false,
+            }))
+          }
+          agendamento={modalFinalization.agendamento}
+          treatments={tableInformation.treatment}
+        />
+      )}
       <h2 className="text-primary text-center my-3">Consultas</h2>
       <Container>
-        {viewFormAdd === "block" && (
+        {viewFormAdd?.view === "block" && (
           <Add
-            Display={viewFormAdd}
+            Display={viewFormAdd?.view}
+            createSnap={viewFormAdd?.createSnap}
             close={closeForm}
-            listUsers={tableInformation.data}
+            listUsers={tableInformation.pacientes}
             doctors={tableInformation.doctor}
             treatments={tableInformation.treatment}
           />
@@ -223,8 +257,8 @@ function Consultation() {
                 <option value={undefined}>Escolher tratamento</option>
                 {tableInformation.treatment &&
                   tableInformation.treatment.map((item) => (
-                    <option key={item.name} value={item.name}>
-                      {item.name}
+                    <option key={item.nome} value={item.nome}>
+                      {item.nome}
                     </option>
                   ))}
               </select>
@@ -241,8 +275,8 @@ function Consultation() {
                 <option value={undefined}>Selecionar médico</option>
                 {tableInformation.doctor &&
                   tableInformation.doctor.map((item) => (
-                    <option key={item.name} value={item.name}>
-                      {item.name}
+                    <option key={item.nome} value={item.nome}>
+                      {item.nome}
                     </option>
                   ))}
               </select>
@@ -285,7 +319,11 @@ function Consultation() {
             </div>
           </div>
           <div className={style["table"]}>
-            <Table tableInformation={tableInformation} setTableInformation={setTableInformation}/>
+            <Table
+              tableInformation={tableInformation}
+              setTableInformation={setTableInformation}
+              close={closeForm}
+            />
           </div>
         </div>
         <Modal
@@ -307,28 +345,39 @@ function Consultation() {
                     }}
                   >
                     <p>
-                      {paciente.horario} - {paciente.nome}
+                      {paciente.hora} - {paciente?.cliente.nome}
                     </p>
-                    <div>
-                      <button
-                        style={{
-                          background: "none",
-                          border: "none",
-                          color: "green",
-                        }}
-                      >
-                        <FontAwesomeIcon icon={faCheck} />
-                      </button>
-                      <button
-                        style={{
-                          background: "none",
-                          border: "none",
-                          color: "red",
-                        }}
-                      >
-                        <FontAwesomeIcon icon={faTimes} />
-                      </button>
-                    </div>
+                    {index === 0 ? (
+                      <div>
+                        <button
+                          style={{
+                            background: "none",
+                            border: "none",
+                            color: "green",
+                          }}
+                          onClick={() => {
+                            setModalFinalization((prev) => ({
+                              userEdit: paciente.cliente,
+                            }));
+                            buscarAgendamento(paciente.id);
+                          }}
+                        >
+                          <FontAwesomeIcon icon={faCheck} />
+                        </button>
+                        <button
+                          style={{
+                            background: "none",
+                            border: "none",
+                            color: "red",
+                          }}
+                          onClick={() => cancelAppointment(paciente.id)}
+                        >
+                          <FontAwesomeIcon icon={faTimes} />
+                        </button>
+                      </div>
+                    ) : (
+                      <></>
+                    )}
                   </div>
                 ))
               ) : (
@@ -341,18 +390,22 @@ function Consultation() {
           show={showStackModal}
           onClose={() => toggleStackModal()}
           title="Desfazer consulta"
+          click={() => desfazer()}
           content={
-            <div className={style.modalContainer}>
+            <div
+              className={style.modalContainer}
+              style={{ height: "65vh", overflowY: "scroll" }}
+            >
               <div className={style.stackModalBody}>
                 {pacientesAgendados.length > 0 ? (
                   <>
                     {pacientesAgendados.map((paciente, index) => (
                       <div key={index} className={style.pacienteItem}>
                         <span className={style.data}>{paciente.data}</span>
-                        <span className={style.horario}>
-                          {paciente.horario}
+                        <span className={style.horario}>{paciente.hora}</span>
+                        <span className={style.nome}>
+                          {paciente?.cliente?.nome}
                         </span>
-                        <span className={style.nome}>{paciente.nome}</span>
                       </div>
                     ))}
                   </>
@@ -364,31 +417,44 @@ function Consultation() {
           }
         />
       </Container>
-      <div className={`position-absolute p-5 rounded-3 ${style["boxButton"]}`}>
-        <button
-          type="button"
-          onClick={() => abrirModalAdd()}
-          className={`${style["add"]} btn btn-primary`}
-        >
-          Marcar Nova Consulta
-        </button>
-      </div><div className={`position-absolute p-5 rounded-3 ${style["boxButton"]}`}>
-        <button
-          type="button"
-          onClick={() => exportCSVAppointments()}
-          className={`${style["csv"]} btn btn-primary`}
-        >
-          Exportar Lista de Consultas
-        </button>
-      </div>
+      <button
+        type="button"
+        onClick={() => abrirModalAdd()}
+        className={`${style["add"]} btn btn-primary`}
+      >
+        Marcar Nova Consulta
+      </button>
+      <button
+        type="button"
+        onClick={() => exportCSVAppointments()}
+        className={`${style["csv"]} btn btn-primary`}
+        hidden={
+          sessionStorage.getItem("hierarquia") === "MEDICO" ? true : false
+        }
+        disabled={
+          sessionStorage.getItem("hierarquia") === "MEDICO" ? true : false
+        }
+      >
+        Exportar Lista de Consultas
+      </button>
     </>
   );
 
   function toggleArrivalModal() {
     setShowArrivalList(!showArrivalList);
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    getFila();
+    getDataAppointement();
   }
+
   function toggleStackModal() {
     setShowStackModal(!showStackModal);
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    getDataAppointement();
   }
 
   function resetFields() {
@@ -397,138 +463,133 @@ function Consultation() {
     setSearchDoctor(undefined);
     setStartDate("");
     setEndDate("");
-    setTableInformation((prevTableInformation) => ({
-      ...prevTableInformation,
-      data: tableInformation.dataNotFilter,
-    }));
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    getDataAppointement();
   }
 
-  function buscar(value) {
+  async function buscar(value) {
     value.preventDefault();
-    if (
-      value.target.searchPatient.value ||
-      value.target.searchTreatment.value !== "Escolher tratamento" ||
-      value.target.searchDoctor.value !== "Escolher médico" ||
-      value.target.startDate.value ||
-      value.target.endDate.value
-    ) {
-      let filtered = tableInformation.dataNotFilter;
-
-      if (value.target.searchPatient.value) {
-        filtered = filtered.filter((item) =>
-          item.nomePaciente
-            .toLowerCase()
-            .includes(value.target.searchPatient.value.toLowerCase())
-        );
-      }
-
-      if (value.target.searchTreatment.value !== "Escolher tratamento") {
-        filtered = filtered.filter(
-          (item) => item.treatment === value.target.searchTreatment.value
-        );
-      }
-
-      if (value.target.searchDoctor.value !== "Escolher médico") {
-        filtered = filtered.filter(
-          (item) => item.doctor === value.target.searchDoctor.value
-        );
-      }
-
-      if (value.target.startDate.value || value.target.endDate.value) {
-        const hoje = new Date();
-        const dia = String(hoje.getDate()).padStart(2, "0");
-        const mes = String(hoje.getMonth() + 1).padStart(2, "0");
-        const ano = hoje.getFullYear();
-        const dataFormatada = new Date(`${ano}-${mes}-${dia}`);
-
-        let startDateFormatted = null;
-        let endDateFormatted = null;
-
-        if (value.target.startDate.value) {
-          const startDateParts = value.target.startDate.value.split("-");
-          startDateFormatted = new Date(
-            `${startDateParts[0]}-${startDateParts[1]}-${startDateParts[2]}`
-          );
-        }
-        if (value.target.endDate.value) {
-          const endDateParts = value.target.endDate.value.split("-");
-          endDateFormatted = new Date(
-            `${endDateParts[0]}-${endDateParts[1]}-${endDateParts[2]}`
-          );
-        }
-
-        filtered = filtered.filter((item) => {
-          const itemDateParts = item.date.split("/");
-          const itemDate = new Date(
-            `${itemDateParts[2]}-${itemDateParts[1]}-${itemDateParts[0]}`
-          );
-
-          if (startDateFormatted && endDateFormatted) {
-            return (
-              itemDate >= startDateFormatted && itemDate <= endDateFormatted
-            );
-          } else if (startDateFormatted) {
-            return itemDate >= startDateFormatted && itemDate <= dataFormatada;
-          } else if (endDateFormatted) {
-            return itemDate >= dataFormatada && itemDate <= endDateFormatted;
-          }
-          return true;
-        });
-      }
-
-      setTableInformation((prevTableInformation) => ({
-        ...prevTableInformation,
-        data: filtered,
+    try {
+      const data = {
+        paciente: searchPatient,
+        tratamento: searchTreatment,
+        medico: searchDoctor,
+        dataInicio: startDate,
+        dataFim: endDate,
+      };
+      const response = await ConsultationControl.filtrar(data);
+      setTableInformation((prev) => ({
+        ...prev,
+        data: [...response],
       }));
-    } else {
-      setTableInformation((prevTableInformation) => ({
-        ...prevTableInformation,
-        data: tableInformation.dataNotFilter,
+    } catch (e) {
+      setGenericModalError((prev) => ({
+        view: true,
+        title: "Ops.... Tivemos um erro ao concluir a ação",
+        description: e.message,
+        icon: "iconErro",
       }));
     }
   }
 
-  function abrirModalAdd() {
-    setViewFormAdd("block");
+  function abrirModalAdd(createSnap = false) {
+    setViewFormAdd((prev) => ({
+      ...prev,
+      view: "block",
+      createSnap: createSnap ? true : false,
+    }));
+  }
+
+  async function desfazer() {
+    try {
+      await ConsultationControl.desfazer(pacientesAgendados[0]?.id);
+      getPilha();
+    } catch (e) {
+      setGenericModalError((prev) => ({
+        view: true,
+        title: "Erro ao Concluir Ação",
+        description: e.message,
+        icon: "iconErro",
+      }));
+    }
   }
 
   async function exportCSVAppointments() {
     try {
-      const response = await api.get(`/agendamentos/exportar-csv`, {
-        responseType: "blob", // Garante que a resposta será tratada como arquivo binário
-      });
-  
-      // Criação do blob com o arquivo CSV
-      const blob = new Blob([response.data], { type: "text/csv" });
-  
-      // Criação de um link temporário para download
+      const response = ConsultationControl.exportarCsv();
+
+      const blob = new Blob([response], { type: "text/csv" });
+
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = "agendamentos.csv"; // Nome do arquivo
+      link.download = "agendamentos.csv";
       document.body.appendChild(link);
       link.click();
-  
-      // Cleanup: Remove o link temporário
+
       link.remove();
       window.URL.revokeObjectURL(url);
-  
-      alert("Sucesso ao exportar CSV");
-    } catch (error) {
-      alert("Erro ao exportar CSV");
-      console.log("Erro ao exportar CSV:", error);
+
+      setAlertSucess(true);
+      setTimeout(() => setAlertSucess(false), 1500);
+    } catch (e) {
+      setGenericModalError((prev) => ({
+        view: true,
+        title: "Erro ao exportar CSV",
+        description: e,
+        icon: "iconErro",
+      }));
     }
   }
-  
 
-  function closeForm(newConsultation) {
+  function closeForm() {
     setViewFormAdd("none");
-    if (newConsultation?.nomePaciente) {
-      newConsultation.id =
-        tableInformation.dataNotFilter[
-          tableInformation.dataNotFilter.length - 1
-        ].id + 1;
-      tableInformation.data.push(newConsultation);
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    getFila();
+    getPilha();
+    getDataAppointement();
+  }
+
+  async function buscarAgendamento(id) {
+    let response;
+    try {
+      response = await ConsultationControl.buscarPorId(id);
+    } catch (e) {
+      setGenericModalError((prev) => ({
+        view: true,
+        title: "Erro ao buscar informações do agendamento",
+        description: e,
+        icon: "iconErro",
+      }));
+    } finally {
+      if (response) {
+        setModalFinalization((prev) => ({
+          ...prev,
+          view: true,
+          agendamento: response[0],
+        }));
+      }
+    }
+  }
+
+  async function cancelAppointment(id) {
+    try {
+      await ConsultationControl.cancelar(id);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      getFila();
+    } catch (e) {
+      setGenericModalError((prev) => ({
+        view: true,
+        title: "Erro ao Concluir Ação",
+        description: e,
+        icon: "iconErro",
+      }));
     }
   }
 }

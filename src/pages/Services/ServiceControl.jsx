@@ -5,6 +5,7 @@ class ServiceControl{
     static async buscar(){
         try{
             let servicos = await ServiceModel.buscar();
+            console.log(servicos);
             return servicos;
         }catch(e){
             throw new Error((e.message));
@@ -20,9 +21,9 @@ class ServiceControl{
         }
     }
 
-    static async filtrar(nome, duracao, preco){
+    static async filtrar(nome, duracao, preco, categoria){
         try{
-            let servicos = await ServiceModel.filtrar(nome, duracao, preco);
+            let servicos = await ServiceModel.filtrar(nome, duracao, preco, categoria);
             return servicos;
         }catch(e){
             throw new Error((e.message));
