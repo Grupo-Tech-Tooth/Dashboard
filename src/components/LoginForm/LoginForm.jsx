@@ -18,7 +18,8 @@ const LoginForm = () => {
     setCarregando(true);
 
     try {
-      const response = await axios.post("http://localhost:8080/login", {
+
+      const response = await axios.post("/api/v1/login", {
         email: email,
         senha: password,
       });
