@@ -113,13 +113,19 @@ const Dashboard = () => {
         });
         const services = Array.isArray(response.data) ? response.data : [];
 
+        // Gera dinamicamente as cores com base na quantidade de serviços
+        const generateColors = (length) => {
+          const colors = ["#60A5FA", "#BFDBFE", "#E0F2FE", "#93C5FD", "#3B82F6"];
+          return Array.from({ length }, (_, i) => colors[i % colors.length]);
+        };
+
         const updatedData = {
-          labels: services.map((service) => service.nome),
+          labels: services.length > 0 ? services.map((service) => service.nome) : ["Nenhum Servico Utilizado"] ,
           datasets: [
             {
               label: "Serviços Mais Usados",
-              data: services.map((service) => service.usos),
-              backgroundColor: ["#60A5FA", "#BFDBFE", "#E0F2FE"],
+              data: services.length > 0 ? services.map((service) => service.usos) : [100],
+              backgroundColor: generateColors(services.length > 0 ? services.length : 1),
             },
           ],
         };
@@ -594,7 +600,7 @@ const Dashboard = () => {
         maximumFractionDigits: 2,
       }); // Formata o valor
     }
-    return "N/A";
+    return "0,00";
   };
 
   // Calcula o menor faturamento por consulta
@@ -611,11 +617,19 @@ const Dashboard = () => {
         maximumFractionDigits: 2,
       }); // Formata o valor
     }
-    return "N/A";
+    return "0,00";
   };
 
   // Serviço mais realizado
   const mostPerformedService = () => {
+    if (
+      popularServicesData.labels[0] === "Nenhum Servico Utilizado" ||
+      popularServicesData.datasets.length === 0 ||
+      popularServicesData.datasets[0].data === 0
+    ) {
+      return { name: "N/A", count: 0 };
+    }
+    
     const maxIndex = popularServicesData.datasets[0].data.indexOf(
       Math.max(...popularServicesData.datasets[0].data)
     );
@@ -627,6 +641,14 @@ const Dashboard = () => {
 
   // Serviço menos realizado
   const leastPerformedService = () => {
+    if (
+      popularServicesData.labels[0] === "Nenhum Servico Utilizado" ||
+      popularServicesData.datasets.length === 0 ||
+      popularServicesData.datasets[0].data.length === 0
+    ) {
+      return { name: "N/A", count: 0 };
+    }
+    
     const minIndex = popularServicesData.datasets[0].data.indexOf(
       Math.min(...popularServicesData.datasets[0].data)
     );
@@ -810,7 +832,7 @@ const Dashboard = () => {
                   <span style={{ fontSize: "14px" }}>(Nº Absoluto)</span>
                 </h4>
 
-                {popularServicesData.datasets[0].data.length < 1 && (
+                {!popularServicesData.datasets[0].data.length > 0 && (
                   <div className={style.carregamento} id="carregamento">
                     <div className={style.loader}></div>
                   </div>

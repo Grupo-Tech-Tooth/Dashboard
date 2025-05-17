@@ -77,7 +77,7 @@ function Financeiro() {
 
   useEffect(() => {
     getData();
-  });
+  },[]);
 
   function editarItem(item) {
     setEditData({
