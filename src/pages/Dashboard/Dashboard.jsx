@@ -12,6 +12,8 @@ import {
   Tooltip,
   Legend,
   ArcElement,
+  BarController,
+  LineController,
 } from "chart.js";
 import Navbar from "../../components/Navbar/Navbar";
 import ChartDataLabels from "chartjs-plugin-datalabels";
@@ -27,7 +29,9 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  ArcElement
+  ArcElement,
+  BarController,
+  LineController
 );
 
 const Dashboard = () => {
@@ -831,13 +835,13 @@ const Dashboard = () => {
                   <span style={{ fontSize: "14px" }}>(Nº Absoluto)</span>
                 </h4>
 
-                {(!popularServicesData.datasets?.[0]?.data?.length) && (
+                {!popularServicesData.datasets[0].data.length > 0 && (
                   <div className={style.carregamento} id="carregamento">
                     <div className={style.loader}></div>
                   </div>
                 )}
 
-                {(popularServicesData.datasets?.[0]?.data?.length > 0) && (
+                {popularServicesData.datasets[0].data.length > 0 && (
                   <div style={{ height: "fit-content", minWidth: "100%" }}>
                     <Pie
                       data={popularServicesData}
