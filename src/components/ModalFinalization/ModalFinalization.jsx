@@ -30,21 +30,24 @@ function ModalFinalization({
   );
 
   function getPrecoServico(id) {
-    let total = treatments.find((servico) => servico.id === agendamento?.idTratamento);
+    let total = treatments.find(
+      (servico) => servico.id === agendamento?.idTratamento
+    );
     total = total?.preco || 0;
     if (id) {
-      let tratamento2 = treatments.find((servico) => servico.id === id);
-      total += tratamento2.preco;
+      // Corrige a comparação para garantir que ambos são números
+      const idNumber = Number(id);
+      let tratamento2 = treatments.find((servico) => servico.id === idNumber);
+      total += tratamento2?.preco || 0;
     }
     setPrice(total);
   }
 
   useEffect(() => {
-    if(price === 0){
+    if (price === 0) {
       getPrecoServico();
     }
   }, []);
-
 
   return (
     <div
@@ -105,8 +108,8 @@ function ModalFinalization({
                 <select
                   className="form-select"
                   onChange={(e) => {
-                    setNewTreatment(e.target.value)
-                    getPrecoServico(e.target.value)
+                    setNewTreatment(e.target.value);
+                    getPrecoServico(e.target.value);
                   }}
                   disabled={!optionsTreatment}
                   defaultValue=""
@@ -144,9 +147,7 @@ function ModalFinalization({
                   className="form-select"
                   onChange={(e) => setSelectedPaymentMethod(e.target.value)}
                 >
-                  <option value="DINHEIRO">
-                    Dinheiro
-                  </option>
+                  <option value="DINHEIRO">Dinheiro</option>
                   <option value="PIX"> PIX </option>
                   <option value="CARTAO_DEBITO"> Cartão de Débito </option>
                   <option value="CARTAO_CREDITO"> Cartão de Crédito </option>
@@ -158,46 +159,46 @@ function ModalFinalization({
 
             {(selectedPaymentMethod === "CARTAO_CREDITO" ||
               selectedPaymentMethod === "CARTAO_DEBITO") && (
-                <div className="d-flex justify-content-between align-items-end">
-                  <p style={{ width: "49%" }}>
-                    Valor da Taxa do Cartão:*
-                    <div className="input-group">
-                      <input
-                        type="text"
-                        className="form-control"
-                        value={taxMachine}
-                        onChange={(e) => setTaxMachine(e.target.value)}
-                        required
-                      />
-                      <span className="input-group-text">%</span>
-                    </div>
-                  </p>
-                  <p style={{ width: "49%" }}>
-                    Quantidade de Parcelas:*
-                    <select
-                      className="form-select"
-                      onChange={(e) => setInstallments(e.target.value)}
+              <div className="d-flex justify-content-between align-items-end">
+                <p style={{ width: "49%" }}>
+                  Valor da Taxa do Cartão:*
+                  <div className="input-group">
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={taxMachine}
+                      onChange={(e) => setTaxMachine(e.target.value)}
                       required
-                      disabled={selectedPaymentMethod !== "CARTAO_CREDITO"}
-                    >
-                      <option value="1" selected>
-                        1 Parcela
-                      </option>
-                      <option value="2"> 2 Parcelas </option>
-                      <option value="3"> 3 Parcelas </option>
-                      <option value="4"> 4 Parcelas </option>
-                      <option value="5"> 5 Parcelas </option>
-                      <option value="6"> 6 Parcelas </option>
-                      <option value="7"> 7 Parcelas </option>
-                      <option value="8"> 8 Parcelas </option>
-                      <option value="9"> 9 Parcelas </option>
-                      <option value="10"> 10 Parcelas </option>
-                      <option value="11"> 11 Parcelas </option>
-                      <option value="12"> 12 Parcelas </option>
-                    </select>
-                  </p>
-                </div>
-              )}
+                    />
+                    <span className="input-group-text">%</span>
+                  </div>
+                </p>
+                <p style={{ width: "49%" }}>
+                  Quantidade de Parcelas:*
+                  <select
+                    className="form-select"
+                    onChange={(e) => setInstallments(e.target.value)}
+                    required
+                    disabled={selectedPaymentMethod !== "CARTAO_CREDITO"}
+                  >
+                    <option value="1" selected>
+                      1 Parcela
+                    </option>
+                    <option value="2"> 2 Parcelas </option>
+                    <option value="3"> 3 Parcelas </option>
+                    <option value="4"> 4 Parcelas </option>
+                    <option value="5"> 5 Parcelas </option>
+                    <option value="6"> 6 Parcelas </option>
+                    <option value="7"> 7 Parcelas </option>
+                    <option value="8"> 8 Parcelas </option>
+                    <option value="9"> 9 Parcelas </option>
+                    <option value="10"> 10 Parcelas </option>
+                    <option value="11"> 11 Parcelas </option>
+                    <option value="12"> 12 Parcelas </option>
+                  </select>
+                </p>
+              </div>
+            )}
             <p className={style["observacao"]}>
               Observação
               <textarea
@@ -234,9 +235,16 @@ function ModalFinalization({
       setNewTreatment("");
     }
     if (price && selectedPaymentMethod) {
-
       try {
-        await ConsultationControl.finalizar(agendamento, newTreatment, price, selectedPaymentMethod, observation, taxMachine, installments);
+        await ConsultationControl.finalizar(
+          agendamento,
+          newTreatment,
+          price,
+          selectedPaymentMethod,
+          observation,
+          taxMachine,
+          installments
+        );
 
         setRightValueSucess(5);
         setTimeout(() => {
@@ -252,6 +260,6 @@ function ModalFinalization({
       }, 3000);
     }
   }
-};
+}
 
 export default ModalFinalization;

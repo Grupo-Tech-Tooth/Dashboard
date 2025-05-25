@@ -35,6 +35,24 @@ function Table({
 
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const paymentMethodLabel = (value) => {
+    switch (value) {
+      case "DINHEIRO":
+        return "Dinheiro";
+      case "PIX":
+        return "PIX";
+      case "CARTAO_DEBITO":
+        return "Cartão de Débito";
+      case "CARTAO_CREDITO":
+        return "Cartão de Crédito";
+      case "CHEQUE":
+        return "Cheque";
+      case "PERMUTA":
+        return "Permuta";
+      default:
+        return value;
+    }
+  };
 
   useEffect(() => {
     if (tableInformation && tableInformation.data) {
@@ -54,81 +72,36 @@ function Table({
 
   const getMenuItems = (item, tableId) => {
     if (tableId === "consultationBody") {
-      return [
-        {
-          key: "1",
-          label: (
-            <button
-              className="text-decoration-none text-primary"
-              onClick={() => editar(item)}
-              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
-            >
-              Editar
-            </button>
-          ),
-        },
-        {
-          key: "6",
-          label: (
-            <button
-              className="text-decoration-none text-primary"
-              onClick={() => confirmar(item)}
-              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
-            >
-              Confirmar
-            </button>
-          ),
-        },
-        {
-          key: "2",
-          label: (
-            <button
-              className="text-decoration-none text-primary"
-              onClick={() => cancelar(item.id)}
-              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
-            >
-              Cancelar
-            </button>
-          ),
-        },
-        {
-          key: "3",
-          label: item.status !== "Concluído" && item.status !== "Pendente" ? (
-            <button
-              className="text-decoration-none text-primary"
-              onClick={() => concluir(item)}
-              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
-            >
-              Finalizar
-            </button>
-          ) : null,
-        },
+      const items = [];
 
-        {
-          key: "4",
-          label: (
-            <button
-              className="text-decoration-none text-primary"
-              onClick={() => visualizarConsulta(item)}
-              style={{
-                background: "none",
-                border: "none",
-                padding: 0,
-                cursor: "pointer",
-              }}
-            >
-              Visualizar
-            </button>
-          ),
-        },
-        ...(item.status === "Pendente" 
-        ? [
+      // Visualizar sempre disponível
+      items.push({
+        key: "visualizar",
+        label: (
+          <button
+            className="text-decoration-none text-primary"
+            onClick={() => visualizarConsulta(item)}
+            style={{
+              background: "none",
+              border: "none",
+              padding: 0,
+              cursor: "pointer",
+            }}
+          >
+            Visualizar
+          </button>
+        ),
+      });
+
+      // Editar, Cancelar, Finalizar e Deletar só se não estiver concluído/cancelado
+      if (item.status !== "Concluído" && item.status !== "Cancelado") {
+        items.unshift(
           {
-            key: "6",
+            key: "editar",
             label: (
               <button
                 className="text-decoration-none text-primary"
-                onClick={() => confirmar(item)}
+                onClick={() => editar(item)}
                 style={{
                   background: "none",
                   border: "none",
@@ -136,89 +109,96 @@ function Table({
                   cursor: "pointer",
                 }}
               >
-                Confirmar
+                Editar
+              </button>
+            ),
+          },
+          {
+            key: "cancelar",
+            label: (
+              <button
+                className="text-decoration-none text-primary"
+                onClick={() => cancelar(item.id)}
+                style={{
+                  background: "none",
+                  border: "none",
+                  padding: 0,
+                  cursor: "pointer",
+                }}
+              >
+                Cancelar
               </button>
             ),
           }
-        ]
-        : []),
-        ...(item.status !== "Concluído" && item.status !== "Cancelado"
-          ? [
-              {
-                key: "1",
-                label: (
-                  <button
-                    className="text-decoration-none text-primary"
-                    onClick={() => editar(item)}
-                    style={{
-                      background: "none",
-                      border: "none",
-                      padding: 0,
-                      cursor: "pointer",
-                    }}
-                  >
-                    Editar
-                  </button>
-                ),
-              },
-              {
-                key: "2",
-                label: (
-                  <button
-                    className="text-decoration-none text-primary"
-                    onClick={() => cancelar(item.id)}
-                    style={{
-                      background: "none",
-                      border: "none",
-                      padding: 0,
-                      cursor: "pointer",
-                    }}
-                  >
-                    Cancelar
-                  </button>
-                ),
-              },
-              {
-                key: "3",
-                label: (
-                  <button
-                    className="text-decoration-none text-primary"
-                    onClick={() => concluir(item)}
-                    style={{
-                      background: "none",
-                      border: "none",
-                      padding: 0,
-                      cursor: "pointer",
-                    }}
-                  >
-                    Finalizar
-                  </button>
-                ),
-              },
-              {
-                key: "5",
-                label: (
-                  <button
-                    className="text-decoration-none text-primary"
-                    onClick={() => deletar(item.id)}
-                    style={{
-                      background: "none",
-                      border: "none",
-                      padding: 0,
-                      cursor: "pointer",
-                    }}
-                  >
-                    Deletar
-                  </button>
-                ),
-              },
-            ]
-          : []),
-      ];
+        );
+
+        // Finalizar só se não for pendente
+        if (item.status !== "Pendente") {
+          items.unshift({
+            key: "finalizar",
+            label: (
+              <button
+                className="text-decoration-none text-primary"
+                onClick={() => concluir(item)}
+                style={{
+                  background: "none",
+                  border: "none",
+                  padding: 0,
+                  cursor: "pointer",
+                }}
+              >
+                Finalizar
+              </button>
+            ),
+          });
+        }
+
+        // Deletar
+        items.push({
+          key: "deletar",
+          label: (
+            <button
+              className="text-decoration-none text-primary"
+              onClick={() => deletar(item.id)}
+              style={{
+                background: "none",
+                border: "none",
+                padding: 0,
+                cursor: "pointer",
+              }}
+            >
+              Deletar
+            </button>
+          ),
+        });
+      }
+
+      // Confirmar só se pendente
+      if (item.status === "Pendente") {
+        items.unshift({
+          key: "confirmar",
+          label: (
+            <button
+              className="text-decoration-none text-primary"
+              onClick={() => confirmar(item)}
+              style={{
+                background: "none",
+                border: "none",
+                padding: 0,
+                cursor: "pointer",
+              }}
+            >
+              Confirmar
+            </button>
+          ),
+        });
+      }
+
+      return items;
     } else {
       return [
         {
-          key: "1",
+          key: "editar",
           label: (
             <button
               className="text-decoration-none text-primary"
@@ -235,7 +215,7 @@ function Table({
           ),
         },
         {
-          key: "2",
+          key: "deletar",
           label: (
             <button
               className="text-decoration-none text-primary"
@@ -296,11 +276,14 @@ function Table({
                           {col.key === ""
                             ? index + 1 + (currentPage - 1) * pageSize
                             : col.key === "amount"
-                              ? "R$ " + item[col.key] + ",00"
-                              : col.key === "paymentMethod" &&
-                                item[col.key] === "Cartão de Crédito"
-                                ? item[col.key] + " - " + item["installments"] + "x"
-                                : item[col.key]}
+                            ? "R$ " + item[col.key] + ",00"
+                            : col.key === "formaPagamento"
+                            ? paymentMethodLabel(item[col.key]) +
+                              (item[col.key] === "CARTAO_CREDITO" &&
+                              item["installments"]
+                                ? ` - ${item["installments"]}x`
+                                : "")
+                            : item[col.key]}
                         </td>
                       ) : (
                         <td style={{ gap: "5px" }} key={`${item.id}-acoes`}>

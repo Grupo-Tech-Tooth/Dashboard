@@ -24,7 +24,7 @@ class EmployeesModel {
                         dataNascimento: medico?.dataNascimento,
                         cep: medico?.cep,
                         numeroResidencia: medico?.numeroResidencia,
-                        complemento: medico?.complemento
+                        complemento: medico?.complemento || "Não informado",
                     });
                 });
             }
@@ -47,7 +47,7 @@ class EmployeesModel {
                         dataNascimento: funcional.dataNascimento,
                         cep: funcional?.cep,
                         numeroResidencia: funcional?.numeroResidencia,
-                        complemento: funcional?.complemento
+                        complemento: funcional?.complemento || "Não informado",
                     });
                 });
             }
@@ -90,7 +90,7 @@ class EmployeesModel {
                 matricula: response?.matricula,
                 cep: response?.cep,
                 number: response?.numeroResidencia,
-                complemento: response?.complemento,
+                complemento: response?.complemento || "Não informado",
             }
             return data;
         } catch (e) {
@@ -114,7 +114,7 @@ class EmployeesModel {
                     matricula: values?.matricula.value,
                     cep: values?.cep.value,
                     numeroResidencia: values?.numeroResidencia.value,
-                    complemento: values?.complemento.value,
+                    complemento: values?.complemento.value || "Não informado",
                     senha: null,
                     crm: values?.crm.value,
                     especializacao: values?.especializacao.value.toUpperCase()
@@ -135,7 +135,7 @@ class EmployeesModel {
                     genero: values?.genero.value,
                     cep: values?.cep.value,
                     numeroResidencia: values?.numeroResidencia.value,
-                    complemento: values?.complemento.value
+                    complemento: values?.complemento.value || "Não informado",
                 }
                 await EmployeesControl.saveFuncional(data);
             }
@@ -161,7 +161,7 @@ class EmployeesModel {
                     matricula: value.matricula.value,
                     cep: value.cep.value,
                     numeroResidencia: value.numeroResidencia.value,
-                    complemento: value.complemento.value,
+                    complemento: value.complemento.value || "Não informado",
                 };
                 await EmployeesControl.editarMedico(id, data);
             } else {
@@ -178,7 +178,7 @@ class EmployeesModel {
                     cep: value.cep.value,
                     departamento: value.departamento.value,
                     numeroResidencia: value.numeroResidencia.value,
-                    complemento: value.complemento.value,
+                    complemento: value.complemento.value || "Não informado",
                 };
                 return await EmployeesControl.editarFuncional(id, data);
             }

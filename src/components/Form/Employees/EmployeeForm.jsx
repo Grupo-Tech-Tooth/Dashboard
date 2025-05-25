@@ -186,7 +186,7 @@ function EmployeeForm({ userData, close, listSpecialization }) {
                 />
             </div>
             <div className="col-md-3">
-                <Input name={'complemento'} type={'text'} label={'Complemento'} placeholder={'Complemento da Casa'} required disabled={disabled} value={user?.complemento} />
+                <Input name={'complemento'} type={'text'} label={'Complemento'} placeholder={'Complemento da Casa'} disabled={disabled} value={user?.complemento} />
             </div>
         </form>,
         funcional: <form ref={formRef} className={`${style['form']} row g-3`} onSubmit={saveFields}>

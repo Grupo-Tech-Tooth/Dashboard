@@ -549,6 +549,20 @@ const Dashboard = () => {
     },
   };
 
+  const [consultationsData, setConsultationsData] = useState(null);
+  useEffect(() => {
+    const fetchConsultationsData = async () => {
+      try {
+        const response = await api.get("/financeiro");
+        setConsultationsData(response.data);
+      } catch (error) {
+        console.error("Erro ao buscar dados de consultas:", error);
+      }
+    };
+
+    fetchConsultationsData();
+  }, []);
+  
   // Calcula o faturamento total mensal
   const totalMonthlyRevenue = annualRevenueData.datasets[0].data
     .reduce((acc, val) => acc + val, 0)
@@ -563,7 +577,7 @@ const Dashboard = () => {
       (acc, val) => acc + val,
       0
     );
-    const totalConsultations = annualRevenueData.datasets[0].data.length;
+    const totalConsultations = consultationsData?.length || 0;
     return totalConsultations > 0
       ? (totalRevenue / totalConsultations).toLocaleString("pt-BR", {
           minimumFractionDigits: 2,
@@ -571,20 +585,6 @@ const Dashboard = () => {
         })
       : "0,00";
   };
-
-  const [consultationsData, setConsultationsData] = useState(null);
-  useEffect(() => {
-    const fetchConsultationsData = async () => {
-      try {
-        const response = await api.get("/financeiro");
-        setConsultationsData(response.data);
-      } catch (error) {
-        console.error("Erro ao buscar dados de consultas:", error);
-      }
-    };
-
-    fetchConsultationsData();
-  }, []);
 
   // Calcula o maior faturamento por consulta
   const highestRevenuePerConsultation = () => {
@@ -678,7 +678,6 @@ const Dashboard = () => {
 
   // Dia com menos consultas (desconsiderando domingo)
   const dayWithLeastConsultations = () => {
-    console.log("dailyFlowData", dailyFlowData);
     if (
       dailyFlowData.datasets.length > 0 &&
       typeof dailyFlowData.datasets[0].data === "object" &&
@@ -761,7 +760,7 @@ const Dashboard = () => {
                 <div className={style.carregamento} id="carregamento">
                   <div className={style.loader}></div>
                 </div>
-              )}
+              )}  
 
               {revenueData.datasets.length > 0 && (
                 <div
@@ -852,7 +851,8 @@ const Dashboard = () => {
                   onChange={(e) =>
                     setFilter({ ...filter, periodo: e.target.value })
                   }
-                  value={filter.timeframe}
+                  // value={filter.timeframe}
+                  value={filter.periodo}
                   className="form-select mt-2"
                 >
                   <option value="Mensal">Mensal</option>
@@ -928,7 +928,7 @@ const Dashboard = () => {
                     <h6 className="text-primary">
                       Faturamento Total:{" "}
                       <span className="text-dark">
-                        R${totalMonthlyRevenue.toLocaleString("pt-BR")}
+                        R${totalMonthlyRevenue ? totalMonthlyRevenue.toLocaleString("pt-BR") : "0,00"}
                       </span>
                     </h6>
                   </div>
@@ -937,9 +937,7 @@ const Dashboard = () => {
                       Faturam. Médio Por Consulta:{" "}
                       <span className="text-dark">
                         R$
-                        {averageRevenuePerConsultation().toLocaleString(
-                          "pt-BR"
-                        )}
+                        {averageRevenuePerConsultation() || "0,00"}
                       </span>
                     </h6>
                   </div>
@@ -948,9 +946,7 @@ const Dashboard = () => {
                       Maior Faturam. Por Consulta:{" "}
                       <span className="text-dark">
                         R$
-                        {highestRevenuePerConsultation().toLocaleString(
-                          "pt-BR"
-                        )}
+                        {highestRevenuePerConsultation() || "0,00"}
                       </span>
                     </h6>
                   </div>
@@ -959,7 +955,7 @@ const Dashboard = () => {
                       Menor Faturam. Por Consulta:{" "}
                       <span className="text-dark">
                         R$
-                        {lowestRevenuePerConsultation().toLocaleString("pt-BR")}
+                        {lowestRevenuePerConsultation() || "0,00"}
                       </span>
                     </h6>
                   </div>

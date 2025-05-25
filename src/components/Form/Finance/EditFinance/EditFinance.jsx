@@ -210,12 +210,12 @@ const EditFinance = ({ display, financeData, listUsers, close }) => {
                       onChange={handleChange}
                       value={formData.formaPagamento}
                     >
-                      <option value="Dinheiro"> Dinheiro </option>
+                      <option value="DINHEIRO"> Dinheiro </option>
                       <option value="PIX"> PIX </option>
-                      <option value="Cartão de Débito"> Cartão de Débito </option>
-                      <option value="Cartão de Crédito"> Cartão de Crédito </option>
-                      <option value="Cheque"> Cheque </option>
-                      <option value="Permuta"> Permuta </option>
+                      <option value="CARTAO_DEBITO"> Cartão de Débito </option>
+                      <option value="CARTAO_CREDITO"> Cartão de Crédito </option>
+                      <option value="CHEQUE"> Cheque </option>
+                      <option value="PERMUTA"> Permuta </option>
                     </select>
                   </div>
                 </div>
