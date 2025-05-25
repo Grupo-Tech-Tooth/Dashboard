@@ -831,13 +831,13 @@ const Dashboard = () => {
                   <span style={{ fontSize: "14px" }}>(Nº Absoluto)</span>
                 </h4>
 
-                {!popularServicesData.datasets[0].data.length > 0 && (
+                {(!popularServicesData.datasets?.[0]?.data?.length) && (
                   <div className={style.carregamento} id="carregamento">
                     <div className={style.loader}></div>
                   </div>
                 )}
 
-                {popularServicesData.datasets[0].data.length > 0 && (
+                {(popularServicesData.datasets?.[0]?.data?.length > 0) && (
                   <div style={{ height: "fit-content", minWidth: "100%" }}>
                     <Pie
                       data={popularServicesData}
