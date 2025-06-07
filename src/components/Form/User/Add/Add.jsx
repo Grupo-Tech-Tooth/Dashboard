@@ -79,7 +79,7 @@ const Add = ({ Display, close }) => {
                                             placeholder="Digite o sobrenome do paciente" required />
                                     </div>
                                     <div className="col-md-4 mb-3">
-                                        <label htmlFor="patientDob" className="form-label">Data de Nascimento*</label>
+                                        <label htmlFor="date" className="form-label">Data de Nascimento*</label>
                                         <InputMask
                                             mask="99/99/9999"
                                             className={`form-control ${error ? 'is-invalid' : ''}`}
@@ -92,7 +92,7 @@ const Add = ({ Display, close }) => {
                                         {error && <div className="invalid-feedback">{error}</div>}
                                     </div>
                                     <div className="col-md-4 mb-3">
-                                        <label htmlFor="patientCpf" className="form-label">CPF*</label>
+                                        <label htmlFor="cpf" className="form-label">CPF*</label>
                                         <InputMask
                                             mask="999.999.999-99"
                                             className="form-control"

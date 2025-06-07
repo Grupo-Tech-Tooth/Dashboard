@@ -216,7 +216,7 @@ function Add({
               {step === 0 && (
                 <form onSubmit={treatmentConsultation}>
                   <div className="mb-3">
-                    <label for="patientName" className="form-label">
+                    <label for="treatment" className="form-label">
                       Tipo de Tratamento*
                     </label>
                     <div className="position-relative">
@@ -254,7 +254,7 @@ function Add({
                     </div>
                   </div>
                   <div className="mb-3">
-                    <label for="patientName" className="form-label">
+                    <label for="doctor" className="form-label">
                       Nome do Médico*
                     </label>
                     <div className="position-relative">
@@ -355,7 +355,7 @@ function Add({
                   <div className="row">
                     <div className="col-md-6">
                       <div className="mb-3">
-                        <label for="appointmentCpf" className="form-label">
+                        <label for="cpf" className="form-label">
                           CPF do Paciente*
                         </label>
                         <div className="position-relative">
@@ -395,7 +395,7 @@ function Add({
                         </div>
                       </div>
                       <div className="mb-3">
-                        <label for="patientName" className="form-label">
+                        <label for="nomePaciente" className="form-label">
                           Nome do Paciente
                         </label>
                         <input
@@ -408,7 +408,7 @@ function Add({
                         />
                       </div>
                       <div className="mb-3">
-                        <label for="appointmentDate" className="form-label">
+                        <label for="date" className="form-label">
                           Data Da Consulta
                         </label>
                         <input
@@ -427,7 +427,7 @@ function Add({
                         />
                       </div>
                       <div className="mb-3">
-                        <label for="appointmentTime" className="form-label">
+                        <label for="time" className="form-label">
                           Hora
                         </label>
                         <input
@@ -441,7 +441,7 @@ function Add({
                     </div>
                     <div className="col-md-6">
                       <div className="mb-3">
-                        <label for="patientName" className="form-label">
+                        <label for="doctor" className="form-label">
                           Nome do Médico*
                         </label>
                         <input
@@ -456,7 +456,7 @@ function Add({
                         />
                       </div>
                       <div className="mb-3">
-                        <label for="patientName" className="form-label">
+                        <label for="treatment" className="form-label">
                           Tratamento*
                         </label>
                         <input
@@ -471,7 +471,7 @@ function Add({
                         />
                       </div>
                       <div className="mb-3">
-                        <label for="appointmentStatus" className="form-label">
+                        <label for="status" className="form-label">
                           Status
                         </label>
                         <select className="form-select" id="status">

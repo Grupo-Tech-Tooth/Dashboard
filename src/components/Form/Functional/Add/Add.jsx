@@ -58,7 +58,7 @@ const Add = ({ display, close, listSpecialization }) => {
                         <Input name={'sobrenome'} type={'text'} label={'Sobrenome*'} placeholder={'Sobrenome do Funcionário'} required />
                     </div>
                     <div className="col-md-3">
-                        <label htmlFor="inputGender" className="form-label" >Sexo*</label>
+                        <label htmlFor="genero" className="form-label" >Sexo*</label>
                         <select
                             id="genero"
                             className="form-select" required>

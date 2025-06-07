@@ -85,17 +85,17 @@ const Edit = ({ userData, display, close, listaClientes }) => {
                             <form id="addPatientForm" onSubmit={editPaciente}>
                                 <div className="row">
                                     <div className="col-md-4 mb-3">
-                                        <label htmlFor="patientName" className="form-label">Nome*</label>
+                                        <label htmlFor="name" className="form-label">Nome*</label>
                                         <input type="text" className="form-control" id="name"
                                             placeholder="Digite o nome do paciente" required disabled={disabled} value={userEdit.name} onChange={handleInputChange}/>
                                     </div>
                                     <div className="col-md-4 mb-3">
-                                        <label htmlFor="patientSurname" className="form-label">Sobrenome*</label>
+                                        <label htmlFor="surname" className="form-label">Sobrenome*</label>
                                         <input type="text" className="form-control" id="surname"
                                             placeholder="Digite o sobrenome do paciente" required disabled={disabled} value={userEdit.surname} onChange={handleInputChange}/>
                                     </div>
                                     <div className="col-md-4 mb-3">
-                                        <label htmlFor="patientDob" className="form-label">Data de Nascimento*</label>
+                                        <label htmlFor="dateBirth" className="form-label">Data de Nascimento*</label>
                                         <InputMask
                                             mask="99/99/9999"
                                             className={`form-control ${error ? 'is-invalid' : ''}`}
@@ -122,17 +122,17 @@ const Edit = ({ userData, display, close, listaClientes }) => {
                                         />
                                     </div>
                                     <div className="col-md-4 mb-3">
-                                        <label htmlFor="patientPhone" className="form-label">Telefone*</label>
+                                        <label htmlFor="phone" className="form-label">Telefone*</label>
                                         <input type="tel" className="form-control" id="phone" placeholder="(00) 00000-0000"
                                             required disabled={disabled} value={userEdit.phone} onChange={handleInputChange}/>
                                     </div>
                                     <div className="col-md-4 mb-3">
-                                        <label htmlFor="patientEmail" className="form-label">Email*</label>
+                                        <label htmlFor="email" className="form-label">Email*</label>
                                         <input type="email" className="form-control" id="email"
                                             placeholder="Digite o email do paciente" required disabled={disabled} value={userEdit.email} onChange={handleInputChange}/>
                                     </div>
                                     <div className="col-md-4 mb-3">
-                                        <label htmlFor="patientGender" className="form-label">Sexo*</label>
+                                        <label htmlFor="gender" className="form-label">Sexo*</label>
                                         <select className="form-select" id="gender" required disabled={disabled} value={userEdit.gender} onChange={handleInputChange}>
                                             <option defaultValue="" disabled>Selecione...</option>
                                             <option value="Masculino">Masculino</option>
@@ -143,7 +143,7 @@ const Edit = ({ userData, display, close, listaClientes }) => {
                                 </div>
                                 <div className="row">
                                     <div className="col-md-4 mb-3">
-                                        <label htmlFor="patientCep" className="form-label">CEP*</label>
+                                        <label htmlFor="cep" className="form-label">CEP*</label>
                                         <input type="text" className="form-control" id="cep"
                                             placeholder="Digite o CEP do paciente" onBlur={() => fetchAddress()} required disabled={disabled} value={userEdit.cep} onChange={handleInputChange}/>
                                     </div>
@@ -153,7 +153,7 @@ const Edit = ({ userData, display, close, listaClientes }) => {
                                             disabled />
                                     </div>
                                     <div className="col-md-4 mb-3">
-                                        <label htmlFor="patientNumber" className="form-label">Número</label>
+                                        <label htmlFor="number" className="form-label">Número</label>
                                         <input type="text" className="form-control" id="number"
                                             placeholder="Número do endereço" required disabled={disabled} value={userEdit.number} onChange={handleInputChange}/>
                                     </div>
@@ -175,17 +175,17 @@ const Edit = ({ userData, display, close, listaClientes }) => {
                                 </div>
                                 <div className="row">
                                     <div className="col-md-4 mb-3">
-                                        <label htmlFor="patientAllergies" className="form-label">Alergias</label>
+                                        <label htmlFor="alergias" className="form-label">Alergias</label>
                                         <input type="text" className="form-control" id="alergias"
                                             placeholder="Alergias do paciente" disabled={disabled} value={userEdit.alergias} onChange={handleInputChange}/>
                                     </div>
                                     <div className="col-md-4 mb-3">
-                                        <label htmlFor="patientMedications" className="form-label">Medicamentos em Uso</label>
+                                        <label htmlFor="medicamentos" className="form-label">Medicamentos em Uso</label>
                                         <input type="text" className="form-control" id="medicamentos"
                                             placeholder="Medicamentos que o paciente usa" disabled={disabled} value={userEdit.medicamentos} onChange={handleInputChange}/>
                                     </div>
                                     <div className="col-md-4 mb-3">
-                                        <label htmlFor="patientDentist" className="form-label">Dentista Responsável</label>
+                                        <label htmlFor="medicoName" className="form-label">Dentista Responsável</label>
                                         <input type="text" className="form-control" id="medicoName"
                                             placeholder={"Dentista responsável pelo paciente"} disabled={disabled} value={userEdit.medicoName} onChange={handleInputChange}/>
                                     </div>
@@ -194,7 +194,7 @@ const Edit = ({ userData, display, close, listaClientes }) => {
                                         <input type="date" className="form-control" id="patientLastVisit" disabled={disabled} />
                                     </div> */}
                                     <div className="col-12 mb-3">
-                                        <label htmlFor="patientNotes" className="form-label">Observações</label>
+                                        <label htmlFor="observacoes" className="form-label">Observações</label>
                                         <textarea className="form-control" id="observacoes" rows="3"
                                             placeholder="Observações sobre o paciente" disabled={disabled} value={userEdit.observacoes} onChange={handleInputChange}></textarea>
                                     </div>

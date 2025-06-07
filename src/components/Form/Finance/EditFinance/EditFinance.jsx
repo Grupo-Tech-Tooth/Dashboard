@@ -98,7 +98,7 @@ const EditFinance = ({ display, financeData, listUsers, close }) => {
               <form onSubmit={handleSubmit}>
                 <div className="row">
                   <div className="col-md-6 mb-3">
-                    <label htmlFor="appointmentCpf" className="form-label">
+                    <label htmlFor="cpf" className="form-label">
                       CPF do Paciente*
                     </label>
                     <div className="position-relative">
@@ -115,7 +115,7 @@ const EditFinance = ({ display, financeData, listUsers, close }) => {
                   </div>
 
                   <div className="col-md-6 mb-3">
-                    <label htmlFor="patientName" className="form-label">
+                    <label htmlFor="nomePaciente" className="form-label">
                       Nome do Paciente
                     </label>
                     <input
@@ -189,6 +189,7 @@ const EditFinance = ({ display, financeData, listUsers, close }) => {
                     <div className="input-group">
                       <span className="input-group-text">R$</span>
                       <input
+                        id="amount"
                         type="text"
                         className="form-control"
                         name="valorBruto"

@@ -53,7 +53,7 @@ function AddFinance({ Display, close, listUsers }) {
 
                             <form onSubmit={saveFields}>
                                 <div className="mb-3">
-                                    <label htmlFor="financeCpf" className="form-label">CPF do Paciente*</label>
+                                    <label htmlFor="cpf" className="form-label">CPF do Paciente*</label>
                                     <div className="position-relative">
                                         <input
                                             type="text"
@@ -81,19 +81,19 @@ function AddFinance({ Display, close, listUsers }) {
                                     </div>
                                 </div>
                                 <div className="mb-3">
-                                    <label htmlFor="patientName" className="form-label">Nome do Paciente</label>
+                                    <label htmlFor="nomePaciente" className="form-label">Nome do Paciente</label>
                                     <input type="text" className="form-control" id="nomePaciente" placeholder="Nome do Paciente" value={inputValueName}></input>
                                 </div>
                                 <div className="mb-3">
-                                    <label htmlFor="financeDate" className="form-label">Data</label>
+                                    <label htmlFor="date" className="form-label">Data</label>
                                     <input type="date" className="form-control" id="date" value={newFinance.date || ''} onChange={(e) => setNewFinance({ ...newFinance, date: e.target.value })} required />
                                 </div>
                                 <div className="mb-3">
-                                    <label htmlFor="financeAmount" className="form-label">Valor</label>
+                                    <label htmlFor="amount" className="form-label">Valor</label>
                                     <input type="text" className="form-control" id="amount" value={inputValueAmount} onChange={(e) => setInputValueAmount(e.target.value)} required />
                                 </div>
                                 <div className="mb-3">
-                                    <label htmlFor="financeDescription" className="form-label">Descrição</label>
+                                    <label htmlFor="description" className="form-label">Descrição</label>
                                     <input type="text" className="form-control" id="description" value={inputValueDescription} onChange={(e) => setInputValueDescription(e.target.value)} required />
                                 </div>
                                 <div className="d-grid">
