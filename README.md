@@ -1,70 +1,88 @@
-# Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# 📦 Manual de Instalação — Dashboard (React.js)
 
-## Available Scripts
+## ✅ Pré-requisitos
 
-In the project directory, you can run:
+Antes de iniciar, certifique-se de ter os seguintes softwares instalados:
 
-### `npm start`
+- [Node.js (v16+)](https://nodejs.org/)
+- [Docker](https://www.docker.com/) *(opcional, mas recomendado)*
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## 🚀 Como rodar o projeto localmente
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### 1. Clone este repositório ou descompacte o `.zip`
 
-### `npm test`
+```bash
+git clone <URL-do-repositório>
+cd Dashboard-main
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Ou apenas extraia o arquivo `Dashboard-main.zip`.
 
-### `npm run build`
+### 2. Instale as dependências
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Com o terminal aberto na pasta raiz do projeto:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```bash
+npm install
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### 3. Inicie a aplicação
 
-### `npm run eject`
+```bash
+npm start
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+O React irá iniciar a aplicação e abrir automaticamente no navegador em:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```
+http://localhost:3000
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## 🐳 Rodando com Docker (opcional)
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Você também pode executar a aplicação usando Docker.
 
-## Learn More
+### 1. Build da imagem
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```bash
+docker build -t dashboard-app .
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### 2. Subir os containers
 
-### Code Splitting
+```bash
+docker-compose up
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+O serviço será exposto em:
 
-### Analyzing the Bundle Size
+```
+http://localhost
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+Você pode ajustar portas e variáveis no arquivo `docker-compose.yml` ou `Dockerfile` conforme necessário.
 
-### Making a Progressive Web App
+## 🗂️ Estrutura do Projeto
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+```
+Dashboard-main/
+├── public/              # HTML principal
+├── src/                 # Código-fonte React
+│   ├── components/      # Componentes reutilizáveis
+│   ├── assets/          # Imagens e ícones
+│   ├── App.js           # Componente principal
+│   └── index.js         # Ponto de entrada
+├── Dockerfile           # Imagem Docker
+├── docker-compose.yml   # Orquestração Docker
+├── package.json         # Dependências e scripts
+└── README.md
+```
 
-### Advanced Configuration
+## 🧠 Scripts úteis
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+| Comando             | Descrição                         |
+|---------------------|-----------------------------------|
+| `npm start`         | Inicia o servidor de desenvolvimento |
+| `npm run build`     | Gera a versão de produção          |
+| `npm test`          | Executa os testes (se configurado) |
