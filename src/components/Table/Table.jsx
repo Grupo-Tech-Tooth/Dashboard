@@ -18,6 +18,7 @@ function Table({
   pacientesDados,
   close,
   statusCarregando = false,
+  listSpecialization,
 }) {
   const [count, setCount] = useState(0);
   const [formUser, setFormUser] = useState("none");
@@ -277,6 +278,10 @@ function Table({
                             ? index + 1 + (currentPage - 1) * pageSize
                             : col.key === "amount"
                             ? "R$ " + item[col.key] + ",00"
+                            : col.key === "especializacao"
+                            ? listSpecialization.find(
+                                (spec) => spec.key === item[col.key]
+                              )?.label || "-"
                             : col.key === "formaPagamento"
                             ? paymentMethodLabel(item[col.key]) +
                               (item[col.key] === "CARTAO_CREDITO" &&

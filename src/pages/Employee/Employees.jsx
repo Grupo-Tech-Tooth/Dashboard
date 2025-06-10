@@ -151,7 +151,7 @@ function Employees() {
             </div>
           </div>
           <div className={style['table']}>
-            <Table tableInformation={tableInformation} setTableInformation={setTableInformation} close={getData} />
+            <Table tableInformation={tableInformation} setTableInformation={setTableInformation} close={getData} listSpecialization={tableInformation.specialization} />
           </div>
         </div>
       </Container>

@@ -229,7 +229,15 @@ function Financeiro() {
     setSearchPaymentMethod("");
     setSearchStartDate("");
     setSearchEndDate("");
-    getData();
+
+    const listOrdenada = tableInformation.dataNotFilter.sort(
+        (a, b) => a.id - b.id
+      );
+      setTableInformation((prevTableInformation) => ({
+        ...prevTableInformation,
+        data: listOrdenada,
+      })
+    );
   }
 
   function buscar() {
